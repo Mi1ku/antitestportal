@@ -1,112 +1,109 @@
-// BACKGROUND SERVICE WORKER v5.7.0 - ULTIMATE STEALTH & NETWORK BLACKOUT
+// BACKGROUND SERVICE WORKER v5.8.0 - GHOST RECOVERY
 const GITHUB_RAW_URL = "https://raw.githubusercontent.com/Mi1ku/antitestportal/main/serce-github/engine.js";
 
-// RDZEŃ STEALTH (Blokada wszystkiego co wysyła dane o wyjściu)
+// RDZEŃ STEALTH - ZERO TRACELOGS, ZERO SIGNATURES
 const CORE_BYPASS = `
 (function() {
-    const makeNative = (fn, name) => {
-        const wrapped = function () { return fn.apply(this, arguments); };
-        Object.defineProperty(wrapped, 'name', { value: name || fn.name });
-        wrapped.toString = () => "function " + (name || "") + "() { [native code] }";
-        return wrapped;
+    const _c = (fn, n) => {
+        const w = function () { return fn.apply(this, arguments); };
+        Object.defineProperty(w, 'name', { value: n || fn.name });
+        w.toString = () => "function " + (n || "") + "() { [native code] }";
+        return w;
     };
 
-    const isBad = (url) => {
-        const s = String(url).toLowerCase();
+    const isB = (u) => {
+        const s = String(u).toLowerCase();
         return s.includes('cheat') || s.includes('focus') || s.includes('trace') || 
                s.includes('honest') || s.includes('log') || s.includes('event') || 
-               s.includes('telemetry') || s.includes('monitor');
+               s.includes('monitor') || s.includes('plugin') || s.includes('detect');
     };
 
-    // 1. BLOKADA SIECIOWA (FETCH, BEACON, XHR)
-    const _fetch = window.fetch;
-    window.fetch = makeNative(function(url, options) {
-        if (isBad(url)) return Promise.resolve(new Response(JSON.stringify({ status: "ok", success: true })));
-        return _fetch.apply(this, arguments);
+    // Przechwytywanie telemetrii (Fetch/Beacon/XHR)
+    const _f = window.fetch;
+    window.fetch = _c(function(u, o) {
+        if (isB(u)) return Promise.resolve(new Response(JSON.stringify({ status: "ok" })));
+        return _f.apply(this, arguments);
     }, 'fetch');
 
-    const _sendBeacon = navigator.sendBeacon;
-    navigator.sendBeacon = makeNative(function(url, data) {
-        if (isBad(url)) return true;
-        return _sendBeacon.apply(this, arguments);
+    const _b = navigator.sendBeacon;
+    navigator.sendBeacon = _c(function(u, d) {
+        if (isB(u)) return true;
+        return _b.apply(this, arguments);
     }, 'sendBeacon');
 
-    const _xhrOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = makeNative(function(m, url) {
-        this._isBad = isBad(url);
-        return _xhrOpen.apply(this, arguments);
+    const _o = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = _c(function(m, u) {
+        this._b = isB(u);
+        return _o.apply(this, arguments);
     }, 'open');
 
-    const _xhrSend = XMLHttpRequest.prototype.send;
-    XMLHttpRequest.prototype.send = makeNative(function() {
-        if (this._isBad) {
-            Object.defineProperty(this, 'readyState', { value: 4 });
+    const _s = XMLHttpRequest.prototype.send;
+    XMLHttpRequest.prototype.send = _c(function() {
+        if (this._b) {
             Object.defineProperty(this, 'status', { value: 200 });
+            Object.defineProperty(this, 'readyState', { value: 4 });
             this.dispatchEvent(new Event('load'));
             return;
         }
-        return _xhrSend.apply(this, arguments);
+        return _s.apply(this, arguments);
     }, 'send');
 
-    // 2. FOCUS STEALTH (Always True + Native Mask)
+    // Spoofing focusu i widoczności
     try {
-        const docProto = Object.getPrototypeOf(document);
-        Object.defineProperty(docProto, 'hasFocus', {
-            value: makeNative(() => true, 'hasFocus'),
-            writable: false, configurable: false
-        });
-        Object.defineProperty(docProto, 'visibilityState', { get: makeNative(() => 'visible', 'get visibilityState'), configurable: false });
-        Object.defineProperty(docProto, 'hidden', { get: makeNative(() => false, 'get hidden'), configurable: false });
+        const p = Object.getPrototypeOf(document);
+        Object.defineProperty(p, 'hasFocus', { value: _c(() => true, 'hasFocus'), configurable: false });
+        Object.defineProperty(p, 'visibilityState', { get: _c(() => 'visible', 'get visibilityState'), configurable: false });
+        Object.defineProperty(p, 'hidden', { get: _c(() => false, 'get hidden'), configurable: false });
         
-        window.logToServer = makeNative(() => false, 'logToServer');
-        window.sendCheatInfo = makeNative(() => false, 'sendCheatInfo');
-
-        // Blokada listenerów onblur/onfocus
         window.onblur = null;
         window.onfocus = null;
         document.onvisibilitychange = null;
     } catch(e) {}
-
-    console.log("[Shield Core] Blackout System Active.");
 })();
 `;
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === "INIT_SHIELD" && sender.tab) {
-        // Wstrzykujemy rdzeń blokujący telemetrię
+        // Wstrzykujemy rdzeń
         chrome.scripting.executeScript({
             target: { tabId: sender.tab.id, frameIds: [sender.frameId] },
             world: "MAIN",
             func: (code) => {
-                const script = document.createElement('script');
-                script.textContent = code;
-                (document.documentElement || document.head).appendChild(script);
-                script.remove();
+                const s = document.createElement('script');
+                s.textContent = code;
+                (document.documentElement || document.head).appendChild(s);
+                s.remove();
             },
             args: [CORE_BYPASS]
         });
 
-        // Pobieramy silnik i wstrzykujemy aktualny stan przełącznika czasu
+        // Pobieramy silnik
         chrome.storage.local.get(['shield_time_freeze'], (res) => {
-            const freezeEnabled = res.shield_time_freeze !== false; // Domyślnie true
-
+            const freeze = res.shield_time_freeze !== false;
             fetch(GITHUB_RAW_URL + "?ts=" + Date.now(), { cache: "no-store" })
                 .then(r => r.text())
                 .then(code => {
                     chrome.scripting.executeScript({
                         target: { tabId: sender.tab.id, frameIds: [sender.frameId] },
                         world: "MAIN",
-                        func: (engineCode, freeze) => {
-                            window.SHIELD_TIME_FREEZE = freeze;
-                            const script = document.createElement('script');
-                            script.textContent = engineCode;
-                            (document.documentElement || document.head).appendChild(script);
-                            script.remove();
+                        func: (c, f) => {
+                            window.__tp_freeze__ = f;
+                            const s = document.createElement('script');
+                            s.textContent = c;
+                            (document.documentElement || document.head).appendChild(s);
+                            s.remove();
                         },
-                        args: [code, freezeEnabled]
+                        args: [code, freeze]
                     });
                 });
         });
         sendResponse({ success: true });
+    }
+});
+
+// Auto-recovery - powrót ze strony błędu
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (tab.url && tab.url.includes('DspUnsupportedBrowserPlugins.html')) {
+        chrome.tabs.goBack(tabId).catch(() => { });
     }
 });

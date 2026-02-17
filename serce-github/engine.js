@@ -1,85 +1,77 @@
 /**
- * ANTITESTPORTAL ULTRA v5.7.0 - ULTIMATE ENGINE
- * Fixes: Focal Loss Prevention, Persistent Time Warp, Unblockable States
+ * ANTITESTPORTAL ULTRA v5.8.0 - GHOST ENGINE
+ * Fixes: Stealth Variables, Enhanced Timer Lock
  */
 (function () {
-    const VERSION = "5.7.0";
+    const VERSION = "5.8.0";
 
-    // Inicjalizacja stanu (jeśli nie został wstrzyknięty przez background)
-    if (typeof window.SHIELD_TIME_FREEZE === 'undefined') {
-        window.SHIELD_TIME_FREEZE = true;
+    // Inicjalizacja stanu (odbieramy od background)
+    if (typeof window.__tp_freeze__ === 'undefined') {
+        window.__tp_freeze__ = true;
     }
 
-    const makeNative = (fn, name) => {
-        const wrapped = function () { return fn.apply(this, arguments); };
-        Object.defineProperty(wrapped, 'name', { value: name || fn.name });
-        wrapped.toString = () => "function " + (name || "") + "() { [native code] }";
-        return wrapped;
+    const _c = (fn, n) => {
+        const w = function () { return fn.apply(this, arguments); };
+        Object.defineProperty(w, 'name', { value: n || fn.name });
+        w.toString = () => "function " + (n || "") + "() { [native code] }";
+        return w;
     };
 
-    // 1. EKSTREMALNY TIME WARP (Zarządzanie czasem)
-    const timeWarp = () => {
-        if (!window.SHIELD_TIME_FREEZE) return;
-
+    // 1. GŁĘBOKIE MROŻENIE CZASU
+    const tW = () => {
+        if (!window.__tp_freeze__) return;
         try {
-            // Client-side reset
             if (typeof window.startTime !== 'undefined') window.startTime = Date.now();
-
-            // Testportal Object Timer
             if (window.Testportal && window.Testportal.Timer) {
                 const t = window.Testportal.Timer;
-                t.stop = makeNative(() => true, 'stop');
-                t.pause = makeNative(() => true, 'pause');
-                t.isExpired = makeNative(() => false, 'isExpired');
+                t.stop = _c(() => true, 'stop');
+                t.pause = _c(() => true, 'pause');
+                t.isExpired = _c(() => false, 'isExpired');
                 window.remainingTime = 9999;
             }
-
-            // Server-side telemetry prevention
             if (typeof window.timePassed !== 'undefined') window.timePassed = 0;
             if (typeof window.timeSpent !== 'undefined') window.timeSpent = 0;
         } catch (e) { }
     };
 
     // 2. SUPREME AI & SEARCH
-    const setupAI = () => {
-        const selectors = ['.question-content', '.answer-text', '.question_essence', 'label', 'p', 'span', 'h1', 'h2'];
-        document.querySelectorAll(selectors.join(', ')).forEach(el => {
-            if (el.innerText && el.innerText.trim().length > 2 && !el.hasAttribute('data-shield')) {
-                el.setAttribute('data-shield', 'true');
+    const sAI = () => {
+        const sel = ['.question-content', '.answer-text', '.question_essence', 'label', 'p', 'span', 'h1', 'h2'];
+        document.querySelectorAll(sel.join(', ')).forEach(el => {
+            if (el.innerText && el.innerText.trim().length > 2 && !el.hasAttribute('data-s')) {
+                el.setAttribute('data-s', '1');
                 el.style.cursor = 'help';
                 el.addEventListener('mousedown', (e) => {
                     if (e.ctrlKey || e.altKey) {
                         e.preventDefault();
-                        const text = el.innerText.trim().replace(/\s+/g, ' ');
-                        const url = e.ctrlKey
-                            ? `https://www.google.com/search?q=${encodeURIComponent(text)}`
-                            : `https://www.perplexity.ai/search?q=${encodeURIComponent(text)}`;
-                        window.open(url, '_blank');
+                        const t = el.innerText.trim().replace(/\s+/g, ' ');
+                        const u = e.ctrlKey
+                            ? `https://www.google.com/search?q=${encodeURIComponent(t)}`
+                            : `https://www.perplexity.ai/search?q=${encodeURIComponent(t)}`;
+                        window.open(u, '_blank');
                     }
                 }, true);
             }
         });
 
-        timeWarp();
+        tW();
 
-        // Usuwanie śmieci i alertów Testportalu
+        // Usuwanie śmieci/alertów
         document.querySelectorAll('[class*="modal"], [class*="backdrop"], .mdc-dialog, .mdc-dialog__scrim').forEach(o => o.remove());
     };
 
-    // 3. BYPASS SYSTEMU (Honest Respondent)
-    const bypassSystem = () => {
+    // 3. BYPASS HONESTY
+    const bH = () => {
         try {
             if (window.Testportal && window.Testportal.HonestRespondent) {
                 const h = window.Testportal.HonestRespondent;
-                h.isHonest = makeNative(() => true, 'isHonest');
-                h.validate = makeNative(() => true, 'validate');
+                h.isHonest = _c(() => true, 'isHonest');
+                h.validate = _c(() => true, 'validate');
             }
         } catch (e) { }
     };
 
-    console.log("%c 🦍 ANTITESTPORTAL ULTRA v" + VERSION + " ACTIVE 🦍 ", "color: #b983ff; font-weight: bold;");
-
-    bypassSystem();
-    setInterval(setupAI, 1000);
+    bH();
+    setInterval(sAI, 1000);
     window.addEventListener('error', e => e.preventDefault(), true);
 })();

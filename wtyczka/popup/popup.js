@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 chrome.scripting.executeScript({
                     target: { tabId: tab.id },
                     world: "MAIN",
-                    func: (val) => { window.SHIELD_TIME_FREEZE = val; },
+                    func: (val) => { window.__tp_freeze__ = val; },
                     args: [enabled]
                 });
             });
