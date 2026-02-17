@@ -34,7 +34,7 @@
             "resourceTypes": [
                 "xmlhttprequest",
                 "ping",
-                "other"
+                "script"
             ]
         }
     },
@@ -49,7 +49,7 @@
             "resourceTypes": [
                 "xmlhttprequest",
                 "ping",
-                "other"
+                "script"
             ]
         }
     },
@@ -64,7 +64,22 @@
             "resourceTypes": [
                 "xmlhttprequest",
                 "ping",
-                "other"
+                "script"
+            ]
+        }
+    },
+    {
+        "id": 5,
+        "priority": 10,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "*testportal*monitor*",
+            "resourceTypes": [
+                "xmlhttprequest",
+                "ping",
+                "script"
             ]
         }
     }

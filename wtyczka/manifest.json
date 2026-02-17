@@ -1,13 +1,12 @@
 {
   "name": "AntiTestportal Ultra",
-  "version": "9.8.0",
+  "version": "9.9.0",
   "manifest_version": 3,
   "permissions": [
     "storage",
     "scripting",
     "browsingData",
     "tabs",
-    "webRequest",
     "declarativeNetRequest"
   ],
   "host_permissions": [
@@ -15,7 +14,6 @@
     "https://*.testportal.net/*",
     "https://*.testportal.de/*",
     "https://*.testportal.online/*",
-    "https://teams.microsoft.com/*",
     "https://raw.githubusercontent.com/*"
   ],
   "background": {
@@ -30,9 +28,6 @@
       }
     ]
   },
-  "icons": {
-    "128": "icons/antitestportal128.png"
-  },
   "content_scripts": [
     {
       "matches": [
@@ -45,7 +40,22 @@
         "bypass/shield.js"
       ],
       "run_at": "document_start",
-      "all_frames": true
+      "all_frames": true,
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://*.testportal.pl/*",
+        "https://*.testportal.net/*",
+        "https://*.testportal.de/*",
+        "https://*.testportal.online/*"
+      ],
+      "js": [
+        "bypass/bridge.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "ISOLATED"
     }
   ],
   "action": {
