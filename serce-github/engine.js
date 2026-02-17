@@ -1,7 +1,7 @@
 (function () {
     /**
-     * SHIELD ULTRA ENTERPRISE v4.5.0 - THE ULTIMATE BYPASS
-     * Combining Nuclear Engine with ReferenceError Focus-Kill
+     * SHIELD ULTRA ENTERPRISE v4.6.0 - THE ULTIMATE BYPASS
+     * Improved Anti-Tamper & Persistent Focus Locking
      */
 
     const makeNative = (fn, name) => {
@@ -11,23 +11,28 @@
         return wrapped;
     };
 
-    // 1. ZABÓJCA FOCUS LOSS (GŁĘBOKIE OŚLEPIENIE)
+    // 1. ZABÓJCA FOCUS LOSS (GŁĘBOKIE OŚLEPIENIE - ANTI-TAMPER)
     const blindDetection = () => {
         try {
             // Trik ReferenceError - wywala skrypt Testportalu, gdy pyta o fokus
+            // Zmieniono na property 'hasFocus' bezpośrednio na dokumencie tak jak w dzialajacybypass
             Object.defineProperty(document, 'hasFocus', {
-                get: () => { throw new ReferenceError("ShieldFocusGuard"); },
+                get: () => { throw new ReferenceError("antiTestportalFeature"); },
                 configurable: true
             });
 
-            // Wyłączamy logowanie na serwer
+            // Wyłączamy logowanie na serwer (z dzialajacybypass)
             window.logToServer = makeNative(() => false, 'logToServer');
             window.sendCheatInfo = makeNative(() => false, 'sendCheatInfo');
 
-            // Mrożenie stanów
+            // Mrożenie stanów widoczności
             const docProto = Object.getPrototypeOf(document);
             Object.defineProperty(docProto, 'visibilityState', { get: () => 'visible', configurable: true });
             Object.defineProperty(docProto, 'hidden', { get: () => false, configurable: true });
+
+            // Blokada zdarzeń blur/focus na poziomie okna (zabezpieczenie dodatkowe)
+            window.addEventListener('blur', (e) => e.stopImmediatePropagation(), true);
+            window.addEventListener('focusout', (e) => e.stopImmediatePropagation(), true);
         } catch (e) { }
     };
 
@@ -47,6 +52,8 @@
                 if (window.Testportal.HonestRespondent) {
                     window.Testportal.HonestRespondent.isHonest = () => true;
                     window.Testportal.HonestRespondent.validate = () => true;
+                    // Dodatkowe zabezpieczenie prototypu
+                    Object.defineProperty(window.Testportal.HonestRespondent, 'isHonest', { get: () => () => true });
                 }
             }
         } catch (e) { }
@@ -68,22 +75,26 @@
         return _fetch.apply(this, arguments);
     }, 'fetch');
 
-    // 4. AUTO-CLICKER (Rozumiem)
+    // 4. AUTO-CLICKER (Rozumiem / Modal Killer)
     const modalKiller = () => {
-        const keywords = ['rozumiem', 'poinformowany', 'opuszczeniu', 'informacja'];
-        document.querySelectorAll('button, div, span').forEach(el => {
+        const keywords = ['rozumiem', 'poinformowany', 'opuszczeniu', 'informacja', 'ok', 'understand'];
+        document.querySelectorAll('button, div, span, a').forEach(el => {
             const text = (el.innerText || "").toLowerCase();
             if (keywords.some(k => text.includes(k))) {
-                if (el.tagName === 'BUTTON') el.click();
+                if (el.tagName === 'BUTTON' || el.tagName === 'A') el.click();
                 if (el.classList.contains('modal') || el.classList.contains('backdrop')) el.remove();
             }
         });
+        // Siłowe usuwanie overlayów
+        const overlays = document.querySelectorAll('[class*="modal"], [class*="backdrop"], [id*="modal"]');
+        overlays.forEach(o => o.remove());
         document.body.classList.remove('modal-open');
+        document.documentElement.style.overflow = 'auto'; // Przywrócenie przewijania
     };
 
     // 5. HELPERY (SZYBKIE SZUKANIE)
     const setupUI = () => {
-        document.querySelectorAll('.question-content, .answer-text, p, span, h2').forEach(el => {
+        document.querySelectorAll('.question-content, .answer-text, p, span, h2, label').forEach(el => {
             if (el.innerText && el.innerText.trim().length > 5 && !el.hasAttribute('data-v4')) {
                 el.setAttribute('data-v4', 'true');
                 el.addEventListener('click', (e) => {
@@ -104,14 +115,14 @@
 
     // BLOKADA BŁĘDÓW (Ciche działanie)
     window.addEventListener('error', (e) => {
-        if (e.message && e.message.includes('ShieldFocusGuard')) {
-            e.preventDefault(); // Ukrywamy nasz celowy ReferenceError
+        if (e.message && (e.message.includes('ShieldFocusGuard') || e.message.includes('antiTestportalFeature'))) {
+            e.preventDefault();
         }
     }, true);
 
     // START
     console.clear();
-    console.log("%c 🦍 SHIELD ULTRA v4.5.0 - ULTIMATE BYPASS LOADED 🦍 ", "color: #22c55e; font-weight: bold; background: #000; padding: 15px; border: 3px solid #22c55e; border-radius: 8px;");
+    console.log("%c 🦍 SHIELD ULTRA v4.6.0 - RE-ENFORCED 🦍 ", "color: #8b5cf6; font-weight: bold; background: #000; padding: 15px; border: 3px solid #8b5cf6; border-radius: 8px;");
 
     blindDetection();
     setInterval(setupUI, 500);
