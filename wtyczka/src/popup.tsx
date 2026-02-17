@@ -10,6 +10,7 @@ function IndexPopup() {
     const [uiMessage, setUiMessage] = useState({ text: "", type: "" });
 
     useEffect(() => {
+        // Sprawdzanie czy klucz jest poprawny
         if (pluginConfig.shieldKey && validKeys.includes(pluginConfig.shieldKey)) {
             setIsActivated(true);
         }
@@ -21,22 +22,26 @@ function IndexPopup() {
     };
 
     const handleActivate = () => {
-        if (validKeys.includes(inputKey.trim())) {
-            pluginConfig.setShieldKey(inputKey.trim());
+        const key = inputKey.trim();
+        if (validKeys.includes(key)) {
+            pluginConfig.setShieldKey(key);
             setIsActivated(true);
-            showMessage("DOSTĘP ULTRA AKTYWOWANY 💎", "success");
+            showMessage("DOSTĘP SUPREME AKTYWOWANY 💎", "success");
         } else {
-            showMessage("BŁĄD: NIEPRAWIDŁOWY KLUCZ LICENCYJNY", "error");
+            showMessage("BŁĄD: NIEPOPRAWNY KLUCZ LICENCYJNY", "error");
         }
     };
 
     const handleClearTrace = async () => {
         try {
+            // Czyszczenie danych dla wszystkich domen Testportalu
             await chrome.browsingData.remove({
                 "origins": [
                     "https://www.testportal.pl",
                     "https://www.testportal.net",
-                    "https://www.testportal.online"
+                    "https://www.testportal.online",
+                    "https://testportal.pl",
+                    "https://testportal.net"
                 ]
             }, {
                 "cache": true,
@@ -46,26 +51,26 @@ function IndexPopup() {
 
             showMessage("ŚLADY WYCZYSZCZONE 🛡️", "success");
 
-            // Force reload ANY tab that matches Testportal domains
-            const tabs = await chrome.tabs.query({
-                url: [
-                    "https://*.testportal.pl/*",
-                    "https://*.testportal.net/*",
-                    "https://*.testportal.online/*"
-                ]
-            });
-
+            // RELOAD: Szukamy wszystkich kart z Testportalem
+            const tabs = await chrome.tabs.query({});
+            let reloaded = 0;
             for (const tab of tabs) {
-                if (tab.id) chrome.tabs.reload(tab.id);
+                if (tab.url && (tab.url.includes("testportal.pl") || tab.url.includes("testportal.net") || tab.url.includes("testportal.online"))) {
+                    if (tab.id) {
+                        await chrome.tabs.reload(tab.id);
+                        reloaded++;
+                    }
+                }
             }
 
-            // Fallback: reload active tab if not caught by query
-            if (tabs.length === 0) {
+            if (reloaded === 0) {
+                // Skoro nie znaleźliśmy kart po URLu, spróbujmy odświeżyć aktywną kartę jeśli jesteśmy na niej
                 const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-                if (activeTab?.id) chrome.tabs.reload(activeTab.id);
+                if (activeTab?.id) await chrome.tabs.reload(activeTab.id);
             }
 
         } catch (e) {
+            console.error("Clear trace failure:", e);
             showMessage("BŁĄD PODCZAS CZYSZCZENIA", "error");
         }
     };
@@ -81,8 +86,8 @@ function IndexPopup() {
     return (
         <div className="popup-container">
             <div className="header">
-                <h1 className="logo">AntiTestportal <span>ULTRA</span></h1>
-                <div className="status-badge pulse">MI1KU SUPREME v11.3</div>
+                <h1 className="logo">76mikus <span>ULTRA</span></h1>
+                <div className="status-badge pulse">GHOST ENGINE v11.3 SUPREME</div>
             </div>
 
             {uiMessage.text && (
@@ -104,8 +109,8 @@ function IndexPopup() {
                     </div>
                     <button className="btn btn-primary" onClick={handleActivate}>ODBLOKUJ POTĘGĘ</button>
                     <div className="support-links">
-                        <p>KUP KLUCZ / WSPARCIE:</p>
-                        <a href="https://instagram.com/76mikus" target="_blank" className="ig-link">INSTAGRAM: @76mikus</a>
+                        <p>KUP KLUCZ / KONTAKT:</p>
+                        <a href="https://instagram.com/76mikus" target="_blank" className="ig-link">IG: @76mikus</a>
                     </div>
                 </div>
             ) : (
@@ -123,7 +128,7 @@ function IndexPopup() {
                             </label>
                         </div>
                         <p className="module-desc">
-                            Zatrzymuje zegar. Resetuj czas przed startem lub w razie potrzeby.
+                            Zamraża czas. Przycisk poniżej resetuje zegar widoczny na stronie.
                         </p>
                         <button className="btn btn-outline" style={{ marginTop: '10px', fontSize: '10px', padding: '6px' }} onClick={handleResetTimer}>
                             RESETUJ TIMER PYTANIA
@@ -132,7 +137,7 @@ function IndexPopup() {
 
                     <div className="module-box" style={{ borderColor: 'rgba(52, 211, 153, 0.3)' }}>
                         <div className="module-header">
-                            <span className="module-title" style={{ color: '#34d399' }}>GHOST SHIELD (SUPREME)</span>
+                            <span className="module-title" style={{ color: '#34d399' }}>EKSTREMALNY STEALTH</span>
                             <label className="switch">
                                 <input
                                     type="checkbox"
@@ -143,7 +148,7 @@ function IndexPopup() {
                             </label>
                         </div>
                         <p className="module-desc">
-                            Absolute Stealth Mode & Honest Respondent. Testportal widzi Cię jako uczciwego gracza.
+                            Uczciwy Respondenta & Anti-Tamper. Zero powiadomień dla nauczyciela.
                         </p>
                     </div>
 
@@ -152,15 +157,15 @@ function IndexPopup() {
                             WYCZYŚĆ ŚLADY & RELOAD
                         </button>
                         <div className="support-links" style={{ textAlign: 'center' }}>
-                            <a href="https://instagram.com/76mikus" target="_blank" style={{ fontSize: '10px' }}>SUPPORT: @76mikus</a>
+                            <a href="https://instagram.com/76mikus" target="_blank" style={{ fontSize: '10px' }}>Wsparcie: @76mikus</a>
                         </div>
                     </div>
 
                     <div className="module-box" style={{ background: 'rgba(255,255,255,0.03)', border: 'none' }}>
-                        <span className="module-title" style={{ color: 'white', display: 'block', marginBottom: '8px', fontSize: '10px' }}>SKRÓTY MI1KU:</span>
+                        <span className="module-title" style={{ color: 'white', display: 'block', marginBottom: '8px', fontSize: '10px' }}>SKRÓTY 76MIKUS:</span>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                             <div className="shortcut-item"><span>CTRL + Klik</span> <small>Google Search</small></div>
-                            <div className="shortcut-item"><span>ALT + Klik</span> <small>AI Solution (Perplexity)</small></div>
+                            <div className="shortcut-item"><span>ALT + Klik</span> <small>AI Supreme Search</small></div>
                         </div>
                     </div>
                 </>

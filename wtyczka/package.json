@@ -41,6 +41,16 @@
       "scripting",
       "unlimitedStorage"
     ],
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "assets/anti-anti-tamper.js"
+        ],
+        "matches": [
+          "*://*/*"
+        ]
+      }
+    ],
     "background": {
       "service_worker": "src/background.ts"
     }
