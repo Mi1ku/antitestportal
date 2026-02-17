@@ -1,32 +1,39 @@
 (function () {
-    // SHIELD LOADER v4.2.0 - CSP BYPASSED
-    console.log("[Shield] Inicjalizacja systemu (CSP Header Strip Active)...");
+    // SHIELD LOADER v4.5.0 - DUAL-LAYER INJECTION
+    console.log("[Shield] Aktywacja warstw ochronnych...");
 
+    // WARSTWA 1: INSTANT LOCAL BYPASS (Core)
+    // Wstrzykujemy krytyczne blokady bezpośrednio z pliku wtyczki
+    try {
+        const script = document.createElement('script');
+        script.src = chrome.runtime.getURL('bypass/core.js');
+        (document.head || document.documentElement).appendChild(script);
+        script.onload = () => script.remove();
+    } catch (e) {
+        console.error("[Shield Error] Nie udało się wstrzyknąć rdzenia.");
+    }
+
+    // WARSTWA 2: DYNAMIC ENGINE (GitHub Sync)
+    // Pobieramy zaawansowaną logikę i UI z chmury
     chrome.runtime.sendMessage({ type: "FETCH_ENGINE" }, (response) => {
         if (chrome.runtime.lastError || !response || !response.success) {
-            console.error("[Shield Error] Błąd pobierania silnika z tła.");
+            console.warn("[Shield] Błąd chmury. Działam na samym rdzeniu.");
             return;
         }
 
-        console.log("%c [Shield] Silnik pobrany. Aktywacja Ghost Mode... ", "color: #22c55e; font-weight: bold;");
+        console.log("[Shield] Silnik zsynchronizowany. Aktywacja modułów premium.");
 
-        // CSP zostało usunięte przez rules.json, więc możemy wstrzyknąć kod bezpośrednio
         try {
-            const script = document.createElement('script');
-            script.textContent = response.code;
-            (document.head || document.documentElement).appendChild(script);
-            script.remove();
+            const engineScript = document.createElement('script');
+            engineScript.textContent = response.code;
+            (document.head || document.documentElement).appendChild(engineScript);
+            engineScript.remove();
         } catch (e) {
-            console.warn("[Shield] Próba wstrzyknięcia przez Blob (Fallback)...");
-            const blob = new Blob([response.code], { type: 'text/javascript' });
-            const url = URL.createObjectURL(blob);
-            const s = document.createElement('script');
-            s.src = url;
-            (document.head || document.documentElement).appendChild(s);
+            console.error("[Shield Error] Błąd inicjalizacji silnika dynamicznego.");
         }
     });
 
-    // Skrót dla strony błędu
+    // AUTO-BACK DLA STRONY BŁĘDU
     if (window.location.href.includes('DspUnsupportedBrowserPlugins.html')) {
         window.history.back();
     }

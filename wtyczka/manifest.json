@@ -15,7 +15,21 @@
     "https://*.testportal.net/*",
     "https://*.testportal.de/*",
     "https://*.testportal.online/*",
+    "https://teams.microsoft.com/*",
     "https://raw.githubusercontent.com/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "bypass/core.js"
+      ],
+      "matches": [
+        "*://*.testportal.pl/*",
+        "*://*.testportal.net/*",
+        "*://*.testportal.online/*",
+        "*://teams.microsoft.com/*"
+      ]
+    }
   ],
   "background": {
     "service_worker": "background.js"
