@@ -1,6 +1,6 @@
 {
   "name": "AntiTestportal Ultra",
-  "version": "9.2.0",
+  "version": "9.7.0",
   "manifest_version": 3,
   "permissions": [
     "storage",
@@ -45,8 +45,7 @@
         "bypass/shield.js"
       ],
       "run_at": "document_start",
-      "all_frames": true,
-      "world": "MAIN"
+      "all_frames": true
     }
   ],
   "action": {
