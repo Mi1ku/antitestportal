@@ -33,7 +33,7 @@
             "urlFilter": "*testportal*cheat*",
             "resourceTypes": [
                 "xmlhttprequest",
-                "beacon",
+                "ping",
                 "other"
             ]
         }
@@ -48,7 +48,7 @@
             "urlFilter": "*testportal*focus*",
             "resourceTypes": [
                 "xmlhttprequest",
-                "beacon",
+                "ping",
                 "other"
             ]
         }
@@ -63,7 +63,7 @@
             "urlFilter": "*testportal*trace*",
             "resourceTypes": [
                 "xmlhttprequest",
-                "beacon",
+                "ping",
                 "other"
             ]
         }
