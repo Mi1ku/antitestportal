@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const activateBtn = document.getElementById('activateBtn');
     const updateBtn = document.getElementById('updateBtn');
     const clearBtn = document.getElementById('clearBtn');
+    const timeFreezeToggle = document.getElementById('timeFreezeToggle');
+    const resetTimeBtn = document.getElementById('resetTimeBtn');
 
     // ALERT SYSTEM
     const alertLayer = document.getElementById('alertLayer');
@@ -84,6 +86,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // CZYSZCZENIE DANYCH
     clearBtn.addEventListener('click', () => {
+        const patterns = [
+            "*://*.testportal.pl/*",
+            "*://*.testportal.net/*",
+            "*://*.testportal.de/*",
+            "*://*.testportal.online/*"
+        ];
+
         chrome.browsingData.remove({
             "origins": [
                 "https://www.testportal.pl",
@@ -93,7 +102,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }, {
             "cache": true, "cookies": true, "localStorage": true
         }, () => {
-            showAlert("SUKCES", "Wszystkie ślady obecności na Testportal zostały usunięte.", "success");
+            // Po wyczyszczeniu śladów odświeżamy karty, żeby system "zapomniał" nas całkowicie
+            chrome.tabs.query({ url: patterns }, (tabs) => {
+                if (tabs && tabs.length > 0) {
+                    tabs.forEach(tab => chrome.tabs.reload(tab.id));
+                }
+                showAlert("SUKCES", "Wszystkie ślady obecności zostały usunięte, a strony odświeżone.", "success");
+            });
         });
     });
 
@@ -121,6 +136,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('syncLoading').style.display = 'none';
                 showAlert("SYNCHRONIZACJA", "Silnik Shield Ultra został pomyślnie zaktualizowany w chmurze i odświeżony w kartach.", "success");
             }, 1500);
+        });
+    });
+
+    // MODUŁ CZASU - LOGIKA
+    timeFreezeToggle.addEventListener('change', () => {
+        const enabled = timeFreezeToggle.checked;
+        chrome.tabs.query({ url: patterns }, (tabs) => {
+            tabs.forEach(tab => {
+                chrome.scripting.executeScript({
+                    target: { tabId: tab.id },
+                    world: "MAIN",
+                    func: (val) => { window.SHIELD_TIME_FREEZE = val; },
+                    args: [enabled]
+                });
+            });
+        });
+    });
+
+    resetTimeBtn.addEventListener('click', () => {
+        chrome.tabs.query({ url: patterns }, (tabs) => {
+            tabs.forEach(tab => {
+                chrome.scripting.executeScript({
+                    target: { tabId: tab.id },
+                    world: "MAIN",
+                    func: () => { window.startTime = Date.now(); }
+                });
+            });
+            showAlert("CZAS ZRESETOWANY", "Licznik pytania został ustawiony na 0.", "success");
         });
     });
 });

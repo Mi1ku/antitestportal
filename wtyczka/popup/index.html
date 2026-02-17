@@ -241,7 +241,7 @@
         <!-- LOCK SCREEN -->
         <div id="lockScreen">
             <div class="header">
-                <h1 class="logo">Shield <span>ULTRA</span></h1>
+                <h1 class="logo">AntiTestportal <span>ULTRA</span></h1>
                 <div class="status-badge"
                     style="color: #94a3b8; background: rgba(148, 163, 184, 0.1); border-color: rgba(148, 163, 184, 0.2);">
                     WYMAGANA AKTYWACJA</div>
@@ -258,13 +258,32 @@
         <!-- MAIN UI -->
         <div id="mainUI" class="hidden">
             <div class="header">
-                <h1 class="logo">Shield <span>ULTRA</span></h1>
+                <h1 class="logo">AntiTestportal <span>ULTRA</span></h1>
                 <div class="status-badge">OCHRONA AKTYWNA</div>
             </div>
 
             <div id="syncLoading">
                 <div class="spinner" style="display: block;"></div>
                 SYNCHRONIZACJA W TOKU...
+            </div>
+
+            <!-- MODUŁ CZASU -->
+            <div
+                style="margin-bottom: 20px; padding: 15px; background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <b style="font-size: 12px; color: var(--primary);">MODUŁ CZASU (TIME WARP)</b>
+                    <label class="switch" style="position: relative; display: inline-block; width: 34px; height: 18px;">
+                        <input type="checkbox" id="timeFreezeToggle" checked style="opacity: 0; width: 0; height: 0;">
+                        <span
+                            style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .4s; border-radius: 34px;"
+                            id="slider"></span>
+                    </label>
+                </div>
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Zamraża licznik czasu na każdym pytaniu, dając Ci
+                    nieograniczony czas na szukanie.</p>
+                <button class="btn btn-outline" id="resetTimeBtn"
+                    style="font-size: 10px; padding: 5px; margin-top: 10px; height: auto;">RESTARTUJ ZEGAR
+                    PYTANIA</button>
             </div>
 
             <button class="btn pulse" id="updateBtn">SYNCHRONIZUJ Z CHMURĄ</button>
@@ -290,7 +309,7 @@
         </div>
     </div>
 
-    <div class="footer-info">Shield Ultra Enterprise v9.5.0 Premium Bypass</div>
+    <div class="footer-info">AntiTestportal Ultra v9.6.0 Premium Bypass</div>
 
     <script src="popup.js"></script>
 </body>
