@@ -1,9 +1,9 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/render?type=soft&color=0f172a&height=200&section=header&text=Shield%20Ultra%20Enterprise&fontSize=60&animation=twinkling&fontAlignY=40&textBg=false&desc=The%20Ultimate%20TestPortal%20Bypass%20%7C%20v9.5.0&descSize=20&descAlignY=65" width="100%" />
+<img src="https://capsule-render.vercel.app/render?type=soft&color=0f172a&height=120&section=header&animation=twinkling" width="100%" />
 
 <br>
-<img src="https://img.icons8.com/plasticine/200/gorilla.png" width="120" />
+<img src="https://images.vexels.com/media/users/3/129765/isolated/preview/ac8341d006ce594d083e3cca3136f1be-checked-shield-icon.png" width="120" />
 
 # Shield Ultra Enterprise v9.5.0
 ### **Złoty Standard w Technologii Stealth dla TestPortal.**
