@@ -1,5 +1,5 @@
 // BACKGROUND SERVICE WORKER - CORS BYPASS ENGINE
-const GITHUB_RAW_URL = "https://raw.githubusercontent.com/Mi1ku/rejmer-kopia/refs/heads/main/antitestportal/serce-github/engine.js";
+const GITHUB_RAW_URL = "https://raw.githubusercontent.com/Mi1ku/antitestportal/main/serce-github/engine.js";
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === "FETCH_ENGINE") {

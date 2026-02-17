@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const UI_CONFIG_URL = "https://raw.githubusercontent.com/Mi1ku/rejmer-kopia/refs/heads/main/antitestportal/serce-github/ui_config.json";
+    const UI_CONFIG_URL = "https://raw.githubusercontent.com/Mi1ku/antitestportal/main/serce-github/ui_config.json";
     const cacheBust = `?v=${Date.now()}`;
 
     const lockScreen = document.getElementById('lockScreen');
