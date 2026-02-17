@@ -103,8 +103,17 @@ document.addEventListener('DOMContentLoaded', () => {
         clearBtn.classList.add('hidden');
         document.getElementById('syncLoading').style.display = 'block';
 
-        chrome.tabs.query({ url: "*://*.testportal.*/*" }, (tabs) => {
-            tabs.forEach(tab => chrome.tabs.reload(tab.id));
+        const patterns = [
+            "*://*.testportal.pl/*",
+            "*://*.testportal.net/*",
+            "*://*.testportal.de/*",
+            "*://*.testportal.online/*"
+        ];
+
+        chrome.tabs.query({ url: patterns }, (tabs) => {
+            if (tabs && tabs.length > 0) {
+                tabs.forEach(tab => chrome.tabs.reload(tab.id));
+            }
 
             setTimeout(() => {
                 updateBtn.classList.remove('hidden');
