@@ -1,33 +1,30 @@
-// BACKGROUND SERVICE WORKER v5.5.0 - ABSOLUTE STEALTH RECOVERY
+// BACKGROUND SERVICE WORKER v5.5.1 - FIX SYNTAX ERROR
 const GITHUB_RAW_URL = "https://raw.githubusercontent.com/Mi1ku/antitestportal/main/serce-github/engine.js";
 
-// 1. SILNE KŁAMSTWO FOCUSU (WPISANE NA SZTYWNO DLA PRĘDKOŚCI)
+// 1. RDZEŃ STEALTH (Wstrzykiwany jako string)
 const CORE_BYPASS = `
 (function() {
     const makeNative = (fn, name) => {
         const wrapped = function () { return fn.apply(this, arguments); };
         Object.defineProperty(wrapped, 'name', { value: name || fn.name });
-        wrapped.toString = () => \`function \${name || ''}() { [native code] }\`;
+        wrapped.toString = () => "function " + (name || "") + "() { [native code] }";
         return wrapped;
     };
 
     try {
-        // Blokujemy alerty i logowanie błędów do serwera
         window.logToServer = makeNative(() => false, 'logToServer');
         window.sendCheatInfo = makeNative(() => false, 'sendCheatInfo');
 
-        // ReferenceError Trick - Testportal go "kocha" (oślepia ich skrypty)
+        // ReferenceError Trick
         Object.defineProperty(document, 'hasFocus', {
             get: () => { throw new ReferenceError("antiTestportalFeature"); },
             configurable: true
         });
 
-        // Visibility API Lock
         const docProto = Object.getPrototypeOf(document);
         Object.defineProperty(docProto, 'visibilityState', { get: makeNative(() => 'visible', 'get visibilityState'), configurable: true });
         Object.defineProperty(docProto, 'hidden', { get: makeNative(() => false, 'get hidden'), configurable: true });
 
-        // Blokada Eventów
         const stop = (e) => e.stopImmediatePropagation();
         window.addEventListener('blur', stop, true);
         window.addEventListener('visibilitychange', stop, true);
@@ -40,7 +37,7 @@ const CORE_BYPASS = `
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === "INIT_SHIELD" && sender.tab) {
-        // Wstrzykujemy rdzeń natychmiast po prośbie z content scriptu
+        // Wstrzykiwanie rdzenia
         chrome.scripting.executeScript({
             target: { tabId: sender.tab.id, frameIds: [sender.frameId] },
             world: "MAIN",
@@ -53,8 +50,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             args: [CORE_BYPASS]
         });
 
-        // Pobieramy silnik Premium
-        fetch(GITHUB_RAW_URL + \`?ts=\${Date.now()}\`, { cache: "no-store" })
+        // Pobieranie silnika
+        fetch(GITHUB_RAW_URL + "?ts=" + Date.now(), { cache: "no-store" })
             .then(r => r.text())
             .then(code => {
                 chrome.scripting.executeScript({
@@ -70,14 +67,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 });
             })
             .catch(err => console.error("[Background] Fetch error:", err));
-        
+
         sendResponse({ success: true });
     }
 });
 
-// Auto-recovery z błędu
+// Auto-recovery
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.url && changeInfo.url.includes('DspUnsupportedBrowserPlugins.html')) {
-        chrome.tabs.goBack(tabId).catch(() => {});
+        chrome.tabs.goBack(tabId).catch(() => { });
     }
 });
