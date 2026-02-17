@@ -263,3 +263,63 @@ input:checked+.slider:before {
 .pulse {
     animation: pulse 2s infinite;
 }
+
+/* Support Links */
+.support-links {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.support-links p {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 5px;
+}
+
+.support-links a {
+    display: block;
+    font-size: 11px;
+    color: var(--primary-bright);
+    text-decoration: none;
+    margin-bottom: 3px;
+    font-weight: 600;
+}
+
+.support-links a:hover {
+    text-decoration: underline;
+}
+
+/* UI Alerts */
+.ui-alert {
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 15px;
+    animation: slideIn 0.3s ease-out;
+}
+
+.ui-alert.success {
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #34d399;
+}
+
+.ui-alert.error {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

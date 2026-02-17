@@ -1,9 +1,9 @@
 {
   "name": "antitestportal-ultra-plasma",
-  "displayName": "AntiTestportal Ultra (Plasma Edition)",
-  "version": "11.0.0",
+  "displayName": "AntiTestportal Ultra (mi1ku Supreme)",
+  "version": "11.3.0",
   "description": "Premium Testportal Bypass with Ghost Commander Tech",
-  "author": "Midway.gg",
+  "author": "76mikus",
   "scripts": {
     "dev": "plasmo dev",
     "build": "plasmo build",
@@ -36,26 +36,13 @@
     "permissions": [
       "storage",
       "declarativeNetRequest",
-      "browsingData"
+      "browsingData",
+      "tabs",
+      "scripting",
+      "unlimitedStorage"
     ],
-    "web_accessible_resources": [
-      {
-        "resources": [
-          "assets/shield.js"
-        ],
-        "matches": [
-          "*://*/*"
-        ]
-      }
-    ],
-    "declarative_net_request": {
-      "rule_resources": [
-        {
-          "id": "ruleset_1",
-          "enabled": true,
-          "path": "rules.json"
-        }
-      ]
+    "background": {
+      "service_worker": "src/background.ts"
     }
   }
 }

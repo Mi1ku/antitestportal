@@ -16,13 +16,30 @@ export const config: PlasmoCSConfig = {
 const TestportalUltraEngine = () => {
     const { pluginConfig } = usePluginConfig();
 
-    // 1. TIME WARP (Timer Lock)
+    const resetTimer = () => {
+        try {
+            // @ts-ignore
+            if (typeof window.startTime !== 'undefined') window.startTime = Date.now();
+            // @ts-ignore
+            if (window.Testportal && window.Testportal.Timer) {
+                // @ts-ignore
+                const t = window.Testportal.Timer;
+                // Force reset if internal state allows
+                if (t.init) t.init();
+            }
+            ['timePassed', 'timeSpent'].forEach(k => {
+                // @ts-ignore
+                if (typeof window[k] !== 'undefined') window[k] = 0;
+            });
+            console.log("[Engine] Timer Reset.");
+        } catch (e) { }
+    };
+
+    // 1. TIME WARP v11.2 (Integrated)
     useEffect(() => {
         const interval = setInterval(() => {
             if (!pluginConfig.timeFreeze) return;
             try {
-                // @ts-ignore
-                if (typeof window.startTime !== 'undefined') window.startTime = Date.now();
                 // @ts-ignore
                 if (window.Testportal && window.Testportal.Timer) {
                     // @ts-ignore
@@ -42,7 +59,7 @@ const TestportalUltraEngine = () => {
         return () => clearInterval(interval);
     }, [pluginConfig.timeFreeze]);
 
-    // 2. SEARCH SHORTS (Mouse Events)
+    // 2. SEARCH SHORTS
     useEffect(() => {
         const handleMouseDown = (e: MouseEvent) => {
             if (e.ctrlKey || e.altKey) {
@@ -64,6 +81,17 @@ const TestportalUltraEngine = () => {
 
         window.addEventListener('mousedown', handleMouseDown, true);
         return () => window.removeEventListener('mousedown', handleMouseDown, true);
+    }, []);
+
+    // 3. LISTEN FOR RESET SIGNAL
+    useEffect(() => {
+        const handleMessage = (msg: any) => {
+            if (msg.type === "RESET_TIMER") {
+                resetTimer();
+            }
+        };
+        chrome.runtime.onMessage.addListener(handleMessage);
+        return () => chrome.runtime.onMessage.removeListener(handleMessage);
     }, []);
 
     return null;
