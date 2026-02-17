@@ -2,7 +2,10 @@
 
 <img src="https://capsule-render.vercel.app/render?type=soft&color=0f172a&height=200&section=header&text=Shield%20Ultra%20Enterprise&fontSize=60&animation=twinkling&fontAlignY=40&textBg=false&desc=The%20Ultimate%20TestPortal%20Bypass%20%7C%20v9.5.0&descSize=20&descAlignY=65" width="100%" />
 
-# 🦍 Shield Ultra Enterprise v9.5.0
+<br>
+<img src="https://img.icons8.com/plasticine/200/gorilla.png" width="120" />
+
+# Shield Ultra Enterprise v9.5.0
 ### **Złoty Standard w Technologii Stealth dla TestPortal.**
 
 Shield Ultra to profesjonalna wtyczka do przeglądarki zaprojektowana w celu zapewnienia całkowitej niewykrywalności i automatyzacji podczas egzaminów na platformie TestPortal.pl. Łącząc zaawansowane maskowanie prototypów (Prototype Poisoning) z filtracją ruchu sieciowego, Shield Ultra omija systemy "Uczciwy Rozwiązujący" oraz śledzenie fokusu ze 100% skutecznością.
