@@ -1,8 +1,8 @@
 {
-  "name": "testportal-gpt",
-  "displayName": "AntiTestportal GPT (with Moodle support)",
-  "version": "2.11.0",
-  "description": "Solve Testportal and Moodle exams automatically using AI!",
+  "name": "antitestportal-ultra-plasma",
+  "displayName": "AntiTestportal Ultra (Plasma Edition)",
+  "version": "10.0.0",
+  "description": "Premium Testportal Bypass with Ghost Commander Tech",
   "author": "Daniel Rogowski",
   "scripts": {
     "dev": "plasmo dev",

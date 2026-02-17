@@ -1,33 +1,30 @@
 import useGlobalSyncedState from "~hooks/use-global-synced-state"
 import { GptModel } from "~models/openai";
 
-export enum PluginConfigKeys {
-    OpenAIApiKey = "testportal-gpt-api-key",
-    OpenAIModel = "testportal-gpt-api-model",
-    TestportalAntiAntiTampering = "testportal-gpt-anti-anti-tampering",
-    AutoSolveButtonVisibility = "testportal-gpt-btn-visibilitiy"
-}
-
 export enum AutoSolveButtonVisibility {
     VISIBLE = "visible",
     BARELY_VISIBLE = "barely_visible",
     NOT_VISIBLE = "not_visible"
 }
 
-export const PluginConfigKey = "testportal-gpt-config-v2";
+export const PluginConfigKey = "shield-ultra-config-v10";
 
 export interface PluginConfig {
+    shieldKey: string;
     apiKey: string;
     apiModel: string;
     antiAntiTampering: boolean;
     btnVisibility: AutoSolveButtonVisibility;
+    timeFreeze: boolean;
 }
 
 const DefaultConfig: PluginConfig = {
+    shieldKey: "",
     apiKey: "",
     apiModel: GptModel.GPT_5_2,
     antiAntiTampering: true,
-    btnVisibility: AutoSolveButtonVisibility.VISIBLE
+    btnVisibility: AutoSolveButtonVisibility.VISIBLE,
+    timeFreeze: true
 }
 
 export default function usePluginConfig() {
@@ -35,6 +32,8 @@ export default function usePluginConfig() {
 
     return {
         pluginConfig: {
+            shieldKey: config.shieldKey,
+            setShieldKey: (val: string) => setConfig(prev => ({ ...prev, shieldKey: val })),
             apiKey: config.apiKey,
             setApiKey: (val: string) => setConfig(prev => ({ ...prev, apiKey: val })),
             apiModel: config.apiModel,
@@ -42,7 +41,9 @@ export default function usePluginConfig() {
             antiAntiTampering: config.antiAntiTampering,
             setAntiAntiTampering: (val: boolean) => setConfig(prev => ({ ...prev, antiAntiTampering: val })),
             btnVisibility: config.btnVisibility,
-            setBtnVisibility: (val: AutoSolveButtonVisibility) => setConfig(prev => ({ ...prev, btnVisibility: val }))
+            setBtnVisibility: (val: AutoSolveButtonVisibility) => setConfig(prev => ({ ...prev, btnVisibility: val })),
+            timeFreeze: config.timeFreeze,
+            setTimeFreeze: (val: boolean) => setConfig(prev => ({ ...prev, timeFreeze: val }))
         }
     }
 }
