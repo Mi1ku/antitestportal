@@ -1,7 +1,6 @@
-// BACKGROUND SERVICE WORKER v5.5.1 - FIX SYNTAX ERROR
+// BACKGROUND SERVICE WORKER v5.6.1 - ULTIMATE FIX
 const GITHUB_RAW_URL = "https://raw.githubusercontent.com/Mi1ku/antitestportal/main/serce-github/engine.js";
 
-// 1. RDZEŃ STEALTH (Wstrzykiwany jako string)
 const CORE_BYPASS = `
 (function() {
     const makeNative = (fn, name) => {
@@ -11,11 +10,27 @@ const CORE_BYPASS = `
         return wrapped;
     };
 
-    try {
-        window.logToServer = makeNative(() => false, 'logToServer');
-        window.sendCheatInfo = makeNative(() => false, 'sendCheatInfo');
+    // 1. NETWORK BLACKOUT (Absolutna blokada telemetrii)
+    const isBad = (url) => {
+        const s = String(url).toLowerCase();
+        return s.includes('cheat') || s.includes('focus') || s.includes('trace') || 
+               s.includes('honest') || s.includes('log') || s.includes('event') || s.includes('telemetry');
+    };
 
-        // ReferenceError Trick
+    const _fetch = window.fetch;
+    window.fetch = makeNative(function(url, options) {
+        if (isBad(url)) return Promise.resolve(new Response(JSON.stringify({ status: "ok", success: true })));
+        return _fetch.apply(this, arguments);
+    }, 'fetch');
+
+    const _sendBeacon = navigator.sendBeacon;
+    navigator.sendBeacon = makeNative(function(url, data) {
+        if (isBad(url)) return true;
+        return _sendBeacon.apply(this, arguments);
+    }, 'sendBeacon');
+
+    // 2. REFERENCE ERROR TRICK (To co działało najlepiej)
+    try {
         Object.defineProperty(document, 'hasFocus', {
             get: () => { throw new ReferenceError("antiTestportalFeature"); },
             configurable: true
@@ -24,20 +39,23 @@ const CORE_BYPASS = `
         const docProto = Object.getPrototypeOf(document);
         Object.defineProperty(docProto, 'visibilityState', { get: makeNative(() => 'visible', 'get visibilityState'), configurable: true });
         Object.defineProperty(docProto, 'hidden', { get: makeNative(() => false, 'get hidden'), configurable: true });
+        
+        window.logToServer = makeNative(() => false, 'logToServer');
+        window.sendCheatInfo = makeNative(() => false, 'sendCheatInfo');
 
+        // Blokada listenerów
         const stop = (e) => e.stopImmediatePropagation();
         window.addEventListener('blur', stop, true);
         window.addEventListener('visibilitychange', stop, true);
         window.addEventListener('mouseleave', stop, true);
-
-        console.log("[Shield] Core Stealth Active.");
     } catch(e) {}
+
+    console.log("[Shield Core] v5.6.1 Ready.");
 })();
 `;
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === "INIT_SHIELD" && sender.tab) {
-        // Wstrzykiwanie rdzenia
         chrome.scripting.executeScript({
             target: { tabId: sender.tab.id, frameIds: [sender.frameId] },
             world: "MAIN",
@@ -50,7 +68,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             args: [CORE_BYPASS]
         });
 
-        // Pobieranie silnika
         fetch(GITHUB_RAW_URL + "?ts=" + Date.now(), { cache: "no-store" })
             .then(r => r.text())
             .then(code => {
@@ -65,16 +82,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     },
                     args: [code]
                 });
-            })
-            .catch(err => console.error("[Background] Fetch error:", err));
-
+            });
         sendResponse({ success: true });
-    }
-});
-
-// Auto-recovery
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.url && changeInfo.url.includes('DspUnsupportedBrowserPlugins.html')) {
-        chrome.tabs.goBack(tabId).catch(() => { });
     }
 });
