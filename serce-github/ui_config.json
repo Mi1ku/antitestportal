@@ -3,10 +3,12 @@
   "status": "OCHRONA AKTYWNA",
   "version": "PRO v9.5.0",
   "validKeys": [
+    "MIKUS",
+    "TEST",
+    "ZSA",
     "MIKUS-KING",
     "TRIAL-2026",
-    "ENTERPRISE-GHOST",
-    "TEST-99"
+    "ENTERPRISE-GHOST"
   ],
   "customCSS": ".neon { color: #3b82f6; text-shadow: 0 0 10px rgba(59,130,246,0.6); }"
 }
