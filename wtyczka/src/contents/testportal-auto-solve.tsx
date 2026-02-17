@@ -18,43 +18,27 @@ const TestportalUltraEngine = () => {
 
     const resetTimer = () => {
         try {
+            // 1. Reset natywnych zmiennych okna
             // @ts-ignore
             if (typeof window.startTime !== 'undefined') window.startTime = Date.now();
-            // @ts-ignore
-            if (window.Testportal && window.Testportal.Timer) {
-                // @ts-ignore
-                const t = window.Testportal.Timer;
-                // Force reset if internal state allows
-                if (t.init) t.init();
-            }
-            ['timePassed', 'timeSpent'].forEach(k => {
-                // @ts-ignore
-                if (typeof window[k] !== 'undefined') window[k] = 0;
-            });
-            console.log("[Engine] Timer Reset.");
+
+            // 2. Szukanie obiektu Testportal w window (pobrane przez postMessage z MAIN world jeśli trzeba, 
+            // ale tutaj próbujemy bezpośrednio z izolowanego, co zazwyczaj nie widzi danych, 
+            // dlatego użyjemy wstrzyknięcia do resetu poniżej)
+
+            // Wywołujemy reset w MAIN world wysyłając event
+            const event = new CustomEvent("76mikus_reset_timer");
+            window.dispatchEvent(event);
+
+            console.log("[Engine] Global Reset Signal Sent.");
         } catch (e) { }
     };
 
-    // 1. TIME WARP v11.2 (Integrated)
+    // 1. TIME WARP v11.4 (Control)
     useEffect(() => {
         const interval = setInterval(() => {
             if (!pluginConfig.timeFreeze) return;
-            try {
-                // @ts-ignore
-                if (window.Testportal && window.Testportal.Timer) {
-                    // @ts-ignore
-                    const t = window.Testportal.Timer;
-                    t.stop = () => true;
-                    t.pause = () => true;
-                    t.isExpired = () => false;
-                    // @ts-ignore
-                    window.remainingTime = 999999;
-                }
-                ['timePassed', 'timeSpent'].forEach(k => {
-                    // @ts-ignore
-                    if (typeof window[k] !== 'undefined') window[k] = 0;
-                });
-            } catch (e) { }
+            // Tutaj tylko logika pomocnicza, główny mróz jest w assets/anti-anti-tamper.js
         }, 800);
         return () => clearInterval(interval);
     }, [pluginConfig.timeFreeze]);
@@ -64,7 +48,7 @@ const TestportalUltraEngine = () => {
         const handleMouseDown = (e: MouseEvent) => {
             if (e.ctrlKey || e.altKey) {
                 const target = e.target as HTMLElement;
-                const text = target.innerText?.trim();
+                const text = target.innerText?.trim() || window.getSelection()?.toString().trim();
 
                 if (text && text.length > 2) {
                     e.preventDefault();
@@ -83,7 +67,7 @@ const TestportalUltraEngine = () => {
         return () => window.removeEventListener('mousedown', handleMouseDown, true);
     }, []);
 
-    // 3. LISTEN FOR RESET SIGNAL
+    // 3. LISTEN FOR RESET SIGNAL FROM POPUP
     useEffect(() => {
         const handleMessage = (msg: any) => {
             if (msg.type === "RESET_TIMER") {
@@ -97,14 +81,11 @@ const TestportalUltraEngine = () => {
     return null;
 }
 
-// Inicjalizacja
-const isTest = document.querySelector(".test-solving-container") || document.querySelector(".question_essence");
-if (isTest) {
-    const rootDiv = document.createElement("div");
-    rootDiv.id = "ultra-engine-v11";
-    document.body.appendChild(rootDiv);
-    const root = createRoot(rootDiv);
-    root.render(<TestportalUltraEngine />);
-}
+// Inicjalizacja silnika
+const rootDiv = document.createElement("div");
+rootDiv.id = "ultra-engine-v11-76mikus";
+document.body.appendChild(rootDiv);
+const root = createRoot(rootDiv);
+root.render(<TestportalUltraEngine />);
 
 export default () => null;

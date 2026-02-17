@@ -10,7 +10,6 @@ function IndexPopup() {
     const [uiMessage, setUiMessage] = useState({ text: "", type: "" });
 
     useEffect(() => {
-        // Sprawdzanie czy klucz jest poprawny
         if (pluginConfig.shieldKey && validKeys.includes(pluginConfig.shieldKey)) {
             setIsActivated(true);
         }
@@ -26,7 +25,7 @@ function IndexPopup() {
         if (validKeys.includes(key)) {
             pluginConfig.setShieldKey(key);
             setIsActivated(true);
-            showMessage("DOSTĘP SUPREME AKTYWOWANY 💎", "success");
+            showMessage("DOSTĘP ULTRA AKTYWOWANY 💎", "success");
         } else {
             showMessage("BŁĄD: NIEPOPRAWNY KLUCZ LICENCYJNY", "error");
         }
@@ -34,7 +33,6 @@ function IndexPopup() {
 
     const handleClearTrace = async () => {
         try {
-            // Czyszczenie danych dla wszystkich domen Testportalu
             await chrome.browsingData.remove({
                 "origins": [
                     "https://www.testportal.pl",
@@ -51,26 +49,13 @@ function IndexPopup() {
 
             showMessage("ŚLADY WYCZYSZCZONE 🛡️", "success");
 
-            // RELOAD: Szukamy wszystkich kart z Testportalem
             const tabs = await chrome.tabs.query({});
-            let reloaded = 0;
             for (const tab of tabs) {
                 if (tab.url && (tab.url.includes("testportal.pl") || tab.url.includes("testportal.net") || tab.url.includes("testportal.online"))) {
-                    if (tab.id) {
-                        await chrome.tabs.reload(tab.id);
-                        reloaded++;
-                    }
+                    if (tab.id) await chrome.tabs.reload(tab.id);
                 }
             }
-
-            if (reloaded === 0) {
-                // Skoro nie znaleźliśmy kart po URLu, spróbujmy odświeżyć aktywną kartę jeśli jesteśmy na niej
-                const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-                if (activeTab?.id) await chrome.tabs.reload(activeTab.id);
-            }
-
         } catch (e) {
-            console.error("Clear trace failure:", e);
             showMessage("BŁĄD PODCZAS CZYSZCZENIA", "error");
         }
     };
@@ -86,8 +71,8 @@ function IndexPopup() {
     return (
         <div className="popup-container">
             <div className="header">
-                <h1 className="logo">76mikus <span>ULTRA</span></h1>
-                <div className="status-badge pulse">GHOST ENGINE v11.3 SUPREME</div>
+                <h1 className="logo">AntiTestportal <span>ULTRA</span></h1>
+                <div className="status-badge pulse">SUPREME v11.5</div>
             </div>
 
             {uiMessage.text && (
@@ -128,7 +113,7 @@ function IndexPopup() {
                             </label>
                         </div>
                         <p className="module-desc">
-                            Zamraża czas. Przycisk poniżej resetuje zegar widoczny na stronie.
+                            Mrozi licznik Testportalu. Resetuj czas przed startem testu.
                         </p>
                         <button className="btn btn-outline" style={{ marginTop: '10px', fontSize: '10px', padding: '6px' }} onClick={handleResetTimer}>
                             RESETUJ TIMER PYTANIA
@@ -137,7 +122,7 @@ function IndexPopup() {
 
                     <div className="module-box" style={{ borderColor: 'rgba(52, 211, 153, 0.3)' }}>
                         <div className="module-header">
-                            <span className="module-title" style={{ color: '#34d399' }}>EKSTREMALNY STEALTH</span>
+                            <span className="module-title" style={{ color: '#34d399' }}>GHOST SHIELD (SUPREME)</span>
                             <label className="switch">
                                 <input
                                     type="checkbox"
@@ -148,7 +133,7 @@ function IndexPopup() {
                             </label>
                         </div>
                         <p className="module-desc">
-                            Uczciwy Respondenta & Anti-Tamper. Zero powiadomień dla nauczyciela.
+                            Technologia Uczciwego Respondenta. Zero prób opuszczenia strony.
                         </p>
                     </div>
 
@@ -157,15 +142,7 @@ function IndexPopup() {
                             WYCZYŚĆ ŚLADY & RELOAD
                         </button>
                         <div className="support-links" style={{ textAlign: 'center' }}>
-                            <a href="https://instagram.com/76mikus" target="_blank" style={{ fontSize: '10px' }}>Wsparcie: @76mikus</a>
-                        </div>
-                    </div>
-
-                    <div className="module-box" style={{ background: 'rgba(255,255,255,0.03)', border: 'none' }}>
-                        <span className="module-title" style={{ color: 'white', display: 'block', marginBottom: '8px', fontSize: '10px' }}>SKRÓTY 76MIKUS:</span>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                            <div className="shortcut-item"><span>CTRL + Klik</span> <small>Google Search</small></div>
-                            <div className="shortcut-item"><span>ALT + Klik</span> <small>AI Supreme Search</small></div>
+                            <a href="https://instagram.com/76mikus" target="_blank" style={{ fontSize: '10px' }}>Support: @76mikus</a>
                         </div>
                     </div>
                 </>

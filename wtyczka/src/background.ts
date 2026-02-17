@@ -1,6 +1,9 @@
+import { Storage } from "@plasmohq/storage"
+import { PluginConfigKey, type PluginConfig } from "~hooks/use-plugin-config";
+
 /**
- * 🦍 76mikus SUPREME BACKGROUND v11.3.5
- * Handles dynamic network rules and telemetry blackout.
+ * 🦍 76mikus SUPREME BACKGROUND v11.3.8
+ * Handles dynamic network rules & FETCH_IMAGE requests.
  */
 
 const RULES = [
@@ -67,4 +70,30 @@ const initSupremeRules = async () => {
 chrome.runtime.onInstalled.addListener(initSupremeRules);
 chrome.runtime.onStartup.addListener(initSupremeRules);
 
-export { }
+// --- USER REQUESTED CONTENT (FETCH_IMAGE) ---
+// This handles cross-origin image fetching for the auto-solve engine
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.type === "FETCH_IMAGE") {
+        fetch(request.url)
+            .then(response => response.blob())
+            .then(blob => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    sendResponse({ data: reader.result, success: true });
+                };
+                reader.onerror = () => {
+                    sendResponse({ success: false, error: "Failed to read blob" });
+                }
+                reader.readAsDataURL(blob);
+            })
+            .catch(error => {
+                sendResponse({ success: false, error: error.toString() });
+            });
+
+        return true; // Keep channel open for async response
+    }
+});
+
+export const handler = async (req, res) => {
+    // Plasmo standard handler
+}

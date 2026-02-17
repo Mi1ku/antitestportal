@@ -1,8 +1,8 @@
 {
-  "name": "antitestportal-ultra-plasma",
-  "displayName": "AntiTestportal Ultra (mi1ku Supreme)",
-  "version": "11.3.0",
-  "description": "Premium Testportal Bypass with Ghost Commander Tech",
+  "name": "antitestportal-ultra-supreme",
+  "displayName": "AntiTestportal Ultra Supreme",
+  "version": "11.5.0",
+  "description": "Ultra Premium Testportal Bypass - 76mikus Edition",
   "author": "76mikus",
   "scripts": {
     "dev": "plasmo dev",
