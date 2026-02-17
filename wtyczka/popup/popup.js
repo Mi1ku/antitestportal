@@ -2,6 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // KONFIGURACJA
     const UI_CONFIG_URL = "https://raw.githubusercontent.com/Mi1ku/antitestportal/main/serce-github/ui_config.json";
     const cacheBust = `?v=${Date.now()}`;
+    const patterns = [
+        "*://*.testportal.pl/*",
+        "*://*.testportal.net/*",
+        "*://*.testportal.de/*",
+        "*://*.testportal.online/*"
+    ];
 
     // ELEMENTY UI
     const lockScreen = document.getElementById('lockScreen');
@@ -46,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(r => r.json())
             .then(data => {
                 const validKeys = data.validKeys || [];
-                // Sprawdzamy klucz dokładnie tak, jak został wpisany (Case Sensitive)
                 const isValid = validKeys.includes(trimmedKey);
 
                 if (isValid) {
@@ -59,13 +64,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!isAuto) {
                         showAlert("BŁĘDNY KLUCZ", "Wprowadzony klucz jest nieaktywny lub wygasł. Skontaktuj się ze sprzedawcą, aby zakupić dostęp.");
                     } else {
-                        // Jeśli auto-login zawiódł, wyczyść stary klucz
                         chrome.storage.local.remove(['shield_key']);
                     }
                 }
             })
             .catch(() => {
-                // Offline Fallback
                 if (isAuto && key) {
                     lockScreen.classList.add('hidden');
                     mainUI.classList.remove('hidden');
@@ -86,13 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // CZYSZCZENIE DANYCH
     clearBtn.addEventListener('click', () => {
-        const patterns = [
-            "*://*.testportal.pl/*",
-            "*://*.testportal.net/*",
-            "*://*.testportal.de/*",
-            "*://*.testportal.online/*"
-        ];
-
         chrome.browsingData.remove({
             "origins": [
                 "https://www.testportal.pl",
@@ -102,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, {
             "cache": true, "cookies": true, "localStorage": true
         }, () => {
-            // Po wyczyszczeniu śladów odświeżamy karty, żeby system "zapomniał" nas całkowicie
             chrome.tabs.query({ url: patterns }, (tabs) => {
                 if (tabs && tabs.length > 0) {
                     tabs.forEach(tab => chrome.tabs.reload(tab.id));
@@ -118,13 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
         clearBtn.classList.add('hidden');
         document.getElementById('syncLoading').style.display = 'block';
 
-        const patterns = [
-            "*://*.testportal.pl/*",
-            "*://*.testportal.net/*",
-            "*://*.testportal.de/*",
-            "*://*.testportal.online/*"
-        ];
-
         chrome.tabs.query({ url: patterns }, (tabs) => {
             if (tabs && tabs.length > 0) {
                 tabs.forEach(tab => chrome.tabs.reload(tab.id));
@@ -134,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateBtn.classList.remove('hidden');
                 clearBtn.classList.remove('hidden');
                 document.getElementById('syncLoading').style.display = 'none';
-                showAlert("SYNCHRONIZACJA", "Silnik Shield Ultra został pomyślnie zaktualizowany w chmurze i odświeżony w kartach.", "success");
+                showAlert("SYNCHRONIZACJA", "Silnik został pomyślnie zaktualizowany w chmurze i odświeżony w kartach.", "success");
             }, 1500);
         });
     });
