@@ -8,6 +8,7 @@ function IndexPopup() {
     const [isActivated, setIsActivated] = useState(false);
     const [inputKey, setInputKey] = useState("");
     const [uiMessage, setUiMessage] = useState({ text: "", type: "" });
+    const [showGuide, setShowGuide] = useState(false);
 
     useEffect(() => {
         if (pluginConfig.shieldKey && validKeys.includes(pluginConfig.shieldKey)) {
@@ -25,154 +26,129 @@ function IndexPopup() {
         if (validKeys.includes(key)) {
             pluginConfig.setShieldKey(key);
             setIsActivated(true);
-            showMessage("DOSTĘP ULTRA AKTYWOWANY 💎", "success");
+            showMessage("WITAJ W ELICIE ULTRA 1.0 💎", "success");
         } else {
-            showMessage("BŁĄD: NIEPOPRAWNY KLUCZ LICENCYJNY", "error");
+            showMessage("BŁĘDNY KLUCZ LICENCYJNY", "error");
         }
     };
 
     const handleClearTrace = async () => {
         try {
             await chrome.browsingData.remove({
-                "origins": [
-                    "https://www.testportal.pl",
-                    "https://www.testportal.net",
-                    "https://www.testportal.online",
-                    "https://testportal.pl",
-                    "https://testportal.net"
-                ]
-            }, {
-                "cache": true,
-                "cookies": true,
-                "localStorage": true
-            });
-
-            showMessage("ŚLADY WYCZYSZCZONE 🛡️", "success");
-
+                "origins": ["https://www.testportal.pl", "https://www.testportal.net", "https://www.testportal.online"]
+            }, { "cache": true, "cookies": true, "localStorage": true });
+            showMessage("SYSTEM WYCZYSZCZONY 🛡️", "success");
             const tabs = await chrome.tabs.query({});
             for (const tab of tabs) {
-                if (tab.url && (tab.url.includes("testportal.pl") || tab.url.includes("testportal.net") || tab.url.includes("testportal.online"))) {
+                if (tab.url?.includes("testportal")) {
                     if (tab.id) await chrome.tabs.reload(tab.id);
                 }
             }
         } catch (e) {
-            showMessage("BŁĄD PODCZAS CZYSZCZENIA", "error");
+            showMessage("BŁĄD CZYSZCZENIA", "error");
         }
     };
 
     const handleResetTimer = async () => {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (tab?.id) {
-            chrome.tabs.sendMessage(tab.id, { type: "RESET_TIMER" });
-            showMessage("TIMER ZRESETOWANY ⏱️", "success");
+        try {
+            const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+            if (tabs[0]?.id) {
+                await chrome.tabs.sendMessage(tabs[0].id, { type: "RESET_TIMER" });
+                showMessage("CZAS ZRESETOWANY ⏱️", "success");
+            }
+        } catch (e) {
+            showMessage("KLIKNIJ F5 NA STRONIE TESTU", "error");
         }
-    };
-
-    const toggleFreeze = () => {
-        const newState = !pluginConfig.timeFreeze;
-        pluginConfig.setTimeFreeze(newState);
-        showMessage(newState ? "CZAS ZAMROŻONY ❄️" : "ZAMRAŻANIE WYŁĄCZONE 🔥", "success");
     };
 
     return (
         <div className="popup-container">
             <div className="header">
                 <h1 className="logo">AntiTestportal <span>ULTRA</span></h1>
-                <div className="status-badge pulse">SUPREME v11.8.5</div>
+                <div className="status-badge pulse">PREMIUM 1.0</div>
             </div>
 
-            {uiMessage.text && (
-                <div className={`ui-alert ${uiMessage.type}`}>
-                    {uiMessage.text}
-                </div>
-            )}
+            {uiMessage.text && <div className={`ui-alert ${uiMessage.type}`}>{uiMessage.text}</div>}
 
             {!isActivated ? (
                 <div className="glass-card">
                     <div className="input-group">
                         <label>Klucz Licencyjny</label>
                         <input
-                            type="text"
-                            value={inputKey}
+                            type="text" value={inputKey}
                             onChange={(e) => setInputKey(e.target.value)}
-                            placeholder="WPISZ SWÓJ KLUCZ..."
+                            placeholder="WPISZ KLUCZ..."
                         />
                     </div>
-                    <button className="btn btn-primary" onClick={handleActivate}>ODBLOKUJ POTĘGĘ</button>
+                    <button className="btn btn-primary" onClick={handleActivate}>AKTYWUJ DOSTĘP</button>
                     <div className="support-links">
-                        <p>KUP KLUCZ / KONTAKT:</p>
-                        <a href="https://instagram.com/76mikus" target="_blank" className="ig-link">IG: @76mikus</a>
+                        <p>Klucze: <b>mikus</b>, <b>zsa</b></p>
+                        <p>Instagram: <a href="https://instagram.com/76mikus" target="_blank">@76mikus</a></p>
                     </div>
                 </div>
             ) : (
                 <>
-                    {/* MODUŁ CZASU - Poprawiony z dwoma przyciskami */}
+                    {/* MODUŁ CZASU */}
                     <div className="module-box" style={{ background: 'rgba(30, 41, 59, 0.4)' }}>
                         <div className="module-header">
-                            <span className="module-title" style={{ color: '#60a5fa' }}>SYSTEM KONTROLI CZASU</span>
+                            <span className="module-title" style={{ color: '#60a5fa' }}>KONTROLA CZASU (ULTRA)</span>
                             <div className={`status-pill ${pluginConfig.timeFreeze ? 'active' : ''}`}>
-                                {pluginConfig.timeFreeze ? 'ZAMROŻONY' : 'AKTYWNY'}
+                                {pluginConfig.timeFreeze ? 'ZAMROŻONY' : 'PŁYNIE'}
                             </div>
                         </div>
                         <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                            <button
-                                className={`btn ${pluginConfig.timeFreeze ? 'btn-outline' : 'btn-primary'}`}
-                                style={{ flex: 1, fontSize: '10px', height: '36px' }}
-                                onClick={toggleFreeze}
-                            >
-                                {pluginConfig.timeFreeze ? 'ODMROŹ CZAS' : 'ZAMRÓŹ CZAS'}
+                            <button className={`btn ${pluginConfig.timeFreeze ? 'btn-outline' : 'btn-primary'}`} style={{ flex: 1, fontSize: '9px' }} onClick={() => pluginConfig.setTimeFreeze(!pluginConfig.timeFreeze)}>
+                                {pluginConfig.timeFreeze ? 'ODMROŹ' : 'ZAMRÓŹ'}
                             </button>
-                            <button
-                                className="btn btn-primary"
-                                style={{ flex: 1, fontSize: '10px', height: '36px', background: 'linear-gradient(45deg, #8b5cf6, #d946ef)' }}
-                                onClick={handleResetTimer}
-                            >
-                                RESETUJ TIMER
+                            <button className="btn btn-primary" style={{ flex: 1, fontSize: '9px', background: 'linear-gradient(45deg, #8b5cf6, #d946ef)' }} onClick={handleResetTimer}>
+                                RESET TIMER
                             </button>
                         </div>
                     </div>
 
+                    {/* GHOST SHIELD */}
                     <div className="module-box" style={{ borderColor: 'rgba(52, 211, 153, 0.3)' }}>
                         <div className="module-header">
-                            <span className="module-title" style={{ color: '#34d399' }}>GHOST SHIELD (SUPREME)</span>
+                            <span className="module-title" style={{ color: '#34d399' }}>GHOST SHIELD (76MIKUS)</span>
                             <label className="switch">
-                                <input
-                                    type="checkbox"
-                                    checked={pluginConfig.antiAntiTampering}
-                                    onChange={(e) => pluginConfig.setAntiAntiTampering(e.target.checked)}
-                                />
+                                <input type="checkbox" checked={pluginConfig.antiAntiTampering} onChange={(e) => pluginConfig.setAntiAntiTampering(e.target.checked)} />
                                 <span className="slider" style={{ backgroundColor: pluginConfig.antiAntiTampering ? '#10b981' : '#334155' }}></span>
                             </label>
                         </div>
-                        <p className="module-desc">Anti-Tamper & Uczciwy Respondenta.</p>
+                    </div>
+
+                    {/* PORADNIK & POMOC */}
+                    <div className="module-box" style={{ background: 'rgba(255,255,255,0.05)', border: '1px dashed rgba(255,255,255,0.2)' }}>
+                        <div className="module-header" style={{ cursor: 'pointer' }} onClick={() => setShowGuide(!showGuide)}>
+                            <span className="module-title" style={{ fontSize: '10px' }}>📘 PORADNIK & TIPY (1.0)</span>
+                            <span style={{ fontSize: '10px' }}>{showGuide ? '▲' : '▼'}</span>
+                        </div>
+                        {showGuide && (
+                            <div style={{ marginTop: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.8)', lineHeight: '1.4' }}>
+                                <p>💎 <b>SZUKAJ AI:</b> Przycisk na ekranie Testportalu automatycznie pobiera treść pytania (bez numeru!) i wrzuca do AI.</p>
+                                <p>❄️ <b>Mrożenie:</b> "Freeze" zatrzymuje zegar Testportalu w miejscu. Możesz go włączyć i wyłączyć w locie.</p>
+                                <p>🚀 <b>Reset:</b> "Reset Timer" cofa zegar do pełnej wartości. Najlepiej używać po wejściu na pytanie.</p>
+                                <p>🔇 <b>Niewykrywalność:</b> Ghost Shield blokuje wysyłanie raportów o ściąganiu do nauczyciela.</p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="module-box" style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)' }}>
                         <div className="module-header">
                             <span className="module-title" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>POKAŻ STATUS NA STRONIE</span>
                             <label className="switch" style={{ transform: 'scale(0.8)' }}>
-                                <input
-                                    type="checkbox"
-                                    checked={pluginConfig.showHud}
-                                    onChange={(e) => pluginConfig.setShowHud(e.target.checked)}
-                                />
+                                <input type="checkbox" checked={pluginConfig.showHud} onChange={(e) => pluginConfig.setShowHud(e.target.checked)} />
                                 <span className="slider"></span>
                             </label>
                         </div>
                     </div>
 
                     <div className="glass-card" style={{ padding: '15px' }}>
-                        <button className="btn btn-primary" style={{ background: '#ef4444', marginBottom: '10px' }} onClick={handleClearTrace}>
-                            WYCZYŚĆ ŚLADY & RELOAD
-                        </button>
-                        <div className="support-links" style={{ textAlign: 'center' }}>
-                            <a href="https://instagram.com/76mikus" target="_blank" style={{ fontSize: '10px' }}>Support: @76mikus</a>
-                        </div>
+                        <button className="btn btn-primary" style={{ background: '#ef4444' }} onClick={handleClearTrace}>NUCLEAR CLEAN & RELOAD</button>
                     </div>
                 </>
             )}
-
-            <div className="footer-info">mi1ku Systems © 2026</div>
+            <div className="footer-info">mi1ku Systems 1.0 | @76mikus</div>
         </div>
     );
 }

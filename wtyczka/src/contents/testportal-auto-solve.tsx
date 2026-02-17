@@ -16,30 +16,13 @@ export const config: PlasmoCSConfig = {
 const TestportalUltraEngine = () => {
     const { pluginConfig } = usePluginConfig();
 
-    // 1. Synchronizacja GHOST SHIELD (Anti-Tamper)
-    useEffect(() => {
-        const event = new CustomEvent("ultra_cmd_shield", {
-            detail: pluginConfig.antiAntiTampering
-        });
-        window.dispatchEvent(event);
-    }, [pluginConfig.antiAntiTampering]);
-
-    // 2. Synchronizacja Widoczności HUD
-    useEffect(() => {
-        const event = new CustomEvent("ultra_cmd_hud", {
-            detail: pluginConfig.showHud
-        });
-        window.dispatchEvent(event);
-    }, [pluginConfig.showHud]);
-
-    // 3. Obsługa resetowania czasu
+    // Resetowanie czasu (Sygnał z Popup)
     const resetTimer = () => {
-        const event = new CustomEvent("ultra_cmd_reset");
-        window.dispatchEvent(event);
-        console.log("[Engine] Hard Reset Signal Dispatched.");
+        window.dispatchEvent(new CustomEvent("ultra_cmd_reset"));
+        console.log("[Engine] Reset Signal Dispatched.");
     };
 
-    // 4. Skróty klawiszowe (Szukanie)
+    // Skróty klawiszowe (Szukanie)
     useEffect(() => {
         const handleMouseDown = (e: MouseEvent) => {
             if (e.ctrlKey || e.altKey) {
@@ -63,7 +46,7 @@ const TestportalUltraEngine = () => {
         return () => window.removeEventListener('mousedown', handleMouseDown, true);
     }, []);
 
-    // 5. Sygnały z Popup
+    // Listenery dla komunikatów bezpośrednich (np. Reset)
     useEffect(() => {
         const handleMessage = (msg: any) => {
             if (msg.type === "RESET_TIMER") {
@@ -77,11 +60,20 @@ const TestportalUltraEngine = () => {
     return null;
 }
 
-// Start silnika
-const rootDiv = document.createElement("div");
-rootDiv.id = "ultra-engine-heart";
-document.body.appendChild(rootDiv);
-const root = createRoot(rootDiv);
-root.render(<TestportalUltraEngine />);
+// Start silnika pomocniczego
+const initEngine = () => {
+    if (document.getElementById("ultra-engine-heart")) return;
+    const rootDiv = document.createElement("div");
+    rootDiv.id = "ultra-engine-heart";
+    document.body.appendChild(rootDiv);
+    const root = createRoot(rootDiv);
+    root.render(<TestportalUltraEngine />);
+};
+
+if (document.body) {
+    initEngine();
+} else {
+    window.addEventListener("DOMContentLoaded", initEngine);
+}
 
 export default () => null;
