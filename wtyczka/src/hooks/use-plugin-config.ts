@@ -1,5 +1,4 @@
 import useGlobalSyncedState from "~hooks/use-global-synced-state"
-import { GptModel } from "~models/openai";
 
 export enum AutoSolveButtonVisibility {
     VISIBLE = "visible",
@@ -7,12 +6,10 @@ export enum AutoSolveButtonVisibility {
     NOT_VISIBLE = "not_visible"
 }
 
-export const PluginConfigKey = "shield-ultra-config-v10";
+export const PluginConfigKey = "shield-ultra-config-v11"; // New key to avoid conflicts
 
 export interface PluginConfig {
     shieldKey: string;
-    apiKey: string;
-    apiModel: string;
     antiAntiTampering: boolean;
     btnVisibility: AutoSolveButtonVisibility;
     timeFreeze: boolean;
@@ -20,8 +17,6 @@ export interface PluginConfig {
 
 const DefaultConfig: PluginConfig = {
     shieldKey: "",
-    apiKey: "",
-    apiModel: GptModel.GPT_5_2,
     antiAntiTampering: true,
     btnVisibility: AutoSolveButtonVisibility.VISIBLE,
     timeFreeze: true
@@ -34,10 +29,6 @@ export default function usePluginConfig() {
         pluginConfig: {
             shieldKey: config.shieldKey,
             setShieldKey: (val: string) => setConfig(prev => ({ ...prev, shieldKey: val })),
-            apiKey: config.apiKey,
-            setApiKey: (val: string) => setConfig(prev => ({ ...prev, apiKey: val })),
-            apiModel: config.apiModel,
-            setApiModel: (val: string) => setConfig(prev => ({ ...prev, apiModel: val })),
             antiAntiTampering: config.antiAntiTampering,
             setAntiAntiTampering: (val: boolean) => setConfig(prev => ({ ...prev, antiAntiTampering: val })),
             btnVisibility: config.btnVisibility,

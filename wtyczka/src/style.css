@@ -1,4 +1,4 @@
-/* ANTITESTPORTAL ULTRA PREMIUM STYLES */
+/* ANTITESTPORTAL ULTRA PREMIUM STYLES v11 */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
 
 :root {
@@ -21,7 +21,7 @@
 
 body {
     background: var(--bg-dark);
-    width: 380px;
+    width: 350px;
     height: auto;
     overflow: hidden;
 }
@@ -29,8 +29,9 @@ body {
 .popup-container {
     padding: 20px;
     background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-    min-height: 480px;
+    min-height: 420px;
     position: relative;
+    border: 1px solid var(--glass-border);
 }
 
 /* Glassmorphism Elements */
@@ -39,18 +40,18 @@ body {
     backdrop-filter: blur(12px);
     border: 1px solid var(--glass-border);
     border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: 18px;
+    margin-bottom: 15px;
 }
 
 /* Header */
 .header {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .logo {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 700;
     color: white;
     letter-spacing: -0.5px;
@@ -58,61 +59,61 @@ body {
 
 .logo span {
     color: var(--primary-bright);
-    text-transform: uppercase;
     font-size: 14px;
-    margin-left: 5px;
+    margin-left: 4px;
 }
 
 .status-badge {
     display: inline-block;
-    padding: 4px 12px;
-    background: rgba(139, 92, 246, 0.1);
+    padding: 4px 10px;
+    background: rgba(139, 92, 246, 0.15);
     border: 1px solid rgba(139, 92, 246, 0.3);
     border-radius: 20px;
     color: var(--primary-bright);
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 600;
-    margin-top: 8px;
+    margin-top: 6px;
+    text-transform: uppercase;
 }
 
 /* Inputs & Buttons */
 .input-group {
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .input-group label {
     display: block;
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-dim);
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 input[type="text"] {
     width: 100%;
-    background: rgba(15, 23, 42, 0.5);
+    background: rgba(15, 23, 42, 0.6);
     border: 1px solid var(--glass-border);
-    border-radius: 10px;
-    padding: 12px 15px;
+    border-radius: 8px;
+    padding: 10px 12px;
     color: white;
-    font-size: 13px;
+    font-size: 12px;
     transition: 0.3s;
 }
 
 input[type="text"]:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
     outline: none;
 }
 
 .btn {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 13px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 12px;
     cursor: pointer;
     transition: 0.3s;
     text-transform: uppercase;
@@ -122,51 +123,48 @@ input[type="text"]:focus {
 .btn-primary {
     background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
 }
 
 .btn-outline {
     background: transparent;
     border: 1px solid var(--glass-border);
     color: var(--text-main);
-    margin-top: 10px;
 }
 
 .btn-outline:hover {
     background: rgba(255, 255, 255, 0.05);
-    border-color: white;
 }
 
 /* Modules */
 .module-box {
     background: rgba(139, 92, 246, 0.05);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(139, 92, 246, 0.15);
     border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 20px;
+    padding: 14px;
+    margin-bottom: 12px;
 }
 
 .module-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .module-title {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--primary-bright);
-    text-transform: uppercase;
 }
 
 .module-desc {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-dim);
     line-height: 1.4;
 }
@@ -175,8 +173,8 @@ input[type="text"]:focus {
 .switch {
     position: relative;
     display: inline-block;
-    width: 38px;
-    height: 20px;
+    width: 34px;
+    height: 18px;
 }
 
 .switch input {
@@ -193,47 +191,73 @@ input[type="text"]:focus {
     right: 0;
     bottom: 0;
     background-color: #334155;
-    transition: .4s;
+    transition: .3s;
     border-radius: 34px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 14px;
-    width: 14px;
-    left: 2px;
-    bottom: 2px;
+    height: 12px;
+    width: 12px;
+    left: 3px;
+    bottom: 3px;
     background-color: white;
-    transition: .4s;
+    transition: .3s;
     border-radius: 50%;
 }
 
-input:checked + .slider {
+input:checked+.slider {
     background-color: var(--primary);
-    box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
 }
 
-input:checked + .slider:before {
-    transform: translateX(18px);
+input:checked+.slider:before {
+    transform: translateX(16px);
+}
+
+/* Shortcuts */
+.shortcut-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: white;
+}
+
+.shortcut-item span {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--primary-bright);
+}
+
+.shortcut-item small {
+    color: var(--text-dim);
 }
 
 /* Footer info */
 .footer-info {
     text-align: center;
-    font-size: 10px;
+    font-size: 9px;
     color: var(--text-dim);
-    margin-top: 20px;
+    margin-top: 15px;
+    opacity: 0.6;
 }
-
-.hidden { display: none; }
 
 /* Animations */
 @keyframes pulse {
-    0% { opacity: 0.6; }
-    50% { opacity: 1; }
-    100% { opacity: 0.6; }
+    0% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.7;
+    }
 }
 
 .pulse {

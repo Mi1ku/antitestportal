@@ -1,6 +1,6 @@
 import "style.css";
 import { useState, useEffect } from "react";
-import usePluginConfig, { AutoSolveButtonVisibility } from "~hooks/use-plugin-config";
+import usePluginConfig from "~hooks/use-plugin-config";
 
 function IndexPopup() {
     const { pluginConfig } = usePluginConfig();
@@ -15,15 +15,14 @@ function IndexPopup() {
     const handleActivate = () => {
         if (pluginConfig.shieldKey.trim().length > 5) {
             setIsActivated(true);
-            // Storage is synced automatically via hook
-            alert("DOSTĘP ULTRA AKTYWOWANY 💎");
+            alert("DOSTĘP ULTRA PREMIUM AKTYWOWANY 💎");
         } else {
-            alert("BŁĄD: NIEPRAWIDŁOWY KLUCZ");
+            alert("BŁĄD: KLUCZ MUSI MIEĆ MIN. 6 ZNAKÓW");
         }
     };
 
     const handleClearTrace = async () => {
-        if (confirm("CZY NA PEWNO WYCZYŚCIĆ WSZYSTKIE ŚLADY? ZOSTANIESZ WYLOGOWANY.")) {
+        if (confirm("CZY NA PEWNO WYCZYŚCIĆ ŚLADY? ZOSTANIESZ WYLOGOWANY.")) {
             await chrome.browsingData.remove({
                 "origins": [
                     "https://www.testportal.pl",
@@ -35,7 +34,7 @@ function IndexPopup() {
                 "cookies": true,
                 "localStorage": true
             });
-            alert("ŚLADY WYCZYSZCZONE. MOŻESZ BEZPIECZNIE WEJŚĆ NA TEST.");
+            alert("ŚLADY WYCZYSZCZONE 🛡️");
         }
     };
 
@@ -43,7 +42,7 @@ function IndexPopup() {
         <div className="popup-container">
             <div className="header">
                 <h1 className="logo">AntiTestportal <span>ULTRA</span></h1>
-                <div className="status-badge">OCHRONA v10.0 GHOST COMMANDER</div>
+                <div className="status-badge pulse">GHOST COMMANDER v11.0 ACTIVE</div>
             </div>
 
             {!isActivated ? (
@@ -57,8 +56,10 @@ function IndexPopup() {
                             placeholder="WPISZ SWÓJ KLUCZ..."
                         />
                     </div>
-                    <button className="btn btn-primary" onClick={handleActivate}>AKTYWUJ DOSTĘP</button>
-                    <p style={{ marginTop: '10px', textAlign: 'center', fontSize: '10px' }}>Wersja Plasma / GPT-Main Tech</p>
+                    <button className="btn btn-primary" onClick={handleActivate}>ODBLOKUJ POTĘGĘ</button>
+                    <p style={{ marginTop: '12px', textAlign: 'center', fontSize: '10px', color: '#94a3b8' }}>
+                        Wymagana licencja premium Midway.gg
+                    </p>
                 </div>
             ) : (
                 <>
@@ -75,53 +76,44 @@ function IndexPopup() {
                             </label>
                         </div>
                         <p className="module-desc">
-                            Zamraża licznik czasu na każdym pytaniu, dając Ci nieograniczony czas na szukanie.
+                            Zatrzymuje zegar Testportalu. Masz nieograniczony czas na każde pytanie.
                         </p>
                     </div>
 
-                    <div className="module-box">
+                    <div className="module-box" style={{ borderColor: 'rgba(52, 211, 153, 0.3)' }}>
                         <div className="module-header">
-                            <span className="module-title">ANTI-ANTI-TAMPERING</span>
+                            <span className="module-title" style={{ color: '#34d399' }}>EKSTREMALNY STEALTH</span>
                             <label className="switch">
                                 <input
                                     type="checkbox"
                                     checked={pluginConfig.antiAntiTampering}
                                     onChange={(e) => pluginConfig.setAntiAntiTampering(e.target.checked)}
                                 />
-                                <span className="slider"></span>
+                                <span className="slider" style={{ backgroundColor: pluginConfig.antiAntiTampering ? '#10b981' : '#334155' }}></span>
                             </label>
                         </div>
                         <p className="module-desc">
-                            Główna ochrona Ghost Commander. Ukrywa fakt posiadania wtyczek przed Testportalem.
+                            Zaawansowane maskowanie native-code. Wtyczka jest niewidoczna dla skanerów.
                         </p>
                     </div>
 
                     <div className="glass-card" style={{ padding: '15px' }}>
-                        <div className="input-group">
-                            <label>API KEY OpenAI (Opcjonalnie)</label>
-                            <input
-                                type="text"
-                                value={pluginConfig.apiKey}
-                                onChange={(e) => pluginConfig.setApiKey(e.target.value)}
-                                placeholder="sk-..."
-                            />
-                        </div>
-                        <button className="btn btn-outline" style={{ color: '#ef4444' }} onClick={handleClearTrace}>
+                        <button className="btn btn-outline" style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }} onClick={handleClearTrace}>
                             WYCZYŚĆ ŚLADY (ANTI-DETECT)
                         </button>
                     </div>
 
-                    <div className="module-box" style={{ background: 'rgba(255,255,255,0.03)' }}>
-                        <span className="module-title" style={{ color: 'white', display: 'block', marginBottom: '8px' }}>INSTRUKCJA SKRÓTÓW:</span>
-                        <p className="module-desc" style={{ color: '#94a3b8' }}>
-                            • <b>CTRL + Klik</b>: Szukaj w Google<br />
-                            • <b>ALT + Klik</b>: Rozwiązanie przez AI
-                        </p>
+                    <div className="module-box" style={{ background: 'rgba(255,255,255,0.03)', border: 'none' }}>
+                        <span className="module-title" style={{ color: 'white', display: 'block', marginBottom: '8px', fontSize: '10px' }}>INTELIGENTNE SKRÓTY:</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                            <div className="shortcut-item"><span>CTRL + Klik</span> <small>Google Search</small></div>
+                            <div className="shortcut-item"><span>ALT + Klik</span> <small>AI Solution</small></div>
+                        </div>
                     </div>
                 </>
             )}
 
-            <div className="footer-info">Powered by Plasma Technology v10.0</div>
+            <div className="footer-info">Midway Protection Systems © 2026</div>
         </div>
     );
 }
