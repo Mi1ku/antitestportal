@@ -1,9 +1,9 @@
 {
   "name": "antitestportal-ultra-plasma",
   "displayName": "AntiTestportal Ultra (Plasma Edition)",
-  "version": "10.0.0",
+  "version": "11.0.0",
   "description": "Premium Testportal Bypass with Ghost Commander Tech",
-  "author": "Daniel Rogowski",
+  "author": "Midway.gg",
   "scripts": {
     "dev": "plasmo dev",
     "build": "plasmo build",
@@ -28,21 +28,34 @@
     "typescript": "5.3.3"
   },
   "manifest": {
+    "host_permissions": [
+      "https://*.testportal.pl/*",
+      "https://*.testportal.net/*",
+      "https://*.testportal.online/*"
+    ],
+    "permissions": [
+      "storage",
+      "declarativeNetRequest",
+      "browsingData"
+    ],
     "web_accessible_resources": [
       {
         "resources": [
-          "assets/anti-anti-tamper.js"
+          "assets/shield.js"
         ],
         "matches": [
           "*://*/*"
         ]
       }
     ],
-    "host_permissions": [
-      "<all_urls>"
-    ],
-    "background": {
-      "service_worker": "src/background.ts"
+    "declarative_net_request": {
+      "rule_resources": [
+        {
+          "id": "ruleset_1",
+          "enabled": true,
+          "path": "rules.json"
+        }
+      ]
     }
   }
 }

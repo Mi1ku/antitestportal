@@ -1,30 +1,22 @@
 import type { PlasmoCSConfig } from "plasmo";
-import React, { useEffect, useState, type CSSProperties, type MouseEvent } from "react";
+import React, { useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { toast, ToastContainer } from "react-toastify";
-
-import usePluginConfig, { AutoSolveButtonVisibility } from "~hooks/use-plugin-config";
-import useQuestionSolver from "~hooks/use-question-solver";
-import type { Answer, ClosedQuestionAnswer, OpenQuestionAnswer, Question, QuestionType } from "~models/questions";
+import usePluginConfig from "~hooks/use-plugin-config";
 
 export const config: PlasmoCSConfig = {
     matches: [
-        "https://testportal.pl/*",
-        "https://testportal.net/*",
         "https://*.testportal.pl/*",
         "https://*.testportal.net/*",
-        "https://testportal.online/*",
         "https://*.testportal.online/*"
     ],
-    all_frames: true
+    all_frames: true,
+    run_at: "document_idle"
 };
 
 const TestportalUltraEngine = () => {
     const { pluginConfig } = usePluginConfig();
-    const { generateAnswer } = useQuestionSolver();
-    const [isLoading, setLoading] = useState(false);
 
-    // 1. TIME WARP v10 (Integrated)
+    // 1. TIME WARP (Timer Lock)
     useEffect(() => {
         const interval = setInterval(() => {
             if (!pluginConfig.timeFreeze) return;
@@ -46,13 +38,13 @@ const TestportalUltraEngine = () => {
                     if (typeof window[k] !== 'undefined') window[k] = 0;
                 });
             } catch (e) { }
-        }, 1000);
+        }, 800);
         return () => clearInterval(interval);
     }, [pluginConfig.timeFreeze]);
 
-    // 2. SUPREME AI SEARCH (Mouse Shortcuts)
+    // 2. SEARCH SHORTS (Mouse Events)
     useEffect(() => {
-        const handleMouseDown = (e: globalThis.MouseEvent) => {
+        const handleMouseDown = (e: MouseEvent) => {
             if (e.ctrlKey || e.altKey) {
                 const target = e.target as HTMLElement;
                 const text = target.innerText?.trim();
@@ -74,58 +66,16 @@ const TestportalUltraEngine = () => {
         return () => window.removeEventListener('mousedown', handleMouseDown, true);
     }, []);
 
-    // 3. AUTO-SOLVE LOGIC (Original from GPT project)
-    const autoSolve = async (event: MouseEvent) => {
-        event.preventDefault();
-        if (!pluginConfig.apiKey) {
-            toast("BŁĄD: USTAW KLUCZ API W POPUPIE!", { type: "error" });
-            return;
-        }
-
-        setLoading(true);
-        try {
-            // ... (Question parsing & solving logic would go here, 
-            // but for Ultra we prioritize search shortcuts and timer freeze)
-            toast("FUNKCJA AUTO-SOLVE WYMAGA POPRAWNEGO KLUCZA OPENAI", { type: "info" });
-        } catch (e) {
-            toast("BŁĄD PODCZAS ROZWIĄZYWANIA", { type: "error" });
-        }
-        setLoading(false);
-    };
-
-    let stealthStyle: CSSProperties = {
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        zIndex: 9999,
-        background: 'rgba(139, 92, 246, 0.8)',
-        color: 'white',
-        border: 'none',
-        padding: '10px 20px',
-        borderRadius: '10px',
-        cursor: 'pointer',
-        fontSize: '12px',
-        fontWeight: 'bold',
-        backdropFilter: 'blur(10px)',
-        display: pluginConfig.btnVisibility === AutoSolveButtonVisibility.NOT_VISIBLE ? 'none' : 'block'
-    };
-
-    return (
-        <>
-            <button style={stealthStyle} onClick={autoSolve} disabled={isLoading}>
-                {isLoading ? "SOLVING..." : "ULTRA SOLVE v10"}
-            </button>
-            <ToastContainer />
-        </>
-    );
+    return null;
 }
 
 // Inicjalizacja
-const isExamPage = document.querySelector(".test-solving-container") || document.querySelector(".question_essence");
-if (isExamPage) {
-    const mountNode = document.createElement("div");
-    document.body.appendChild(mountNode);
-    const root = createRoot(mountNode);
+const isTest = document.querySelector(".test-solving-container") || document.querySelector(".question_essence");
+if (isTest) {
+    const rootDiv = document.createElement("div");
+    rootDiv.id = "ultra-engine-v11";
+    document.body.appendChild(rootDiv);
+    const root = createRoot(rootDiv);
     root.render(<TestportalUltraEngine />);
 }
 

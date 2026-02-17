@@ -1,0 +1,74 @@
+[
+    {
+        "id": 1,
+        "priority": 1,
+        "action": {
+            "type": "modifyHeaders",
+            "responseHeaders": [
+                {
+                    "header": "content-security-policy",
+                    "operation": "remove"
+                },
+                {
+                    "header": "x-content-security-policy",
+                    "operation": "remove"
+                }
+            ]
+        },
+        "condition": {
+            "urlFilter": "testportal",
+            "resourceTypes": [
+                "main_frame",
+                "sub_frame"
+            ]
+        }
+    },
+    {
+        "id": 2,
+        "priority": 10,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "*testportal*cheat*",
+            "resourceTypes": [
+                "xmlhttprequest",
+                "ping",
+                "script",
+                "other"
+            ]
+        }
+    },
+    {
+        "id": 3,
+        "priority": 10,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "*testportal*focus*",
+            "resourceTypes": [
+                "xmlhttprequest",
+                "ping",
+                "script",
+                "other"
+            ]
+        }
+    },
+    {
+        "id": 4,
+        "priority": 10,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "*testportal*trace*",
+            "resourceTypes": [
+                "xmlhttprequest",
+                "ping",
+                "script",
+                "other"
+            ]
+        }
+    }
+]
