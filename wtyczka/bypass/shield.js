@@ -1,39 +1,39 @@
 (function () {
-    // SHIELD LOADER v4.5.0 - DUAL-LAYER INJECTION
-    console.log("[Shield] Aktywacja warstw ochronnych...");
+    // SHIELD LOADER v5.0.0 - PRO INJECTION SYSTEM
+    console.log("[Shield] Inicjalizacja systemu wstrzykiwania...");
 
-    // WARSTWA 1: INSTANT LOCAL BYPASS (Core)
-    // Wstrzykujemy krytyczne blokady bezpośrednio z pliku wtyczki
+    // 1. WCZYTUJEMY RDZEŃ LOKALNY
     try {
-        const script = document.createElement('script');
-        script.src = chrome.runtime.getURL('bypass/core.js');
-        (document.head || document.documentElement).appendChild(script);
-        script.onload = () => script.remove();
+        const coreScript = document.createElement('script');
+        coreScript.src = chrome.runtime.getURL('bypass/core.js');
+        (document.head || document.documentElement).appendChild(coreScript);
+        coreScript.onload = () => coreScript.remove();
     } catch (e) {
-        console.error("[Shield Error] Nie udało się wstrzyknąć rdzenia.");
+        console.error("[Shield Error] Rdzeń nie odnaleziony.");
     }
 
-    // WARSTWA 2: DYNAMIC ENGINE (GitHub Sync)
-    // Pobieramy zaawansowaną logikę i UI z chmury
-    chrome.runtime.sendMessage({ type: "FETCH_ENGINE" }, (response) => {
-        if (chrome.runtime.lastError || !response || !response.success) {
-            console.warn("[Shield] Błąd chmury. Działam na samym rdzeniu.");
+    // 2. POBIERAMY I WSTRZYKUJEMY SILNIK Z CHMURY (Omijamy CSP przez Background Script)
+    chrome.runtime.sendMessage({ type: "FETCH_ENGINE" }, (fetchResponse) => {
+        if (chrome.runtime.lastError || !fetchResponse || !fetchResponse.success) {
+            console.warn("[Shield] Błąd serwera. Korzystam z lokalnego rdzenia.");
             return;
         }
 
-        console.log("[Shield] Silnik zsynchronizowany. Aktywacja modułów premium.");
+        console.log("[Shield] Silnik zsynchronizowany. Przekazywanie do egzekucji...");
 
-        try {
-            const engineScript = document.createElement('script');
-            engineScript.textContent = response.code;
-            (document.head || document.documentElement).appendChild(engineScript);
-            engineScript.remove();
-        } catch (e) {
-            console.error("[Shield Error] Błąd inicjalizacji silnika dynamicznego.");
-        }
+        // Wysyłamy kod do background, aby wstrzyknął go przez Scripting API (100% bypass CSP)
+        chrome.runtime.sendMessage({
+            type: "INJECT_ENGINE",
+            code: fetchResponse.code
+        }, (injectResponse) => {
+            if (injectResponse && injectResponse.success) {
+                console.log("%c [Shield] 🦍 SYSTEM SHIELD ULTRA AKTYWNY 🦍 ", "color: #8b5cf6; font-weight: bold; font-size: 14px;");
+            } else {
+                console.error("[Shield Error] Błąd krytyczny wstrzykiwania silnika.");
+            }
+        });
     });
 
-    // AUTO-BACK DLA STRONY BŁĘDU
     if (window.location.href.includes('DspUnsupportedBrowserPlugins.html')) {
         window.history.back();
     }

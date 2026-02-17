@@ -1,84 +1,107 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // KONFIGURACJA
     const UI_CONFIG_URL = "https://raw.githubusercontent.com/Mi1ku/antitestportal/main/serce-github/ui_config.json";
     const cacheBust = `?v=${Date.now()}`;
 
+    // ELEMENTY UI
     const lockScreen = document.getElementById('lockScreen');
     const mainUI = document.getElementById('mainUI');
     const licenseInput = document.getElementById('licenseInput');
     const activateBtn = document.getElementById('activateBtn');
-
-    // UI Feedback elements
     const updateBtn = document.getElementById('updateBtn');
     const clearBtn = document.getElementById('clearBtn');
 
-    function showStatus(btn, message, color = "#22c55e", success = true) {
-        const originalContent = btn.innerHTML;
-        const originalBg = btn.style.background;
-        btn.innerText = message;
-        btn.style.background = color;
-        btn.style.color = "white";
+    // ALERT SYSTEM
+    const alertLayer = document.getElementById('alertLayer');
+    const alertIcon = document.getElementById('alertIcon');
+    const alertTitle = document.getElementById('alertTitle');
+    const alertText = document.getElementById('alertText');
+    const alertClose = document.getElementById('alertClose');
 
-        setTimeout(() => {
-            btn.innerHTML = originalContent;
-            btn.style.background = originalBg;
-            btn.style.color = "";
-        }, 2000);
+    function showAlert(title, text, type = "error") {
+        alertTitle.innerText = title;
+        alertText.innerText = text;
+        alertIcon.innerText = type === "success" ? "✅" : "❌";
+        alertLayer.style.display = "flex";
     }
+
+    alertClose.addEventListener('click', () => {
+        alertLayer.style.display = "none";
+    });
 
     // 1. SPRAWDZANIE LOKALNEGO KLUCZA
     chrome.storage.local.get(['shield_key'], (result) => {
         if (result.shield_key) {
-            verifyKey(result.shield_key, true); // Auto-login
+            verifyKey(result.shield_key, true);
         }
     });
 
-    // 2. WERYFIKACJA KLUCZA (Cloud Sync)
+    // 2. WERYFIKACJA KLUCZA (Case Sensitive + Better UI)
     function verifyKey(key, isAuto = false) {
+        const trimmedKey = key.trim();
+
         fetch(UI_CONFIG_URL + cacheBust)
             .then(r => r.json())
             .then(data => {
-                const isValid = data.validKeys && data.validKeys.includes(key);
+                const validKeys = data.validKeys || [];
+                // Sprawdzamy klucz dokładnie tak, jak został wpisany (Case Sensitive)
+                const isValid = validKeys.includes(trimmedKey);
 
-                // TRIAL BYPASS DLA TESTÓW
-                if (isValid || key === "TRIAL-2026" || key === "MIKUS-KING") {
+                if (isValid) {
                     if (!isAuto) {
-                        chrome.storage.local.set({ shield_key: key });
+                        chrome.storage.local.set({ shield_key: trimmedKey });
                     }
                     lockScreen.classList.add('hidden');
                     mainUI.classList.remove('hidden');
-                } else if (!isAuto) {
-                    showStatus(activateBtn, "BŁĘDNY KLUCZ!", "#ef4444", false);
+                } else {
+                    if (!isAuto) {
+                        showAlert("BŁĘDNY KLUCZ", "Wprowadzony klucz jest nieaktywny lub wygasł. Skontaktuj się ze sprzedawcą, aby zakupić dostęp.");
+                    } else {
+                        // Jeśli auto-login zawiódł, wyczyść stary klucz
+                        chrome.storage.local.remove(['shield_key']);
+                    }
                 }
             })
             .catch(() => {
-                // Fallback jeśli GitHub leży, a klucz był już raz wpisany
-                if (isAuto) {
+                // Offline Fallback
+                if (isAuto && key) {
                     lockScreen.classList.add('hidden');
                     mainUI.classList.remove('hidden');
+                } else if (!isAuto) {
+                    showAlert("BŁĄD POŁĄCZENIA", "Nie udało się połączyć z serwerem licencji. Sprawdź połączenie z internetem.");
                 }
             });
     }
 
     activateBtn.addEventListener('click', () => {
-        const val = licenseInput.value.trim().toUpperCase();
-        if (val) verifyKey(val);
+        const val = licenseInput.value.trim();
+        if (val) {
+            verifyKey(val);
+        } else {
+            showAlert("BRAK KLUCZA", "Wprowadź klucz licencyjny, aby odblokować Shield Ultra.");
+        }
     });
 
-    // PRZYCISKI GŁÓWNE
+    // CZYSZCZENIE DANYCH
     clearBtn.addEventListener('click', () => {
         chrome.browsingData.remove({
-            "origins": ["https://www.testportal.pl", "https://www.testportal.net", "https://*.testportal.pl", "https://*.testportal.net"]
+            "origins": [
+                "https://www.testportal.pl",
+                "https://www.testportal.net",
+                "https://www.testportal.online"
+            ]
         }, {
             "cache": true, "cookies": true, "localStorage": true
         }, () => {
-            showStatus(clearBtn, "DANE WYCZYSZCZONE!");
+            showAlert("SUKCES", "Wszystkie ślady obecności na Testportal zostały usunięte.", "success");
         });
     });
 
+    // SYNCHRONIZACJA
     updateBtn.addEventListener('click', () => {
-        chrome.tabs.query({ url: ["https://*.testportal.pl/*", "https://*.testportal.net/*", "https://*.testportal.online/*"] }, (tabs) => {
+        chrome.tabs.query({ url: "*://*.testportal.*/*" }, (tabs) => {
             tabs.forEach(tab => chrome.tabs.reload(tab.id));
-            showStatus(updateBtn, "BAZA ZSYNCHRONIZOWANA!");
+            showAlert("SYNCHRONIZACJA", "Silnik Shield Ultra został zaktualizowany w chmurze.", "success");
         });
     });
 });
