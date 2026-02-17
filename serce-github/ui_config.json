@@ -1,0 +1,12 @@
+{
+  "title": "Shield <span class='neon'>ULTRA</span>",
+  "status": "OCHRONA AKTYWNA",
+  "version": "PRO v9.5.0",
+  "validKeys": [
+    "MIKUS-KING",
+    "TRIAL-2026",
+    "ENTERPRISE-GHOST",
+    "TEST-99"
+  ],
+  "customCSS": ".neon { color: #3b82f6; text-shadow: 0 0 10px rgba(59,130,246,0.6); }"
+}

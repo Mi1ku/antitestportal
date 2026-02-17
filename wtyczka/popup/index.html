@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* PREMIUM DESIGN SYSTEM */
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #22c55e;
+            --danger: #ef4444;
+        }
+
+        html,
+        body {
+            width: 360px;
+            height: 550px;
+            margin: 0;
+            padding: 0;
+            background: #08080a;
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            color: var(--text-main);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            background: var(--bg-dark);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            margin: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        .neon {
+            color: var(--primary);
+            text-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+
+        .version-badge {
+            font-size: 10px;
+            background: rgba(59, 130, 246, 0.15);
+            padding: 3px 8px;
+            border-radius: 20px;
+            color: var(--primary);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            font-weight: 600;
+        }
+
+        /* STATUS CARDS */
+        .status-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            border: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-label {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .status-value {
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .status-active {
+            color: var(--accent);
+        }
+
+        /* BUTTONS */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* GUIDE */
+        .guide-section {
+            margin-top: 25px;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px dashed #334155;
+        }
+
+        .guide-header {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .guide-item {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.5;
+        }
+
+        .dot {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .k {
+            background: #334155;
+            padding: 2px 5px;
+            border-radius: 4px;
+            color: white;
+            font-size: 10px;
+            font-family: monospace;
+        }
+
+        /* LOCK SCREEN OVERLAY */
+        #lockScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-dark);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+            border-radius: 16px;
+        }
+
+        .lock-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+
+        .lock-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .lock-desc {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 30px;
+        }
+
+        .input-key {
+            background: #08080a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 15px;
+            color: white;
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-key:focus {
+            border-color: var(--primary);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            font-size: 10px;
+            color: #475569;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- LOCK SCREEN -->
+        <div id="lockScreen">
+            <div class="lock-icon">🔒</div>
+            <div class="lock-title">SHIELD <span class="neon">ULTRA</span></div>
+            <div class="lock-desc">System wymaga aktywacji kluczem licencyjnym</div>
+
+            <input type="text" id="licenseInput" class="input-key" placeholder="WPROWADŹ KLUCZ...">
+            <button id="activateBtn" class="btn btn-primary">AKTYWUJ DOSTĘP</button>
+
+            <p style="font-size: 11px; margin-top: 20px; color: var(--text-dim);">
+                Kup u twórcy: <a href="https://www.instagram.com/76mikus/" target="_blank"
+                    style="color: var(--primary); text-decoration: none; font-weight: 700;">@76mikus</a>
+            </p>
+        </div>
+
+        <!-- MAIN UI -->
+        <div id="mainUI" class="hidden">
+            <div class="header">
+                <h1 class="title">Shield <span class="neon">ULTRA</span></h1>
+                <span class="version-badge">PRO v9.5.0</span>
+            </div>
+
+            <div class="status-card">
+                <span class="status-label">Ochrona Fokusu:</span>
+                <span class="status-value status-active"> persist-active</span>
+            </div>
+
+            <div class="status-card">
+                <span class="status-label">Bypass Honesty:</span>
+                <span class="status-value status-active">inject-ok</span>
+            </div>
+
+            <button id="updateBtn" class="btn btn-primary">
+                <span>🔄</span> SYNCHRONIZUJ Z CHMURĄ
+            </button>
+
+            <button id="clearBtn" class="btn btn-danger">
+                <span>🛡️</span> WYCZYŚĆ ŚLADY (ANTI-DETECT)
+            </button>
+
+            <div class="guide-section">
+                <div class="guide-header">⚙️ INSTRUKCJA OPERACYJNA</div>
+                <div class="guide-item">
+                    <span class="dot">•</span>
+                    <span>Szukaj w Google: Przytrzymaj <span class="k">CTRL</span> i kliknij pytanie.</span>
+                </div>
+                <div class="guide-item">
+                    <span class="dot">•</span>
+                    <span>AI Solver: Przytrzymaj <span class="k">ALT</span> i kliknij pytanie.</span>
+                </div>
+                <div class="guide-item">
+                    <span class="dot">•</span>
+                    <span>Niewykrywalność: System automatycznie maskuje zmianę kart i aplikacji.</span>
+                </div>
+                <div class="guide-item">
+                    <span class="dot">•</span>
+                    <span>Czystość: Kliknij "Wyczyść ślady" przed każdym nowym podejściem.</span>
+                </div>
+            </div>
+
+            <div class="footer">
+                Developed by Mikus Enterprise | Secure Edition
+            </div>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>
