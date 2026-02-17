@@ -37,10 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
         alertLayer.style.display = "none";
     });
 
-    // 1. SPRAWDZANIE LOKALNEGO KLUCZA
-    chrome.storage.local.get(['shield_key'], (result) => {
+    // 1. SPRAWDZANIE KLUCZA I USTAWIEŃ
+    chrome.storage.local.get(['shield_key', 'shield_time_freeze'], (result) => {
         if (result.shield_key) {
             verifyKey(result.shield_key, true);
+        }
+        if (result.shield_time_freeze !== undefined) {
+            timeFreezeToggle.checked = result.shield_time_freeze;
         }
     });
 
@@ -130,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // MODUŁ CZASU - LOGIKA
     timeFreezeToggle.addEventListener('change', () => {
         const enabled = timeFreezeToggle.checked;
+        chrome.storage.local.set({ shield_time_freeze: enabled });
         chrome.tabs.query({ url: patterns }, (tabs) => {
             tabs.forEach(tab => {
                 chrome.scripting.executeScript({

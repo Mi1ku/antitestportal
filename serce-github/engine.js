@@ -1,10 +1,14 @@
 /**
- * ANTITESTPORTAL ULTRA v5.6.1 - ULTIMATE ENGINE
- * Fixes: Extreme Timer Freeze, Honest Bypass, Search Integration
+ * ANTITESTPORTAL ULTRA v5.7.0 - ULTIMATE ENGINE
+ * Fixes: Focal Loss Prevention, Persistent Time Warp, Unblockable States
  */
 (function () {
-    const VERSION = "5.6.1";
-    window.SHIELD_TIME_FREEZE = (typeof window.SHIELD_TIME_FREEZE === 'undefined') ? true : window.SHIELD_TIME_FREEZE;
+    const VERSION = "5.7.0";
+
+    // Inicjalizacja stanu (jeśli nie został wstrzyknięty przez background)
+    if (typeof window.SHIELD_TIME_FREEZE === 'undefined') {
+        window.SHIELD_TIME_FREEZE = true;
+    }
 
     const makeNative = (fn, name) => {
         const wrapped = function () { return fn.apply(this, arguments); };
@@ -13,17 +17,15 @@
         return wrapped;
     };
 
-    // 1. EKSTREMALNY TIME WARP
+    // 1. EKSTREMALNY TIME WARP (Zarządzanie czasem)
     const timeWarp = () => {
         if (!window.SHIELD_TIME_FREEZE) return;
 
         try {
-            // Resetujemy czas startu (testy podstawowe)
-            if (typeof window.startTime !== 'undefined') {
-                window.startTime = Date.now();
-            }
+            // Client-side reset
+            if (typeof window.startTime !== 'undefined') window.startTime = Date.now();
 
-            // Atak na obiekt Timer (nowy Testportal)
+            // Testportal Object Timer
             if (window.Testportal && window.Testportal.Timer) {
                 const t = window.Testportal.Timer;
                 t.stop = makeNative(() => true, 'stop');
@@ -32,7 +34,7 @@
                 window.remainingTime = 9999;
             }
 
-            // Blokada wysyłki czasu do serwera
+            // Server-side telemetry prevention
             if (typeof window.timePassed !== 'undefined') window.timePassed = 0;
             if (typeof window.timeSpent !== 'undefined') window.timeSpent = 0;
         } catch (e) { }
@@ -60,13 +62,12 @@
 
         timeWarp();
 
-        // Killer overlejów (Blokujemy informację "Straciłeś focus")
+        // Usuwanie śmieci i alertów Testportalu
         document.querySelectorAll('[class*="modal"], [class*="backdrop"], .mdc-dialog, .mdc-dialog__scrim').forEach(o => o.remove());
-        document.body.classList.remove('modal-open', 'mdc-dialog-scroll-lock');
     };
 
-    // 3. BYPASS UCZCIWOŚCI
-    const bypassHonesty = () => {
+    // 3. BYPASS SYSTEMU (Honest Respondent)
+    const bypassSystem = () => {
         try {
             if (window.Testportal && window.Testportal.HonestRespondent) {
                 const h = window.Testportal.HonestRespondent;
@@ -78,7 +79,7 @@
 
     console.log("%c 🦍 ANTITESTPORTAL ULTRA v" + VERSION + " ACTIVE 🦍 ", "color: #b983ff; font-weight: bold;");
 
-    bypassHonesty();
+    bypassSystem();
     setInterval(setupAI, 1000);
     window.addEventListener('error', e => e.preventDefault(), true);
 })();
