@@ -99,9 +99,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // SYNCHRONIZACJA
     updateBtn.addEventListener('click', () => {
+        updateBtn.classList.add('hidden');
+        clearBtn.classList.add('hidden');
+        document.getElementById('syncLoading').style.display = 'block';
+
         chrome.tabs.query({ url: "*://*.testportal.*/*" }, (tabs) => {
             tabs.forEach(tab => chrome.tabs.reload(tab.id));
-            showAlert("SYNCHRONIZACJA", "Silnik Shield Ultra został zaktualizowany w chmurze.", "success");
+
+            setTimeout(() => {
+                updateBtn.classList.remove('hidden');
+                clearBtn.classList.remove('hidden');
+                document.getElementById('syncLoading').style.display = 'none';
+                showAlert("SYNCHRONIZACJA", "Silnik Shield Ultra został pomyślnie zaktualizowany w chmurze i odświeżony w kartach.", "success");
+            }, 1500);
         });
     });
 });

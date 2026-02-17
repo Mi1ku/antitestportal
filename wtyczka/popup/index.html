@@ -121,6 +121,51 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
+        /* ANIMATIONS & SPINNER */
+        .pulse {
+            animation: pulse-animation 2s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% {
+                box-shadow: 0 0 0 0px rgba(139, 92, 246, 0.4);
+            }
+
+            100% {
+                box-shadow: 0 0 0 15px rgba(139, 92, 246, 0);
+            }
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #syncLoading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
         /* ALERT SYSTEM */
         #alertLayer {
             position: fixed;
@@ -217,7 +262,12 @@
                 <div class="status-badge">OCHRONA AKTYWNA</div>
             </div>
 
-            <button class="btn" id="updateBtn">SYNCHRONIZUJ Z CHMURĄ</button>
+            <div id="syncLoading">
+                <div class="spinner" style="display: block;"></div>
+                SYNCHRONIZACJA W TOKU...
+            </div>
+
+            <button class="btn pulse" id="updateBtn">SYNCHRONIZUJ Z CHMURĄ</button>
             <button class="btn btn-outline" id="clearBtn"
                 style="color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">WYCZYŚĆ ŚLADY (ANTI-DETECT)</button>
 

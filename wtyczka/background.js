@@ -1,4 +1,4 @@
-// BACKGROUND SERVICE WORKER - CORE ENGINE & INJECTION
+// BACKGROUND SERVICE WORKER v5.2.0 - PRO INJECTION ENGINE
 const GITHUB_RAW_URL = "https://raw.githubusercontent.com/Mi1ku/antitestportal/main/serce-github/engine.js";
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -15,7 +15,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 
     if (request.type === "INJECT_ENGINE" && sender.tab) {
-        // Metoda Scripting API omija CSP strony na 100%
         chrome.scripting.executeScript({
             target: { tabId: sender.tab.id, frameIds: [sender.frameId] },
             world: "MAIN",
@@ -25,10 +24,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     script.textContent = code;
                     (document.head || document.documentElement).appendChild(script);
                     script.remove();
-                } catch (e) {
-                    // Fallback to direct eval if script tag fails (rare in MAIN)
-                    eval(code);
-                }
+                } catch (e) { }
             },
             args: [request.code]
         }).then(() => {
@@ -40,9 +36,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-// Auto-redirect from error page
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.url && changeInfo.url.includes('DspUnsupportedBrowserPlugins.html')) {
-        chrome.tabs.goBack(tabId).catch(() => { });
-    }
-});
+// Usunięto problematyczny auto-redirect powodujący pętle na stronie głównej

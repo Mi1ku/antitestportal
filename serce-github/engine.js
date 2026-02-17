@@ -1,8 +1,9 @@
+/**
+ * SHIELD ULTRA ENTERPRISE v4.9.0 - THE ULTIMATE BYPASS & SUPREME SEARCH
+ * Features: Absolute Anti-Tamper, Honest Bypass, Time Distortion, AI Magic
+ */
 (function () {
-    /**
-     * SHIELD ULTRA ENTERPRISE v4.8.0 - THE ULTIMATE BYPASS & TIME WARP
-     * Features: Absolute Anti-Tamper, Honest Bypass, Time Distortion
-     */
+    const SHIELD_VERSION = "4.9.0";
 
     const makeNative = (fn, name) => {
         const wrapped = function () { return fn.apply(this, arguments); };
@@ -11,30 +12,22 @@
         return wrapped;
     };
 
-    // 1. ZABÓJCA FOCUS LOSS (ReferenceError Trick - Ported from testportal-gpt)
+    // 1. ZABÓJCA FOCUS LOSS (ReferenceError Trick)
     const initAntiTamper = () => {
         try {
-            // Trik ReferenceError - paraliżuje wykrywanie zmian kart
             Object.defineProperty(document, 'hasFocus', {
                 get: () => { throw new ReferenceError("antiTestportalFeature"); },
                 configurable: true
             });
-
             window.logToServer = makeNative(() => false, 'logToServer');
             window.sendCheatInfo = makeNative(() => false, 'sendCheatInfo');
-
-            // Mrożenie widoczności karty
             const docProto = Object.getPrototypeOf(document);
             Object.defineProperty(docProto, 'visibilityState', { get: () => 'visible', configurable: true });
             Object.defineProperty(docProto, 'hidden', { get: () => false, configurable: true });
-
-            // Blokowanie zdarzeń wyjścia
-            window.addEventListener('blur', (e) => e.stopImmediatePropagation(), true);
-            window.addEventListener('focusout', (e) => e.stopImmediatePropagation(), true);
         } catch (e) { }
     };
 
-    // 2. BYPASS UCZCIWEGO ROZWIĄZUJĄCEGO (Honest Respondent Killer)
+    // 2. BYPASS UCZCIWEGO ROZWIĄZUJĄCEGO
     const bypassHonesty = () => {
         try {
             if (window.Testportal) {
@@ -42,112 +35,101 @@
                 if (honesty) {
                     honesty.isHonest = () => true;
                     honesty.validate = () => true;
-                    honesty.sendPulse = () => true;
                     Object.defineProperty(honesty, 'isHonest', { get: () => () => true });
                 }
-
-                if (window.Testportal.Log) {
-                    window.Testportal.Log.enqueue = () => true;
-                    window.Testportal.Log.send = () => true;
-                }
-
                 if (window.Testportal.Config) {
                     window.Testportal.Config.isFocusTrackingEnabled = false;
                     window.Testportal.Config.loseFocusNotification = false;
-                    window.Testportal.Config.isTimeLimitEnabled = false; // Próba wyłączenia limitu
                 }
             }
         } catch (e) { }
     };
 
-    // 3. TIME WARP (Mrożenie i manipulacja czasem)
+    // 3. TIME WARP
     const timeWarp = () => {
         try {
-            // Testportal liczy czas pytania od window.startTime
-            // Ciągłe resetowanie startTime sprawia, że zegar pytania stoi w miejscu
             if (typeof window.startTime !== 'undefined') {
-                setInterval(() => {
-                    window.startTime = Date.now();
-                }, 1000);
+                window.startTime = Date.now() + 3600000; // Dodajemy godzinę zapasu
             }
-
-            // Blokowanie automatycznego wysyłania testu po czasie (client-side)
-            window.remainingTime = 9999;
-            window.testTypeTimeLimit = 0;
-
-            // Jeśli zegar jest w obiekcie Testportal.Timer
             if (window.Testportal && window.Testportal.Timer) {
                 window.Testportal.Timer.stop = () => true;
-                window.Testportal.Timer.remainingTime = 3600; // Ustawienie godziny zapasu
             }
         } catch (e) { }
     };
 
-    // 4. NETWORK PROTECTION (Ghost Mode)
-    const forbidden = ['cheat', 'focus', 'blur', 'trace', 'logger', 'honest', 'detection', 'cheat-detection'];
-    const isBad = (u) => typeof u === 'string' && forbidden.some(p => u.toLowerCase().includes(p));
-
-    const _sendBeacon = navigator.sendBeacon;
-    navigator.sendBeacon = makeNative(function (url, data) {
-        if (isBad(url)) return true;
-        return _sendBeacon.apply(this, arguments);
-    }, 'sendBeacon');
-
-    const _fetch = window.fetch;
-    window.fetch = makeNative(function (url, init) {
-        if (isBad(url)) return Promise.resolve(new Response('{"status":"ok","remainingTime":3600}'));
-        return _fetch.apply(this, arguments);
-    }, 'fetch');
-
-    // 5. MODAL KILLER (Eliminacja powiadomień)
-    const modalKiller = () => {
-        const keywords = ['rozumiem', 'poinformowany', 'opuszczeniu', 'informacja', 'ok', 'understand', 'acknowledge'];
-        document.querySelectorAll('button, div, span, a').forEach(el => {
-            const text = (el.innerText || "").toLowerCase();
-            if (keywords.some(k => text.includes(k))) {
-                if (el.tagName === 'BUTTON' || el.tagName === 'A' || el.classList.contains('mdc-button')) {
-                    el.click();
-                }
-            }
-        });
-
-        const overlays = document.querySelectorAll('.mdc-dialog, .mdc-dialog__scrim, [class*="modal"], [class*="backdrop"]');
-        overlays.forEach(o => o.remove());
-        document.body.classList.remove('mdc-dialog-scroll-lock', 'modal-open');
-        document.documentElement.style.overflow = 'auto';
-    };
-
-    // 6. AI & SEARCH HELPER
+    // 4. SUPREME AI & SEARCH (Now with more selectors)
     const setupAI = () => {
-        document.querySelectorAll('.question-content, .answer-text, p, span, h2, .question_essence').forEach(el => {
-            if (el.innerText && el.innerText.trim().length > 5 && !el.hasAttribute('data-v4')) {
-                el.setAttribute('data-v4', 'true');
+        // Bardziej agresywne selektory dla Testportalu
+        const selectors = [
+            '.question-content', '.answer-text', '.question_essence',
+            '.question-container p', '.question-container span',
+            'label', 'h2', 'h1', '.mdc-form-field'
+        ];
+
+        document.querySelectorAll(selectors.join(', ')).forEach(el => {
+            if (el.innerText && el.innerText.trim().length > 2 && !el.hasAttribute('data-shield')) {
+                el.setAttribute('data-shield', 'true');
+                el.style.transition = 'all 0.2s';
+
+                // Wizualne potwierdzenie, że element jest "obsłużony" (subtelna zmiana kursora)
                 el.style.cursor = 'help';
-                el.addEventListener('click', (e) => {
+
+                el.addEventListener('mousedown', (e) => {
                     if (e.ctrlKey || e.altKey) {
                         e.preventDefault();
+                        e.stopPropagation();
+
                         const text = el.innerText.trim().replace(/\s+/g, ' ');
                         const url = e.ctrlKey
                             ? `https://www.google.com/search?q=${encodeURIComponent(text)}`
                             : `https://www.perplexity.ai/search?q=${encodeURIComponent(text)}`;
+
                         window.open(url, '_blank');
                     }
-                });
+                }, true);
             }
         });
+
         bypassHonesty();
-        timeWarp(); // Aktywacja pętli czasowej
-        modalKiller();
+        timeWarp();
+
+        // Modal Killer
+        document.querySelectorAll('.mdc-dialog, .mdc-dialog__scrim, [class*="modal"], [class*="backdrop"]').forEach(o => o.remove());
+        document.body.classList.remove('mdc-dialog-scroll-lock', 'modal-open');
     };
 
-    // START
+    // 5. FLOATING INDICATOR (Potwierdzenie wizualne na stronie)
+    const addIndicator = () => {
+        if (document.getElementById('shield-indicator')) return;
+        const div = document.createElement('div');
+        div.id = 'shield-indicator';
+        div.innerHTML = `🛡️ Shield Ultra v${SHIELD_VERSION} Active`;
+        div.setAttribute('style', `
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(139, 92, 246, 0.8);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-family: sans-serif;
+            z-index: 999999;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+            pointer-events: none;
+            opacity: 0.7;
+        `);
+        document.documentElement.appendChild(div);
+    };
+
+    // INICJALIZACJA
     console.clear();
-    console.log("%c 🦍 SHIELD ULTRA v4.8.0 - TIME WARP ACTIVATED 🦍 ", "color: #8b5cf6; font-weight: bold; background: #000; padding: 15px; border: 3px solid #8b5cf6; border-radius: 8px;");
+    console.log("%c 🦍 SHIELD ULTRA v" + SHIELD_VERSION + " - FULL POWER ACTIVATED 🦍 ", "color: #8b5cf6; font-weight: bold; background: #000; padding: 15px; border: 3px solid #8b5cf6; border-radius: 8px;");
 
     initAntiTamper();
-    setInterval(setupAI, 500);
-    new MutationObserver(setupAI).observe(document.documentElement, { childList: true, subtree: true });
+    addIndicator();
 
+    setInterval(setupAI, 1000);
     window.addEventListener('error', (e) => { e.preventDefault(); }, true);
-
 })();
