@@ -13,13 +13,15 @@ export interface PluginConfig {
     antiAntiTampering: boolean;
     btnVisibility: AutoSolveButtonVisibility;
     timeFreeze: boolean;
+    showHud: boolean;
 }
 
 const DefaultConfig: PluginConfig = {
     shieldKey: "",
     antiAntiTampering: true,
     btnVisibility: AutoSolveButtonVisibility.VISIBLE,
-    timeFreeze: true
+    timeFreeze: true,
+    showHud: true
 }
 
 export default function usePluginConfig() {
@@ -34,7 +36,9 @@ export default function usePluginConfig() {
             btnVisibility: config.btnVisibility,
             setBtnVisibility: (val: AutoSolveButtonVisibility) => setConfig(prev => ({ ...prev, btnVisibility: val })),
             timeFreeze: config.timeFreeze,
-            setTimeFreeze: (val: boolean) => setConfig(prev => ({ ...prev, timeFreeze: val }))
+            setTimeFreeze: (val: boolean) => setConfig(prev => ({ ...prev, timeFreeze: val })),
+            showHud: config.showHud,
+            setShowHud: (val: boolean) => setConfig(prev => ({ ...prev, showHud: val }))
         }
     }
 }

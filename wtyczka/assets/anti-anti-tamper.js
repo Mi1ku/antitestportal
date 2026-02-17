@@ -1,5 +1,9 @@
 (function () {
-    console.log("%c [AntiTestportal Ultra] Supreme Engine Active ", "background: #8b5cf6; color: white; font-weight: bold; border-radius: 4px; padding: 4px 12px;");
+    console.log("%c [AntiTestportal Ultra] Supreme Engine Initializing ", "background: #8b5cf6; color: white; font-weight: bold; border-radius: 4px; padding: 4px 12px;");
+
+    let isHudEnabled = true;
+    let isGhostShieldEnabled = true;
+    let isTimeFreezeEnabled = false;
 
     const _c = (fn, n) => {
         const w = function () { return fn.apply(this, arguments); };
@@ -8,103 +12,128 @@
         return w;
     };
 
-    // --- 1. GHOST HUD (Branding Update: AntiTestportal Ultra) ---
+    // --- 1. GHOST HUD (Branding: AntiTestportal Ultra) ---
     const createHUD = () => {
-        if (document.getElementById('ultra-supreme-hud')) return;
+        if (document.getElementById('mikus-hud-container')) return;
         const hud = document.createElement('div');
-        hud.id = 'ultra-supreme-hud';
+        hud.id = 'mikus-hud-container';
+        hud.style.cssText = "position: fixed; top: 12px; right: 12px; z-index: 2147483647; pointer-events: none; transition: opacity 0.2s ease;";
         hud.innerHTML = `
-            <div style="position: fixed; top: 10px; right: 10px; z-index: 999999; 
-                        background: rgba(139, 92, 246, 0.15); backdrop-filter: blur(8px);
-                        border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px;
-                        padding: 6px 12px; color: #a78bfa; font-family: 'Inter', sans-serif;
-                        font-size: 10px; font-weight: bold; pointer-events: none;
-                        display: flex; align-items: center; gap: 6px; animation: fadeIn 0.5s ease-out;">
-                <div style="width: 6px; height: 6px; background: #34d399; border-radius: 50%; box-shadow: 0 0 8px #34d399;"></div>
-                ANTITESTPORTAL ULTRA: <span id="ultra-status">GHOST ACTIVE</span>
+            <div style="background: rgba(139, 92, 246, 0.15); backdrop-filter: blur(10px);
+                        border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px;
+                        padding: 8px 14px; color: #a78bfa; font-family: 'Outfit', 'Inter', sans-serif;
+                        font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 8px;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.2); animation: slideInHud 0.4s ease-out;">
+                <div id="mikus-dot" style="width: 7px; height: 7px; background: #34d399; border-radius: 50%; box-shadow: 0 0 10px #10b981; animation: pulseDot 2s infinite;"></div>
+                <span style="letter-spacing: 0.5px;">ULTRA: <span id="mikus-status-text">GHOST ACTIVE</span></span>
             </div>
             <style>
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes slideInHud { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+                @keyframes pulseDot { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
             </style>
         `;
-        document.body.appendChild(hud);
+        (document.body || document.documentElement).appendChild(hud);
     };
 
-    // --- 2. THE REFERENCE ERROR TRICK ---
+    const updateHudDisplay = () => {
+        const hud = document.getElementById('mikus-hud-container');
+        if (!hud) return;
+
+        const shouldShow = isHudEnabled && (isGhostShieldEnabled || isTimeFreezeEnabled);
+        hud.style.opacity = shouldShow ? "1" : "0";
+        hud.style.visibility = shouldShow ? "visible" : "hidden";
+
+        const statusText = document.getElementById('mikus-status-text');
+        if (statusText) {
+            statusText.innerText = isTimeFreezeEnabled ? "TIME FROZEN" : "GHOST ACTIVE";
+        }
+    };
+
+    // --- 2. ANTI-TAMPER & STEALTH ---
     window.logToServer = _c(() => false, 'logToServer');
     try {
         Object.defineProperty(document, 'hasFocus', {
-            get: () => { throw new ReferenceError("antiTestportalFeature"); },
+            get: () => {
+                if (isGhostShieldEnabled) throw new ReferenceError("antiTestportalFeature");
+                return true;
+            },
             configurable: true
         });
     } catch (e) { }
 
-    window.addEventListener('error', (e) => {
-        if (e.message && e.message.includes("antiTestportalFeature")) {
-            e.preventDefault();
-            return true;
-        }
-    }, true);
-
-    // --- 3. NUCLEAR EVENT BLOCKING ---
     const silence = (e) => {
+        if (!isGhostShieldEnabled) return;
         e.stopImmediatePropagation();
         e.stopPropagation();
     };
-    const events = ['blur', 'visibilitychange', 'mouseleave', 'focusout', 'mozvisibilitychange', 'webkitvisibilitychange', 'pagehide', 'beforeunload'];
-    events.forEach(ev => {
+    ['blur', 'visibilitychange', 'mouseleave', 'focusout', 'mozvisibilitychange', 'webkitvisibilitychange', 'pagehide', 'beforeunload'].forEach(ev => {
         window.addEventListener(ev, silence, true);
         document.addEventListener(ev, silence, true);
     });
 
-    // --- 4. SUPREME BYPASS (Honest & Timer) ---
+    // --- 3. SUPREME BYPASS ENGINE ---
     const applySupremeBypass = () => {
         try {
-            if (!document.getElementById('ultra-supreme-hud')) createHUD();
+            if (!document.getElementById('mikus-hud-container')) createHUD();
+            updateHudDisplay();
 
             if (window.Testportal) {
                 const tp = window.Testportal;
 
-                if (tp.HonestRespondent) {
+                if (tp.HonestRespondent && isGhostShieldEnabled) {
                     const h = tp.HonestRespondent;
                     h.isHonest = _c(() => true, 'isHonest');
-                    h.validate = _c(() => true, 'validate');
-                    h.checkFocus = _c(() => true, 'checkFocus');
                     h.attemptsCount = 0;
-
                     Object.defineProperty(h, 'isHonest', { get: () => true, configurable: true });
                     Object.defineProperty(h, 'attemptsCount', { get: () => 0, set: () => { }, configurable: false });
                 }
 
                 if (tp.Timer) {
                     const t = tp.Timer;
-                    t.isExpired = _c(() => false, 'isExpired');
-                    if (t.getTimeLeft) {
-                        const originalTime = t.getTimeLeft ? t.getTimeLeft() : 9999;
-                        if (!window.__tp_orig_time__) window.__tp_orig_time__ = originalTime;
-                        t.getTimeLeft = _c(() => window.__tp_orig_time__, 'getTimeLeft');
+                    if (isTimeFreezeEnabled) {
+                        t.isExpired = _c(() => false, 'isExpired');
+                        if (t.getTimeLeft) {
+                            const current = t.getTimeLeft();
+                            if (!window.__tp_frozen_time) window.__tp_frozen_time = current;
+                            t.getTimeLeft = _c(() => window.__tp_frozen_time, 'getTimeLeft');
+                        }
+                    } else {
+                        window.__tp_frozen_time = null;
                     }
                 }
             }
-
-            window.remainingTime = 999999;
+            window.remainingTime = window.remainingTime || 999999;
             window.timeSpent = 0;
             window.cheat_detected = false;
-
         } catch (e) { }
     };
 
-    // --- 5. TIMER RESET LISTENER ---
-    window.addEventListener("76mikus_reset_timer", () => {
+    // --- 4. COMMAND LISTENERS (Sync from Content Script) ---
+    window.addEventListener("ultra_cmd_reset", () => {
+        window.__tp_frozen_time = null;
         try {
             if (window.Testportal && window.Testportal.Timer) {
                 const t = window.Testportal.Timer;
                 if (t.init) t.init();
-                if (window.startTime) window.startTime = Date.now();
-                window.__tp_orig_time__ = undefined;
-                console.log("[AntiTestportal Ultra] Timer Reset Done");
             }
+            if (window.startTime) window.startTime = Date.now();
         } catch (e) { }
+        console.log("[AntiTestportal Ultra] Timer Reset Triggered.");
+    });
+
+    window.addEventListener("ultra_cmd_freeze", (e) => {
+        isTimeFreezeEnabled = e.detail;
+        updateHudDisplay();
+    });
+
+    window.addEventListener("ultra_cmd_shield", (e) => {
+        isGhostShieldEnabled = e.detail;
+        updateHudDisplay();
+    });
+
+    window.addEventListener("ultra_cmd_hud", (e) => {
+        isHudEnabled = e.detail;
+        updateHudDisplay();
     });
 
     applySupremeBypass();

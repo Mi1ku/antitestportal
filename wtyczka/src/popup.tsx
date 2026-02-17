@@ -68,11 +68,17 @@ function IndexPopup() {
         }
     };
 
+    const toggleFreeze = () => {
+        const newState = !pluginConfig.timeFreeze;
+        pluginConfig.setTimeFreeze(newState);
+        showMessage(newState ? "CZAS ZAMROŻONY ❄️" : "ZAMRAŻANIE WYŁĄCZONE 🔥", "success");
+    };
+
     return (
         <div className="popup-container">
             <div className="header">
                 <h1 className="logo">AntiTestportal <span>ULTRA</span></h1>
-                <div className="status-badge pulse">SUPREME v11.5</div>
+                <div className="status-badge pulse">SUPREME v11.8.5</div>
             </div>
 
             {uiMessage.text && (
@@ -100,24 +106,30 @@ function IndexPopup() {
                 </div>
             ) : (
                 <>
-                    <div className="module-box">
+                    {/* MODUŁ CZASU - Poprawiony z dwoma przyciskami */}
+                    <div className="module-box" style={{ background: 'rgba(30, 41, 59, 0.4)' }}>
                         <div className="module-header">
-                            <span className="module-title">MODUŁ CZASU (TIME WARP)</span>
-                            <label className="switch">
-                                <input
-                                    type="checkbox"
-                                    checked={pluginConfig.timeFreeze}
-                                    onChange={(e) => pluginConfig.setTimeFreeze(e.target.checked)}
-                                />
-                                <span className="slider"></span>
-                            </label>
+                            <span className="module-title" style={{ color: '#60a5fa' }}>SYSTEM KONTROLI CZASU</span>
+                            <div className={`status-pill ${pluginConfig.timeFreeze ? 'active' : ''}`}>
+                                {pluginConfig.timeFreeze ? 'ZAMROŻONY' : 'AKTYWNY'}
+                            </div>
                         </div>
-                        <p className="module-desc">
-                            Mrozi licznik Testportalu. Resetuj czas przed startem testu.
-                        </p>
-                        <button className="btn btn-outline" style={{ marginTop: '10px', fontSize: '10px', padding: '6px' }} onClick={handleResetTimer}>
-                            RESETUJ TIMER PYTANIA
-                        </button>
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                            <button
+                                className={`btn ${pluginConfig.timeFreeze ? 'btn-outline' : 'btn-primary'}`}
+                                style={{ flex: 1, fontSize: '10px', height: '36px' }}
+                                onClick={toggleFreeze}
+                            >
+                                {pluginConfig.timeFreeze ? 'ODMROŹ CZAS' : 'ZAMRÓŹ CZAS'}
+                            </button>
+                            <button
+                                className="btn btn-primary"
+                                style={{ flex: 1, fontSize: '10px', height: '36px', background: 'linear-gradient(45deg, #8b5cf6, #d946ef)' }}
+                                onClick={handleResetTimer}
+                            >
+                                RESETUJ TIMER
+                            </button>
+                        </div>
                     </div>
 
                     <div className="module-box" style={{ borderColor: 'rgba(52, 211, 153, 0.3)' }}>
@@ -132,9 +144,21 @@ function IndexPopup() {
                                 <span className="slider" style={{ backgroundColor: pluginConfig.antiAntiTampering ? '#10b981' : '#334155' }}></span>
                             </label>
                         </div>
-                        <p className="module-desc">
-                            Technologia Uczciwego Respondenta. Zero prób opuszczenia strony.
-                        </p>
+                        <p className="module-desc">Anti-Tamper & Uczciwy Respondenta.</p>
+                    </div>
+
+                    <div className="module-box" style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <div className="module-header">
+                            <span className="module-title" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>POKAŻ STATUS NA STRONIE</span>
+                            <label className="switch" style={{ transform: 'scale(0.8)' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={pluginConfig.showHud}
+                                    onChange={(e) => pluginConfig.setShowHud(e.target.checked)}
+                                />
+                                <span className="slider"></span>
+                            </label>
+                        </div>
                     </div>
 
                     <div className="glass-card" style={{ padding: '15px' }}>
