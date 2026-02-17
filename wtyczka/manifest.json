@@ -1,6 +1,6 @@
 {
   "name": "AntiTestportal Ultra",
-  "version": "9.1.0",
+  "version": "9.2.0",
   "manifest_version": 3,
   "permissions": [
     "storage",
@@ -17,19 +17,6 @@
     "https://*.testportal.online/*",
     "https://teams.microsoft.com/*",
     "https://raw.githubusercontent.com/*"
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "bypass/core.js"
-      ],
-      "matches": [
-        "*://*.testportal.pl/*",
-        "*://*.testportal.net/*",
-        "*://*.testportal.online/*",
-        "*://teams.microsoft.com/*"
-      ]
-    }
   ],
   "background": {
     "service_worker": "background.js"
@@ -59,7 +46,7 @@
       ],
       "run_at": "document_start",
       "all_frames": true,
-      "world": "ISOLATED"
+      "world": "MAIN"
     }
   ],
   "action": {
