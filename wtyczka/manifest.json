@@ -1,6 +1,6 @@
 {
   "name": "AntiTestportal Ultra",
-  "version": "9.7.0",
+  "version": "9.8.0",
   "manifest_version": 3,
   "permissions": [
     "storage",

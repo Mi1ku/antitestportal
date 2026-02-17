@@ -22,5 +22,50 @@
                 "sub_frame"
             ]
         }
+    },
+    {
+        "id": 2,
+        "priority": 10,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "*testportal*cheat*",
+            "resourceTypes": [
+                "xmlhttprequest",
+                "beacon",
+                "other"
+            ]
+        }
+    },
+    {
+        "id": 3,
+        "priority": 10,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "*testportal*focus*",
+            "resourceTypes": [
+                "xmlhttprequest",
+                "beacon",
+                "other"
+            ]
+        }
+    },
+    {
+        "id": 4,
+        "priority": 10,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "*testportal*trace*",
+            "resourceTypes": [
+                "xmlhttprequest",
+                "beacon",
+                "other"
+            ]
+        }
     }
 ]

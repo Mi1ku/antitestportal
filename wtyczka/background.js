@@ -1,70 +1,35 @@
-// BACKGROUND SERVICE WORKER v5.8.0 - GHOST RECOVERY
+// BACKGROUND SERVICE WORKER v5.9.0 - TOTAL STEALTH
 const GITHUB_RAW_URL = "https://raw.githubusercontent.com/Mi1ku/antitestportal/main/serce-github/engine.js";
 
-// RDZEŃ STEALTH - ZERO TRACELOGS, ZERO SIGNATURES
-const CORE_BYPASS = `
-(function() {
-    const _c = (fn, n) => {
-        const w = function () { return fn.apply(this, arguments); };
-        Object.defineProperty(w, 'name', { value: n || fn.name });
-        w.toString = () => "function " + (n || "") + "() { [native code] }";
-        return w;
-    };
-
-    const isB = (u) => {
-        const s = String(u).toLowerCase();
-        return s.includes('cheat') || s.includes('focus') || s.includes('trace') || 
-               s.includes('honest') || s.includes('log') || s.includes('event') || 
-               s.includes('monitor') || s.includes('plugin') || s.includes('detect');
-    };
-
-    // Przechwytywanie telemetrii (Fetch/Beacon/XHR)
-    const _f = window.fetch;
-    window.fetch = _c(function(u, o) {
-        if (isB(u)) return Promise.resolve(new Response(JSON.stringify({ status: "ok" })));
-        return _f.apply(this, arguments);
-    }, 'fetch');
-
-    const _b = navigator.sendBeacon;
-    navigator.sendBeacon = _c(function(u, d) {
-        if (isB(u)) return true;
-        return _b.apply(this, arguments);
-    }, 'sendBeacon');
-
-    const _o = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = _c(function(m, u) {
-        this._b = isB(u);
-        return _o.apply(this, arguments);
-    }, 'open');
-
-    const _s = XMLHttpRequest.prototype.send;
-    XMLHttpRequest.prototype.send = _c(function() {
-        if (this._b) {
-            Object.defineProperty(this, 'status', { value: 200 });
-            Object.defineProperty(this, 'readyState', { value: 4 });
-            this.dispatchEvent(new Event('load'));
-            return;
-        }
-        return _s.apply(this, arguments);
-    }, 'send');
-
-    // Spoofing focusu i widoczności
-    try {
-        const p = Object.getPrototypeOf(document);
-        Object.defineProperty(p, 'hasFocus', { value: _c(() => true, 'hasFocus'), configurable: false });
-        Object.defineProperty(p, 'visibilityState', { get: _c(() => 'visible', 'get visibilityState'), configurable: false });
-        Object.defineProperty(p, 'hidden', { get: _c(() => false, 'get hidden'), configurable: false });
-        
-        window.onblur = null;
-        window.onfocus = null;
-        document.onvisibilitychange = null;
-    } catch(e) {}
-})();
-`;
+// RDZEŃ BYPASSU - Czysty i niewykrywalny
+const CORE_BYPASS =
+    "(function() {" +
+    "    const makeNative = (fn, name) => {" +
+    "        const wrapped = function () { return fn.apply(this, arguments); };" +
+    "        Object.defineProperty(wrapped, 'name', { value: name || fn.name });" +
+    "        wrapped.toString = () => 'function ' + (name || '') + '() { [native code] }';" +
+    "        return wrapped;" +
+    "    };" +
+    "    try {" +
+    "        const docProto = Object.getPrototypeOf(document);" +
+    "        Object.defineProperty(docProto, 'hasFocus', {" +
+    "            value: makeNative(() => true, 'hasFocus')," +
+    "            writable: true, configurable: true" +
+    "        });" +
+    "        Object.defineProperty(docProto, 'visibilityState', { get: makeNative(() => 'visible', 'get visibilityState'), configurable: true });" +
+    "        Object.defineProperty(docProto, 'hidden', { get: makeNative(() => false, 'get hidden'), configurable: true });" +
+    "        window.logToServer = makeNative(() => false, 'logToServer');" +
+    "        window.sendCheatInfo = makeNative(() => false, 'sendCheatInfo');" +
+    "        const stop = (e) => e.stopImmediatePropagation();" +
+    "        window.addEventListener('blur', stop, true);" +
+    "        window.addEventListener('visibilitychange', stop, true);" +
+    "        window.addEventListener('mouseleave', stop, true);" +
+    "    } catch(e) {}" +
+    "})();";
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === "INIT_SHIELD" && sender.tab) {
-        // Wstrzykujemy rdzeń
+        // 1. Wstrzykujemy rdzeń
         chrome.scripting.executeScript({
             target: { tabId: sender.tab.id, frameIds: [sender.frameId] },
             world: "MAIN",
@@ -77,7 +42,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             args: [CORE_BYPASS]
         });
 
-        // Pobieramy silnik
+        // 2. Pobieramy silnik z GitHuba
         chrome.storage.local.get(['shield_time_freeze'], (res) => {
             const freeze = res.shield_time_freeze !== false;
             fetch(GITHUB_RAW_URL + "?ts=" + Date.now(), { cache: "no-store" })
@@ -101,7 +66,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-// Auto-recovery - powrót ze strony błędu
+// Auto-recovery - jeśli nas wykryje mimo wszystko
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (tab.url && tab.url.includes('DspUnsupportedBrowserPlugins.html')) {
         chrome.tabs.goBack(tabId).catch(() => { });

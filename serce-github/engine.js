@@ -1,14 +1,10 @@
 /**
- * ANTITESTPORTAL ULTRA v5.8.0 - GHOST ENGINE
- * Fixes: Stealth Variables, Enhanced Timer Lock
+ * ANTITESTPORTAL ULTRA v5.9.0 - TOTAL STEALTH ENGINE
+ * Features: Silent Time Warp, Invisible AI Search, Total Blackout
  */
 (function () {
-    const VERSION = "5.8.0";
-
-    // Inicjalizacja stanu (odbieramy od background)
-    if (typeof window.__tp_freeze__ === 'undefined') {
-        window.__tp_freeze__ = true;
-    }
+    const VERSION = "5.9.0";
+    if (typeof window.__tp_freeze__ === 'undefined') window.__tp_freeze__ = true;
 
     const _c = (fn, n) => {
         const w = function () { return fn.apply(this, arguments); };
@@ -17,7 +13,7 @@
         return w;
     };
 
-    // 1. GŁĘBOKIE MROŻENIE CZASU
+    // 1. SILNE MROŻENIE CZASU
     const tW = () => {
         if (!window.__tp_freeze__) return;
         try {
@@ -56,9 +52,9 @@
 
         tW();
 
-        // Usuwanie śmieci/alertów
+        // Killer overlejów
         document.querySelectorAll('[class*="modal"], [class*="backdrop"], .mdc-dialog, .mdc-dialog__scrim').forEach(o => o.remove());
-    };
+    });
 
     // 3. BYPASS HONESTY
     const bH = () => {
@@ -74,4 +70,5 @@
     bH();
     setInterval(sAI, 1000);
     window.addEventListener('error', e => e.preventDefault(), true);
+    console.log("%c AntiTestportal Ultra v" + VERSION + " Active", "color: #8b5cf6; font-weight: bold;");
 })();
