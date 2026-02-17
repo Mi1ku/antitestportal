@@ -1,50 +1,47 @@
 /**
- * SHIELD CORE v1.2.0 - HARDENED INSTANT BYPASS
- * This script runs in the ISOLATED world but affects the MAIN world
+ * ANTITESTPORTAL ULTRA - CORE v1.3.0 STEALTH
  */
 (function () {
-    console.log("[Shield Core] Aktywacja TOTAL STEALTH v1.2...");
+    console.log("[Shield Core] Aktywacja warstwy dyskretnej...");
 
-    // 1. SILNE BLOKOWANIE EVENTÓW (ISOLATED LEVEL)
+    // 1. CAŁKOWITE ZABLOKOWANIE EVENTÓW WYJŚCIA
     const block = (e) => {
         e.stopImmediatePropagation();
         e.stopPropagation();
     };
 
-    // Blokujemy zdarzenia zanim Testportal je w ogóle zobaczy
     ['blur', 'focusout', 'visibilitychange', 'mouseleave', 'pause'].forEach(evt => {
         window.addEventListener(evt, block, true);
         document.addEventListener(evt, block, true);
     });
 
-    // 2. WYSYŁKA DO MAIN WORLD (ZABÓJCA FOKUSU)
-    // Ponieważ jesteśmy w Content Script, musimy wstrzyknąć to do MAIN, 
-    // aby nadpisać document.hasFocus i inne globalne API.
-    const injectToMain = () => {
+    // 2. WSTRZYKIWANIE KŁAMSTWA DO MAIN WORLD
+    const injectStealth = () => {
         const code = `
             (function() {
                 try {
-                    // ReferenceError Trick
+                    // Zamiast rzucać błędem, po prostu zwracamy TRUE
+                    const trueFn = () => true;
                     Object.defineProperty(document, 'hasFocus', {
-                        get: () => { throw new ReferenceError("antiTestportalFeature"); },
+                        get: () => trueFn,
                         configurable: true
                     });
 
-                    // Visibility Lock
+                    // Visibility Lock - głębokie nadpisanie
                     const docProto = Object.getPrototypeOf(document);
                     Object.defineProperty(docProto, 'visibilityState', { get: () => 'visible', configurable: true });
                     Object.defineProperty(docProto, 'hidden', { get: () => false, configurable: true });
 
-                    // API Neutralization
+                    // Blokada wysyłki danych o "oszustwach"
                     window.logToServer = () => false;
                     window.sendCheatInfo = () => false;
+                    
+                    // Pozbywamy się handlerów onblur/onvisibilitychange
+                    window.onblur = null;
+                    window.onfocus = null;
+                    document.onvisibilitychange = null;
 
-                    // Mrożenie zdarzeń w MAIN WORLD
-                    const stop = (e) => e.stopImmediatePropagation();
-                    window.addEventListener('blur', stop, true);
-                    window.addEventListener('visibilitychange', stop, true);
-
-                    console.log("[Shield Core] Blokady MAIN aktywne.");
+                    console.log("[Shield Core] Status: NIEWIDZIALNY.");
                 } catch(e) {}
             })();
         `;
@@ -54,6 +51,5 @@
         script.remove();
     };
 
-    injectToMain();
-    console.log("[Shield Core] System zainicjowany.");
+    injectStealth();
 })();
