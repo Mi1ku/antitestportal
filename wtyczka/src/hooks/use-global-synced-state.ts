@@ -1,12 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Storage } from "@plasmohq/storage"
-import useAsyncEffect from "use-async-effect"
+// import { Storage } from "@plasmohq/storage"
 import { EventEmitter } from "events"
 import useBrowserEnv, { BrowserEnvType } from "~hooks/use-browser-env";
 
 export const MSG_GLOBAL_STATE_CHANGE = "testportal-global-state-change";
 
-const pluginStorage = new Storage();
 const stateMap = new Map<string, any>();
 const emitter = new EventEmitter();
 export const stateBus = {
@@ -32,16 +30,23 @@ export default function useSyncedState<T>(key: string, defaultValue: T): [T, Rea
     const initialMessageSkipped = useRef<boolean>(false);
 
     // Load from plugin storage when the component mounts.
-    useAsyncEffect(async () => {
-        const stored = await pluginStorage.get<T>(key);
-        if (stored !== undefined) {
-            setValue(stored);
-            stateBus.set(key, stored);
-        } else {
-            // Initialize with default value if nothing in storage
-            stateBus.set(key, defaultValue);
-        }
-        isInitialized.current = true;
+    useEffect(() => {
+        const load = () => {
+            try {
+                const raw = localStorage.getItem(key);
+                if (raw !== null) {
+                    const parsed = JSON.parse(raw);
+                    setValue(parsed);
+                    stateBus.set(key, parsed);
+                } else {
+                    stateBus.set(key, defaultValue);
+                }
+            } catch (e) {
+                stateBus.set(key, defaultValue);
+            }
+            isInitialized.current = true;
+        };
+        load();
     }, [])
 
     // Subscribe to changes in the global state bus for this key.
@@ -61,7 +66,9 @@ export default function useSyncedState<T>(key: string, defaultValue: T): [T, Rea
         const currentValue = stateBus.get<T>(key) ?? defaultValue;
         const newValue = typeof update === "function" ? (update as any)(currentValue) : update
         stateBus.set(key, newValue)
-        pluginStorage.set(key, newValue)
+        try {
+            localStorage.setItem(key, JSON.stringify(newValue));
+        } catch (e) { }
     }
 
     return [value, setSharedValue]
