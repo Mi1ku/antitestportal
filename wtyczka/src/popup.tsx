@@ -50,7 +50,6 @@ function IndexPopup() {
     };
 
     const handleResetTimer = () => {
-        // Zastosowano Nuclear Storage Signal - brak błędu połączenia!
         pluginConfig.triggerReset();
         showMessage("ZRESETOWANO ⏱️", "success");
     };
@@ -97,10 +96,18 @@ function IndexPopup() {
                                         : 'linear-gradient(135deg, #10b981, #34d399)',
                                     color: 'white',
                                     fontWeight: 'bold',
-                                    textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                                    padding: '4px 10px',
+                                    fontSize: '12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
                                 }}
                             >
-                                {pluginConfig.timeFreeze ? 'ZAMROŻONY' : 'ODMROŻONY'}
+                                {pluginConfig.timeFreeze ? (
+                                    <><span>❄️</span> ZAMROŻONY</>
+                                ) : (
+                                    <><span>🔥</span> ODMROŻONY</>
+                                )}
                             </div>
                         </div>
                         <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
@@ -109,14 +116,15 @@ function IndexPopup() {
                                 style={{ flex: 1, fontSize: '9px', borderColor: '#3b82f6' }}
                                 onClick={() => pluginConfig.setTimeFreeze(!pluginConfig.timeFreeze)}
                             >
-                                {pluginConfig.timeFreeze ? 'ODMROŹ' : 'ZAMRÓŹ'}
+                                {pluginConfig.timeFreeze ? '🔥 ODMROŹ' : '❄️ ZAMRÓŹ'}
                             </button>
                             <button className="btn btn-primary" style={{ flex: 1, fontSize: '9px', background: 'linear-gradient(45deg, #8b5cf6, #d946ef)' }} onClick={handleResetTimer}>
-                                RESET TIMER
+                                ⏱️ RESET TIMER
                             </button>
                         </div>
                     </div>
 
+                    {/* GHOST SHIELD */}
                     <div className="module-box" style={{ borderColor: 'rgba(52, 211, 153, 0.3)' }}>
                         <div className="module-header">
                             <span className="module-title" style={{ color: '#34d399' }}>GHOST SHIELD</span>
@@ -127,18 +135,18 @@ function IndexPopup() {
                         </div>
                     </div>
 
+                    {/* PORADNIK & POMOC */}
                     <div className="module-box" style={{ background: 'rgba(255,255,255,0.05)', border: '1px dashed rgba(255,255,255,0.2)' }}>
                         <div className="module-header" style={{ cursor: 'pointer' }} onClick={() => setShowGuide(!showGuide)}>
-                            <span className="module-title" style={{ fontSize: '10px' }}>📘 PORADNIK & SKRÓTY (v1.0)</span>
+                            <span className="module-title" style={{ fontSize: '10px' }}>📘 PORADNIK & SKRÓTY (v1.0.2)</span>
                             <span style={{ fontSize: '10px' }}>{showGuide ? '▲' : '▼'}</span>
                         </div>
                         {showGuide && (
                             <div style={{ marginTop: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.8)', lineHeight: '1.4' }}>
-                                <p>⚡ <b>Alt + S:</b> Błyskawiczne szukanie całego zadania w Perplexity AI.</p>
-                                <p>🌐 <b>Alt + G:</b> Błyskawiczne szukanie całego zadania w Google.</p>
-                                <p>💎 <b>Szukanie AI:</b> Przycisk na ekranie robi to samo bez użycia klawiatury.</p>
-                                <p>❄️ <b>Mrożenie:</b> "Freeze" zatrzymuje zegar w miejscu (dynamicznie!).</p>
-                                <p>🚀 <b>Reset:</b> "Reset Timer" cofa zegar do pełnej wartości.</p>
+                                <p>💎 <b>SZUKAJ:</b> Na HUDzie masz dwa przyciski (✨ AI i 🌐 GOOGLE) dla całego zadania.</p>
+                                <p>⌨️ <b>SKRÓTY:</b> Ctrl+Shift+X (AI) oraz Ctrl+Shift+Z (Google).</p>
+                                <p>❄️ <b>Mrożenie:</b> "Freeze" zatrzymuje zegar (Ikona ❄️). Odmrażanie to (Ikona 🔥).</p>
+                                <p>🚀 <b>Reset:</b> "Reset Timer" cofa zegar do pełnej wartości paska.</p>
                                 <hr style={{ opacity: 0.1, margin: '6px 0' }} />
                                 <p>🖱️ <b>Ctrl + Klik:</b> Szukaj zaznaczonego tekstu w Google.</p>
                                 <p>🖱️ <b>Alt + Klik:</b> Szukaj zaznaczonego tekstu w AI.</p>

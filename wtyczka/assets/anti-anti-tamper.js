@@ -25,7 +25,7 @@
         }
     };
 
-    // --- 1. GHOST HUD (v1.0 Ready) ---
+    // --- 1. GHOST HUD (v1.0.2 - Improved Search UI) ---
     const createHUD = () => {
         if (document.getElementById('mikus-hud-container')) return;
         const hud = document.createElement('div');
@@ -41,18 +41,22 @@
                 <span style="letter-spacing: 0.5px;">ULTRA 1.0: <span id="mikus-status-text">GHOST ACTIVE</span></span>
             </div>
             <div id="mikus-actions" style="display: flex; gap: 8px; pointer-events: auto;">
-                <button id="mikus-btn-search" title="Smart Search (Alt+S)" style="background: #8b5cf6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); transition: all 0.2s;">
-                    🔍 SZUKAJ AI
+                <button id="mikus-btn-ai" title="AI Search" style="background: #8b5cf6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); transition: all 0.2s;">
+                    ✨ AI
+                </button>
+                <button id="mikus-btn-google" title="Google Search" style="background: #3b82f6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); transition: all 0.2s;">
+                    🌐 GOOGLE
                 </button>
             </div>
             <style>
                 @keyframes pulseDot { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } 100% { opacity: 1; transform: scale(1); } }
-                #mikus-btn-search:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5); filter: brightness(1.1); }
+                #mikus-actions button:hover { transform: translateY(-2px); filter: brightness(1.1); }
             </style>
         `;
         (document.body || document.documentElement).appendChild(hud);
 
-        document.getElementById('mikus-btn-search').onclick = () => smartSearch('ai');
+        document.getElementById('mikus-btn-ai').onclick = () => smartSearch('ai');
+        document.getElementById('mikus-btn-google').onclick = () => smartSearch('google');
     };
 
     const updateHudDisplay = () => {
@@ -91,13 +95,16 @@
         }, 'reset');
     };
 
-    // --- 3. KEYBOARD SHORTCUTS ---
+    // --- 3. CUSTOM KEYBOARD SHORTCUTS ---
+    // Zmienione na Cmd/Ctrl + B (jak Brain) dla AI oraz Cmd/Ctrl + Q (jak Query) dla Google
     window.addEventListener('keydown', (e) => {
-        if (e.altKey && e.key.toLowerCase() === 's') {
+        // AI SEARCH: Ctrl + Shift + X
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'x') {
             e.preventDefault();
             smartSearch('ai');
         }
-        if (e.altKey && e.key.toLowerCase() === 'g') {
+        // GOOGLE SEARCH: Ctrl + Shift + Z
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'z') {
             e.preventDefault();
             smartSearch('google');
         }
