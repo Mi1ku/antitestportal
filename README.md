@@ -1,35 +1,38 @@
 # 🦍 AntiTestportal Ultra
 
-**AntiTestportal Ultra** to potężne, profesjonalne narzędzie do całkowitego bypassu zabezpieczeń platformy Testportal. Wersja 1.0.2 "Supreme" wprowadza najbardziej zaawansowane mechanizmy niewykrywalności i wsparcia AI, stworzone w całości przez Mi1ku.
+**AntiTestportal Ultra** to potężne, profesjonalne narzędzie do całkowitego bypassu zabezpieczeń platformy Testportal. Wersja 1.0.4 "Supreme" wprowadza najbardziej zaawansowane mechanizmy niewykrywalności i wsparcia AI, stworzone w całości przez Mi1ku.
 
 ---
 
-## 💎 Główne Funkcje (v1.0.2)
+## 💎 Główne Funkcje (v1.0.4)
 
+- **Default Frozen State (❄️)**: Wtyczka domyślnie startuje z **zamrożonym czasem**. Nie musisz nic klikać po starcie testu – czas stoi w miejscu od sekundy zero.
 - **Ghost Shield (Supreme Stealth)**: Blokuje wszelkie próby wykrycia zmiany karty. Nauczyciel widzi **0 prób** opuszczenia strony. System działa na poziomie jądra przeglądarki (MAIN World).
 - **Nuclear Timer Control (EZ ULTRA)**: 
-  - **Freeze (❄️)**: Całkowite zamrożenie odliczania czasu. System nadpisuje natywny licznik Testportalu.
-  - **Unfreeze (🔥)**: Płynne przywrócenie odliczania czasu bez odświeżania strony.
+  - **Freeze (❄️)**: Całkowite zamrożenie odliczania czasu (Stabilność 100%).
+  - **Unfreeze (🔥)**: Płynne przywrócenie odliczania czasu.
   - **Reset (⏱️)**: Natychmiastowe przywrócenie pełnego limitu czasu na pytanie.
-- **Dual Search HUD (✨ AI / 🌐 GOOGLE)**: Dwa oddzielne przyciski na ekranie zadania do natychmiastowego wyszukiwania całego zadania, automatycznie usuwające numerację pytań i prefiksy ("Pytanie 1:").
-- **Nuclear Clean Protocol**: Jedno kliknięcie usuwa wszystkie ślady aktywności (Cookies, LocalStorage, Cache) i restartuje środowisko.
+- **Dual Search HUD (✨ AI / 🌐 GOOGLE)**: Dwa oddzielne przyciski na ekranie zadania do natychmiastowego wyszukiwania całego zadania.
+- **Nuclear Clean Protocol**: Jedno kliknięcie usuwa wszystkie ślady aktywności.
 
 ---
 
 ## 🚀 Instrukcja dla Użytkownika
 
-### 1. Instalacja
-- W Chrome: wejdź w `chrome://extensions/`.
-- Włącz **Tryb Dewelopera** (prawy górny róg).
-- Kliknij **Załaduj rozpakowane** i wybierz folder `build/chrome-mv3-prod`.
+### 1. Pobieranie (Gotowa Paczka)
+Jeśli chcesz zainstalować wtyczkę bez budowania kodu:
+1. Pobierz plik `AntiTestportal-Ultra-v1.0.4-Supreme.zip` z sekcji **Releases** na GitHubie (po prawej stronie repozytorium).
+2. Wypakuj plik do dowolnego folderu.
+3. W Chrome: wejdź w `chrome://extensions/`.
+4. Włącz **Tryb Dewelopera** (prawy górny róg).
+5. Kliknij **Załaduj rozpakowane** i wybierz wypakowany folder.
 
 ### 2. Aktywacja (Klucze)
 - Klucze: `mikus`, `zsa`.
 
-### 3. Sterowanie i Skróty (v1.0.2)
-- **HUD na stronie**: Zawiera status oraz dwa przyciski szukania: **✨ AI** (Perplexity) i **🌐 GOOGLE**.
-- **Ctrl + Shift + X**: Błyskawiczne szukanie **całego pytania** w Perplexity AI.
-- **Ctrl + Shift + Z**: Błyskawiczne szukanie **całego pytania** w Google.
+### 3. Sterowanie i Skróty (v1.0.4)
+- **Alt + Z**: Błyskawiczne szukanie **całego pytania** w Perplexity AI.
+- **Ctrl + Z**: Błyskawiczne szukanie **całego pytania** w Google.
 - **Alt + Klik**: Szukanie **zaznaczonego tekstu** w AI.
 - **Ctrl + Klik**: Szukanie **zaznaczonego tekstu** w Google.
 
@@ -37,27 +40,12 @@
 
 ## 🛠️ Poradnik Deweloperski (Setup & Dev)
 
-Jeśli chcesz rozwijać ten projekt, postępuj zgodnie z poniższą instrukcją. Projekt oparty jest na środowisku **Plasmo**.
+Projekt oparty jest na środowisku **Plasmo**.
 
-### 1. Wymagania wstępne
-- **Node.js**: Wersja 16.x lub nowsza.
-- **npm**: Menedżer pakietów.
-
-### 2. Instalacja i Konfiguracja
-1. Pobierz pliki źródłowe do folderu.
-2. Otwórz terminal w folderze `wtyczka/`.
-3. Uruchom:
-   ```bash
-   npm install
-   ```
-
-### 3. Development i Build
-- `npm run dev` - Uruchomienie trybu deweloperskiego (Live Reload). Załaduj folder `build/chrome-mv3-dev` do Chrome.
-- `npm run build` - Generowanie wersji produkcyjnej do folderu `build/chrome-mv3-prod`.
-
-### 4. Architektura
-- **Main World Injection**: Kluczowa logika `assets/anti-anti-tamper.js` wstrzykiwana bezpośrednio do Window strony.
-- **Storage Watch**: Popup komunikuje się z content-scriptem przez system `pluginStorage.watch()`, eliminując błędy połączenia (No direct messaging).
+- `npm install` - Instalacja zależności.
+- `npm run dev` - Tryb deweloperskiego (Live Reload).
+- `npm run build` - Generowanie wersji produkcyjnej.
+- `.\pack_release.ps1` - Automatyczne pakowanie gotowej wersji .zip do folderu głównego (wymaga PowerShell).
 
 ---
 
@@ -80,6 +68,6 @@ Zgodnie z polskim prawem autorskim, autorskie prawa osobiste są niezbywalne.
 ## 🦍 Kontakt i Autor
 - **Twórca**: mi1ku
 - **Instagram**: [@76mikus](https://instagram.com/76mikus)
-- **Wersja**: 1.0.2 Stable "Supreme Edition"
+- **Wersja**: 1.0.4 Stable "Supreme Edition"
 
 **Stworzone przez mi1ku. Wszelkie prawa zastrzeżone. © 2026 mi1ku Systems.**

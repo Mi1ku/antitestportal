@@ -138,18 +138,21 @@ function IndexPopup() {
                     {/* PORADNIK & POMOC */}
                     <div className="module-box" style={{ background: 'rgba(255,255,255,0.05)', border: '1px dashed rgba(255,255,255,0.2)' }}>
                         <div className="module-header" style={{ cursor: 'pointer' }} onClick={() => setShowGuide(!showGuide)}>
-                            <span className="module-title" style={{ fontSize: '10px' }}>📘 PORADNIK & SKRÓTY (v1.0.2)</span>
+                            <span className="module-title" style={{ fontSize: '10px' }}>📘 PORADNIK & SKRÓTY (v1.0.3)</span>
                             <span style={{ fontSize: '10px' }}>{showGuide ? '▲' : '▼'}</span>
                         </div>
                         {showGuide && (
                             <div style={{ marginTop: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.8)', lineHeight: '1.4' }}>
-                                <p>💎 <b>DWA PRZYCISKI:</b> Na HUDzie w rogu strony masz teraz ✨ AI (Perplexity) oraz 🌐 GOOGLE do szukania całego zadania.</p>
-                                <p>⌨️ <b>SKRÓTY:</b> Ctrl+Shift+X (AI) oraz Ctrl+Shift+Z (Google) - szukają bez klikania!</p>
-                                <p>❄️ <b>Mrożenie:</b> Ikona ❄️ oznacza stop zegara. 🔥 oznacza, że czas płynie.</p>
-                                <p>🚀 <b>Reset:</b> "Reset Timer" cofa zegar do pełnej wartości (na żywo!).</p>
+                                <p>❄️ <b>Mrożenie:</b> Ikona ❄️ to stop zegara. 🔥 to start.</p>
+                                <p>🚀 <b>Reset:</b> "Reset Timer" cofa zegar do pełnej wartości (No-F5).</p>
                                 <hr style={{ opacity: 0.1, margin: '6px 0' }} />
-                                <p>🖱️ <b>Ctrl + Klik:</b> Szukaj zaznaczonego tekstu w Google.</p>
-                                <p>🖱️ <b>Alt + Klik:</b> Szukaj zaznaczonego tekstu w AI.</p>
+                                <p>🔍 <b>SZUKAJ CAŁE ZADANIE:</b></p>
+                                <p>⚡ <b>Ctrl + Z:</b> Szukaj całego pytania w Google.</p>
+                                <p>⚡ <b>Alt + Z:</b> Szukaj całego pytania w AI (Perplexity).</p>
+                                <hr style={{ opacity: 0.1, margin: '6px 0' }} />
+                                <p>🔍 <b>SZUKAJ ZAZNACZONY TEKST:</b></p>
+                                <p>🖱️ <b>Ctrl + Klik:</b> Szukaj zaznaczenia w Google.</p>
+                                <p>🖱️ <b>Alt + Klik:</b> Szukaj zaznaczenia w AI.</p>
                             </div>
                         )}
                     </div>

@@ -3,7 +3,7 @@
 
     let isHudEnabled = true;
     let isGhostShieldEnabled = true;
-    let isTimeFreezeEnabled = false;
+    let isTimeFreezeEnabled = true; // DOMYŚLNIE ZAMROŻONY ❄️
 
     const _c = (fn, n) => {
         const w = function () { return fn.apply(this, arguments); };
@@ -25,7 +25,6 @@
         }
     };
 
-    // --- 1. GHOST HUD (v1.0.2 - Improved Search UI) ---
     const createHUD = () => {
         if (document.getElementById('mikus-hud-container')) return;
         const hud = document.createElement('div');
@@ -38,13 +37,13 @@
                         font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 8px;
                         box-shadow: 0 10px 30px rgba(0,0,0,0.5); pointer-events: none;">
                 <div id="mikus-dot" style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 15px #10b981; animation: pulseDot 2s infinite;"></div>
-                <span style="letter-spacing: 0.5px;">ULTRA 1.0: <span id="mikus-status-text">GHOST ACTIVE</span></span>
+                <span style="letter-spacing: 0.5px;">ULTRA 1.0: <span id="mikus-status-text">INIT...</span></span>
             </div>
             <div id="mikus-actions" style="display: flex; gap: 8px; pointer-events: auto;">
-                <button id="mikus-btn-ai" title="AI Search" style="background: #8b5cf6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); transition: all 0.2s;">
+                <button id="mikus-btn-ai" title="AI Search (Alt+Z)" style="background: #8b5cf6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); transition: all 0.2s;">
                     ✨ AI
                 </button>
-                <button id="mikus-btn-google" title="Google Search" style="background: #3b82f6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); transition: all 0.2s;">
+                <button id="mikus-btn-google" title="Google Search (Ctrl+Z)" style="background: #3b82f6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); transition: all 0.2s;">
                     🌐 GOOGLE
                 </button>
             </div>
@@ -70,7 +69,6 @@
         if (statusText) statusText.innerText = isTimeFreezeEnabled ? "TIME WARPED" : "GHOST ACTIVE";
     };
 
-    // --- 2. THE NUCLEAR TIMER ---
     const setupNuclearTimer = () => {
         if (!window.Testportal || !window.Testportal.Timer) return;
         const timer = window.Testportal.Timer;
@@ -81,7 +79,14 @@
         Object.defineProperty(timer, 'getTimeLeft', {
             get: () => {
                 return _c(() => {
-                    if (isTimeFreezeEnabled) return window.__ultra_frozen_val || 3600;
+                    if (isTimeFreezeEnabled) {
+                        // Jeśli mrozimy po raz pierwszy, zapisujemy czas
+                        if (!window.__ultra_frozen_val) {
+                            try { window.__ultra_frozen_val = originalGetTimeLeft.call(timer); }
+                            catch (e) { window.__ultra_frozen_val = 3600; }
+                        }
+                        return window.__ultra_frozen_val;
+                    }
                     return originalGetTimeLeft ? originalGetTimeLeft.call(timer) : 3600;
                 }, 'getTimeLeft');
             },
@@ -95,22 +100,11 @@
         }, 'reset');
     };
 
-    // --- 3. CUSTOM KEYBOARD SHORTCUTS ---
-    // Zmienione na Cmd/Ctrl + B (jak Brain) dla AI oraz Cmd/Ctrl + Q (jak Query) dla Google
     window.addEventListener('keydown', (e) => {
-        // AI SEARCH: Ctrl + Shift + X
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'x') {
-            e.preventDefault();
-            smartSearch('ai');
-        }
-        // GOOGLE SEARCH: Ctrl + Shift + Z
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'z') {
-            e.preventDefault();
-            smartSearch('google');
-        }
+        if (e.altKey && !e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); smartSearch('ai'); }
+        if (e.ctrlKey && !e.altKey && e.key.toLowerCase() === 'z') { e.preventDefault(); smartSearch('google'); }
     }, true);
 
-    // --- 4. ANTI-TAMPER ---
     window.logToServer = _c(() => false, 'logToServer');
     try {
         Object.defineProperty(document, 'hasFocus', {
@@ -121,15 +115,17 @@
 
     const silence = (e) => {
         if (!isGhostShieldEnabled) return;
+        silence_event(e);
+    };
+    function silence_event(e) {
         e.stopImmediatePropagation();
         e.stopPropagation();
-    };
+    }
     ['blur', 'visibilitychange', 'mouseleave', 'focusout', 'mozvisibilitychange', 'webkitvisibilitychange', 'pagehide', 'beforeunload'].forEach(ev => {
         window.addEventListener(ev, silence, true);
         document.addEventListener(ev, silence, true);
     });
 
-    // --- 5. COMMAND LISTENERS ---
     window.addEventListener("ultra_cmd_reset", () => {
         if (window.Testportal && window.Testportal.Timer) {
             window.Testportal.Timer.init?.();
@@ -143,6 +139,8 @@
         isTimeFreezeEnabled = e.detail;
         if (isTimeFreezeEnabled && window.Testportal?.Timer?.getTimeLeft) {
             try { window.__ultra_frozen_val = window.Testportal.Timer.getTimeLeft(); } catch (e) { window.__ultra_frozen_val = 3600; }
+        } else {
+            window.__ultra_frozen_val = null;
         }
         updateHudDisplay();
     });
@@ -164,7 +162,7 @@
         // @ts-ignore
         window.cheat_detected = false;
         // @ts-ignore
-        window.remainingTime = isTimeFreezeEnabled ? 3600 : (window.remainingTime || 3600);
-    }, 500);
+        window.remainingTime = isTimeFreezeEnabled ? (window.__ultra_frozen_val || 3600) : (window.remainingTime || 3600);
+    }, 400);
 
 })();
