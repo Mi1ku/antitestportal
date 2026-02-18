@@ -21,8 +21,7 @@ Witaj w elicie. To narzędzie to Twój scyzoryk szwajcarski do testów online. P
 Wtyczka posiada system licencyjny. Aby jej używać, musisz się zalogować.
 
 ### Metody Logowania:
-1.  **Discord / Google**: Kliknij przycisk, aby zalogować się "tymczasowo" (symulacja OAuth). Klucz wygasa po sesji.
-2.  **Klucz Licencyjny**: Wpisz kod otrzymany od administratora.
+1.  **Klucz Licencyjny**: Wpisz kod otrzymany od administratora.
     *   Klucze są sprawdzane w lokalnej bazie danych.
     *   Klucze mogą mieć ważność (np. 1h, 24h) lub być dożywotnie.
 

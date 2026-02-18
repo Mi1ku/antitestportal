@@ -1,5 +1,3 @@
-import { Storage } from "@plasmohq/storage"
-
 export interface LicenseKey {
     code: string;
     type: 'ADMIN' | 'USER';
@@ -10,14 +8,19 @@ export interface LicenseKey {
 }
 
 const STORAGE_KEY = "ultra_license_db";
-const storage = new Storage({
-    area: "local"
-});
 
 export class KeyService {
 
     static async initDatabase() {
-        const db = await storage.get<LicenseKey[]>(STORAGE_KEY) || [];
+        // Simple usage of localStorage for now to guarantee it works without complex async chrome APIs
+        let db: LicenseKey[] = [];
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) db = JSON.parse(raw);
+        } catch (e) {
+            console.error("Storage error", e);
+        }
+
         // Ensure default ADMIN key exists if DB is empty
         if (db.length === 0) {
             const adminKey: LicenseKey = {
@@ -28,13 +31,19 @@ export class KeyService {
                 createdBy: "SYSTEM",
                 note: "Default System Admin"
             };
-            await storage.set(STORAGE_KEY, [adminKey]);
+            db.push(adminKey);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
             console.log("[KeyService] Initialized DB with default admin key.");
         }
     }
 
     static async getAllKeys(): Promise<LicenseKey[]> {
-        return await storage.get<LicenseKey[]>(STORAGE_KEY) || [];
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+            return [];
+        }
     }
 
     static async getKey(code: string): Promise<LicenseKey | null> {
@@ -69,14 +78,14 @@ export class KeyService {
         };
 
         keys.push(newKey);
-        await storage.set(STORAGE_KEY, keys);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(keys));
         return newKey;
     }
 
     static async deleteKey(code: string): Promise<void> {
         let keys = await this.getAllKeys();
         keys = keys.filter(k => k.code !== code);
-        await storage.set(STORAGE_KEY, keys);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(keys));
     }
 
     private static generateRandomCode(prefix: string): string {

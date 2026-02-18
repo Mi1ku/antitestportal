@@ -2,9 +2,13 @@ import "./style.css";
 import { useState, useEffect } from "react";
 import usePluginConfig from "~hooks/use-plugin-config";
 import { KeyService, type LicenseKey } from "~services/KeyService";
-import { Storage } from "@plasmohq/storage";
-
-const storage = new Storage({ area: "local" });
+const getCasinoCredits = () => {
+    try {
+        const raw = localStorage.getItem("casino_credits");
+        return raw ? parseInt(raw) : 100;
+    } catch { return 100; }
+};
+const setCasinoCredits = (val: number) => localStorage.setItem("casino_credits", val.toString());
 
 type Tab = "home" | "casino" | "settings" | "admin";
 
@@ -28,17 +32,13 @@ function IndexPopup() {
     useEffect(() => {
         const init = async () => {
             await KeyService.initDatabase();
-            const savedCredits = await storage.get<number>("casino_credits");
-            if (savedCredits) setCredits(savedCredits);
+            setCredits(getCasinoCredits());
 
             if (pluginConfig.shieldKey) {
                 const validation = await KeyService.validateKey(pluginConfig.shieldKey);
                 if (validation.valid) {
                     setIsActivated(true);
                     if (validation.type === 'ADMIN') setIsAdmin(true);
-                } else if (pluginConfig.shieldKey.startsWith("LOGIN_")) {
-                    // Temp login
-                    setIsActivated(true);
                 }
             }
         };
@@ -54,7 +54,7 @@ function IndexPopup() {
 
     // Save credits
     useEffect(() => {
-        storage.set("casino_credits", credits);
+        setCasinoCredits(credits);
     }, [credits]);
 
 
@@ -66,16 +66,6 @@ function IndexPopup() {
     const showMessage = (text: string, type: "success" | "error") => {
         setUiMessage({ text, type });
         setTimeout(() => setUiMessage({ text: "", type: "" }), 3000);
-    };
-
-    const handleLogin = (provider: "google" | "discord") => {
-        showMessage(`Łączenie z ${provider}...`, "success");
-        setTimeout(() => {
-            const fakeKey = `LOGIN_${provider.toUpperCase()}_${Date.now()}`;
-            pluginConfig.setShieldKey(fakeKey);
-            setIsActivated(true);
-            showMessage(`Zalogowano przez ${provider}!`, "success");
-        }, 1500);
     };
 
     const handleActivate = async () => {
@@ -179,17 +169,8 @@ function IndexPopup() {
                     </div>
                 )}
                 <div className="glass-card">
-                    <button className="btn btn-primary" style={{ background: '#5865F2', marginBottom: '10px' }} onClick={() => handleLogin('discord')}>
-                        🎮 Login Discord
-                    </button>
-                    <button className="btn btn-primary" style={{ background: '#DB4437', marginBottom: '20px' }} onClick={() => handleLogin('google')}>
-                        📧 Login Google
-                    </button>
-
-                    <div className="divider" style={{ margin: '15px 0', borderTop: '1px solid rgba(255,255,255,0.1)' }}></div>
-
                     <div className="input-group">
-                        <label>Lub wpisz Klucz Licencyjny</label>
+                        <label>Wpisz Klucz Licencyjny</label>
                         <input
                             type="text" value={inputKey}
                             onChange={(e) => setInputKey(e.target.value)}
