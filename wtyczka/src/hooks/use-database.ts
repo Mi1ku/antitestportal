@@ -83,9 +83,9 @@ export interface DatabaseSchema {
 const DB_KEY = "supreme_secure_db_v2";
 
 const INITIAL_KEYS: DbKey[] = [
-    { id: "1", key: "mikus", role: "admin", expiresAt: "never", points: 999, ownerName: "Mikuś", reflink: "MIKUS" },
-    { id: "dev", key: "SUPREME_DEVELOPER_MODE", role: "admin", expiresAt: "never", points: 0, ownerName: "Dev", reflink: "DEV" },
-    { id: "admin_secret", key: "SUPREME_ADMIN_76", role: "admin", expiresAt: "never", points: 0, ownerName: "System", reflink: "ADMIN" }
+    { id: "1", key: "mikus", role: "admin", expiresAt: "never", points: 999, ownerName: "Mikuś", reflink: "MIKUS76" },
+    { id: "dev", key: "SUPREME_DEVELOPER_MODE", role: "admin", expiresAt: "never", points: 0, ownerName: "Dev", reflink: "DEV_ONLY" },
+    { id: "admin_secret", key: "SUPREME_ADMIN_76", role: "admin", expiresAt: "never", points: 0, ownerName: "System", reflink: "SUP76" }
 ];
 
 export default function useDatabase() {
@@ -121,7 +121,7 @@ export default function useDatabase() {
             window.__SUPREME_DEV__ = {
                 viewDatabase: () => data,
                 injectAdminKey: async (key: string) => {
-                    const nextDb = { ...data, keys: [...data.keys, { id: Date.now().toString(), key, role: 'admin', expiresAt: 'never', points: 0, reflink: key.toUpperCase() }] };
+                    const nextDb = { ...data, keys: [...data.keys, { id: Date.now().toString(), key, role: 'admin', expiresAt: 'never', points: 0, reflink: key.toUpperCase().substring(0, 8) }] };
                     await storage.set(DB_KEY, encodeData(nextDb));
                     window.location.reload();
                 },
@@ -130,14 +130,23 @@ export default function useDatabase() {
                     window.location.reload();
                 },
                 addPoints: async (key: string, pts: number) => {
-                    const nextDb = { ...data, keys: data.keys.map(k => k.key === key ? { ...k, points: k.points + pts } : k) };
+                    const nextDb = { ...data, keys: data.keys.map(k => k.key === key ? { ...k, points: (k.points || 0) + pts } : k) };
                     await storage.set(DB_KEY, encodeData(nextDb));
                     window.location.reload();
                 }
             };
         };
 
+        const interval = setInterval(async () => {
+            let rawData = await storage.get(DB_KEY);
+            if (rawData) {
+                const data = decodeData(rawData as string);
+                if (data) setDb(data);
+            }
+        }, 2000);
+
         init();
+        return () => clearInterval(interval);
     }, []);
 
     const updateDb = async (newDb: DatabaseSchema) => {
@@ -147,7 +156,17 @@ export default function useDatabase() {
     };
 
     const checkForUpdates = async () => {
-        return { hasUpdate: false, version: "1.2.0", url: "#" };
+        try {
+            // Real GitHub API call placeholder
+            // W prawdziwym środowisku tu by był fetch do Twojego repozytorium
+            return {
+                hasUpdate: false,
+                version: "1.2.0",
+                url: "https://github.com/mikus/antitestportal/releases/latest"
+            };
+        } catch (e) {
+            return { hasUpdate: false };
+        }
     };
 
     const addKey = async (key: string, role: 'user' | 'admin', days: number | 'never', owner: string = "") => {
@@ -181,29 +200,38 @@ export default function useDatabase() {
         }
 
         let nextKeys = [...db.keys];
+        let userWasUpdated = false;
 
-        // Handle Referral on First Activation
+        // Auto-binding and Referral logic on FIRST activation (when boundHwid is null)
         if (!found.boundHwid && found.role !== 'admin') {
+            userWasUpdated = true;
+            let updatedPoints = found.points || 0;
+
             if (referralCode) {
-                const referrer = nextKeys.find(k => k.reflink.toLowerCase() === referralCode.toLowerCase());
+                const referrer = nextKeys.find(k => k.reflink.toLowerCase() === referralCode.toLowerCase().trim());
                 if (referrer && referrer.id !== found.id) {
-                    // Give points to referrer and referee
+                    updatedPoints += 25; // Bonus for user
+                    // Give bonus to referrer
                     nextKeys = nextKeys.map(k => {
-                        if (k.id === referrer.id) return { ...k, points: k.points + 50 };
-                        if (k.id === found.id) return { ...k, points: k.points + 25, referredBy: referrer.reflink, boundHwid: currentHwid };
+                        if (k.id === referrer.id) return { ...k, points: (k.points || 0) + 50 };
                         return k;
                     });
-                    console.log(`Referral applied! ${referrer.reflink} +50, ${found.key} +25`);
-                } else {
-                    nextKeys = nextKeys.map(k => k.id === found.id ? { ...k, boundHwid: currentHwid } : k);
+                    console.log(`Referral applied! Referrer ${referrer.reflink} +50, User ${found.key} +25`);
                 }
-            } else {
-                nextKeys = nextKeys.map(k => k.id === found.id ? { ...k, boundHwid: currentHwid } : k);
             }
+
+            // Bind to HWID and update points
+            nextKeys = nextKeys.map(k => {
+                if (k.id === found.id) return { ...k, boundHwid: currentHwid, points: updatedPoints };
+                return k;
+            });
+        }
+
+        if (userWasUpdated) {
             await updateDb({ ...db, keys: nextKeys });
         }
 
-        const updatedUser = nextKeys.find(k => k.id === found.id);
+        const updatedUser = userWasUpdated ? nextKeys.find(k => k.id === found.id) : found;
         return { success: true, user: updatedUser };
     };
 
@@ -217,7 +245,7 @@ export default function useDatabase() {
         if (!db) return;
         const nextDb = {
             ...db,
-            keys: db.keys.map(k => k.id === id ? { ...k, points: k.points + amount } : k)
+            keys: db.keys.map(k => k.id === id ? { ...k, points: (k.points || 0) + amount } : k)
         };
         await updateDb(nextDb);
     };
