@@ -1,6 +1,6 @@
 # 🦍 AntiTestportal Ultra (mi1ku Supreme Edition 1.0)
 
-**AntiTestportal Ultra** to potężne, profesjonalne narzędzie do całkowitego bypassu zabezpieczeń platformy Testportal. Wersja 1.0.2 "Supreme" wprowadza najbardziej zaawansowane mechanizmy niewykrywalności i wsparcia AI, stworzone w całości przez **mi1ku Systems**.
+**AntiTestportal Ultra** to potężne, profesjonalne narzędzie do całkowitego bypassu zabezpieczeń platformy Testportal. Wersja 1.0.2 "Supreme" wprowadza najbardziej zaawansowane mechanizmy niewykrywalności i wsparcia AI, stworzone w całości przez Mi1ku.
 
 ---
 
@@ -77,7 +77,7 @@ Zgodnie z polskim prawem autorskim, autorskie prawa osobiste są niezbywalne.
 ---
 
 ## 🦍 Kontakt i Autor
-- **Twórca**: mi1ku (Supreme Systems Designer)
+- **Twórca**: mi1ku
 - **Instagram**: [@76mikus](https://instagram.com/76mikus)
 - **Wersja**: 1.0.2 Stable "Supreme Edition"
 
