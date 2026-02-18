@@ -22,43 +22,41 @@ function injectGhostEngine() {
     try {
         const script = document.createElement('script');
         script.src = chrome.runtime.getURL('assets/anti-anti-tamper.js');
-        // Wstrzykujemy do head dla maksymalnej szybkości
         (document.head || document.documentElement).appendChild(script);
         script.onload = () => script.remove();
     } catch (e) { }
 }
 
-// 1. Wstrzykujemy silnik (MAIN WORLD)
 injectGhostEngine();
 
-// 2. Obsługa DYNAMICZNCH zmian (Bez odświeżania strony)
-// Słuchamy zmian w storage i przesyłamy je do wstrzykniętego skryptu przez CustomEvent
+// Dynamiczna synchronizacja stanu (bez wiadomości direct)
 pluginStorage.watch({
     [PluginConfigKey]: (change) => {
         const newConfig = change.newValue as PluginConfig;
+        const oldConfig = change.oldValue as PluginConfig;
+
         if (newConfig) {
-            console.log("[76mikus] Dynamic Sync:", newConfig);
             window.dispatchEvent(new CustomEvent("ultra_cmd_shield", { detail: newConfig.antiAntiTampering }));
             window.dispatchEvent(new CustomEvent("ultra_cmd_hud", { detail: newConfig.showHud }));
             window.dispatchEvent(new CustomEvent("ultra_cmd_freeze", { detail: newConfig.timeFreeze }));
+
+            // Reagujemy na zmianę timestampu resetu (Zamiast sendMessage)
+            if (newConfig.resetTimestamp !== oldConfig?.resetTimestamp) {
+                window.dispatchEvent(new CustomEvent("ultra_cmd_reset"));
+            }
         }
     }
 });
 
-// 3. Inicjalizacja stanu początkowego (zaraz po załadowaniu)
 const initShieldState = async () => {
     const config = await pluginStorage.get<PluginConfig>(PluginConfigKey);
-    const isEnabled = config?.antiAntiTampering ?? true;
-    const isHud = config?.showHud ?? true;
-    const isFreeze = config?.timeFreeze ?? false;
+    if (!config) return;
 
-    // Wysyłamy stan początkowy do wstrzykniętego skryptu
-    window.dispatchEvent(new CustomEvent("ultra_cmd_shield", { detail: isEnabled }));
-    window.dispatchEvent(new CustomEvent("ultra_cmd_hud", { detail: isHud }));
-    window.dispatchEvent(new CustomEvent("ultra_cmd_freeze", { detail: isFreeze }));
+    window.dispatchEvent(new CustomEvent("ultra_cmd_shield", { detail: config.antiAntiTampering }));
+    window.dispatchEvent(new CustomEvent("ultra_cmd_hud", { detail: config.showHud }));
+    window.dispatchEvent(new CustomEvent("ultra_cmd_freeze", { detail: config.timeFreeze }));
 };
 
-// Czekamy chwilę, żeby wstrzyknięty skrypt zdążył ustawić listenery
-setTimeout(initShieldState, 100);
+setTimeout(initShieldState, 150);
 
 export default () => null;

@@ -51,25 +51,26 @@
 
 ### Architektura
 - **Main World Injection**: Skrypt `assets/anti-anti-tamper.js` jest wstrzykiwany bezpośrednio do warstwy okna strony w celu manipulacji obiektem `window.Testportal`.
-- **Dynamic Bridge**: Komunikacja między popupem a silnikiem strony odbywa się przez `CustomEvents`, co pozwala na zmiany bez F5.
+- **Dynamic Bridge**: Komunikacja między popupem a silnikiem strony odbywa się przez system synchronizacji pamięci (Storage Watch), co eliminuje błędy połączenia.
 
 ---
 
 ## ⚖️ Notki Prawne i Prawo Polskie
 
-### 1. Charakter Proof of Concept
-Oprogramowanie ma charakter **wyłącznie edukacyjny**. Służy do demonstracji luk w zabezpieczeniach systemów monitorowania aktywności i nie powinno być używane do naruszania regulaminów egzaminacyjnych.
+### 1. Charakter Edukacyjny (Proof of Concept)
+Oprogramowanie zostało stworzone i udostępnione wyłącznie w celach **edukacyjnych, badawczych oraz demonstracyjnych**. Narzędzie służy do wykazywania luk w zabezpieczeniach systemów Web-Based Testing. Autor nie zachęca ani nie propaguje łamania regulaminów placówek edukacyjnych.
 
-### 2. Odpowiedzialność (Art. 415 KC)
-Zgodnie z **Art. 415 Kodeksu Cywilnego**: "Kto z winy swej wyrządził drugiemu szkodę, obowiązany jest do jej naprawienia". Użytkownik korzysta z rozszerzenia na własną odpowiedzialność. Autor (**mi1ku**) nie ponosi odpowiedzialności za ewentualne konsekwencje dyscyplinarne, prawne lub techniczne wynikające z użycia narzędzia.
+### 2. Odpowiedzialność Cywilna (Art. 415 KC)
+Zgodnie z **Art. 415 Kodeksu Cywilnego**: *"Kto z winy swej wyrządził drugiemu szkodę, obowiązany jest do jej naprawienia"*. Użytkownik wykorzystuje oprogramowanie na własną, wyłączną odpowiedzialność. Twórca nie ponosi odpowiedzialności za ewentualne konsekwencje dyscyplinarne, prawne lub techniczne wynikające z niewłaściwego użycia narzędzia.
 
-### 3. Prawa Autorskie
-Nazwa "mi1ku Systems", logo oraz kod źródłowy są przedmiotem prawa autorskiego. Podlegają ochronie na podstawie **Ustawy o prawie autorskim i prawach pokrewnych (Dz.U. 1994 nr 24 poz. 83)**. Kopiowanie, modyfikowanie bez zgody lub komercyjna dystrybucja bez licencji jest surowo zabroniona.
+### 3. Prawa Autorskie (Dz.U. 1994 nr 24 poz. 83)
+Wszystkie elementy niniejszego oprogramowania, w tym kod źródłowy, nazwa **"mi1ku Systems"** oraz interfejs graficzny, podlegają ochronie prawnej na podstawie **Ustawy o prawie autorskim i prawach pokrewnych (Dz.U. 1994 nr 24 poz. 83)**. Autor zastrzega sobie wszelkie prawa do utworu. Kopiowanie, modyfikowanie bez wyraźnej zgody lub dystrybucja komercyjna jest zabroniona.
 
 ---
 
-## 🦍 Kontakt i Wsparcie
+## 🦍 Kontakt i Autor
+- **Twórca**: mi1ku (Supreme Systems Designer)
 - **Instagram**: [@76mikus](https://instagram.com/76mikus)
 - **Wersja**: 1.0.0 Stable "Supreme Edition"
 
-**mi1ku Systems © 2026. Wszystkie prawa zastrzeżone.**
+**Stworzone przez mi1ku. Wszelkie prawa zastrzeżone. © 2026 mi1ku Systems.**

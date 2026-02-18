@@ -49,16 +49,10 @@ function IndexPopup() {
         }
     };
 
-    const handleResetTimer = async () => {
-        try {
-            const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-            if (tabs[0]?.id) {
-                await chrome.tabs.sendMessage(tabs[0].id, { type: "RESET_TIMER" });
-                showMessage("ZRESETOWANO ⏱️", "success");
-            }
-        } catch (e) {
-            showMessage("KLIKNIJ F5 NA STRONIE TESTU", "error");
-        }
+    const handleResetTimer = () => {
+        // Zastosowano Nuclear Storage Signal - brak błędu połączenia!
+        pluginConfig.triggerReset();
+        showMessage("ZRESETOWANO ⏱️", "success");
     };
 
     return (
@@ -123,7 +117,6 @@ function IndexPopup() {
                         </div>
                     </div>
 
-                    {/* GHOST SHIELD */}
                     <div className="module-box" style={{ borderColor: 'rgba(52, 211, 153, 0.3)' }}>
                         <div className="module-header">
                             <span className="module-title" style={{ color: '#34d399' }}>GHOST SHIELD</span>
@@ -134,7 +127,6 @@ function IndexPopup() {
                         </div>
                     </div>
 
-                    {/* PORADNIK & POMOC */}
                     <div className="module-box" style={{ background: 'rgba(255,255,255,0.05)', border: '1px dashed rgba(255,255,255,0.2)' }}>
                         <div className="module-header" style={{ cursor: 'pointer' }} onClick={() => setShowGuide(!showGuide)}>
                             <span className="module-title" style={{ fontSize: '10px' }}>📘 PORADNIK & SKRÓTY (v1.0)</span>
