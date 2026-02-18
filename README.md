@@ -1,73 +1,101 @@
-# 🦍 AntiTestportal Ultra
+# 🦍 AntiTestportal Ultra Supreme - Instrukcja Obsługi
 
-**AntiTestportal Ultra** to potężne, profesjonalne narzędzie do całkowitego bypassu zabezpieczeń platformy Testportal. Wersja 1.0.5 "Supreme" wprowadza najbardziej zaawansowane mechanizmy niewykrywalności i wsparcia AI, stworzone w całości przez Mi1ku.
+Witaj w elicie. To narzędzie to Twój scyzoryk szwajcarski do testów online. Poniżej znajdziesz pełny opis funkcji, instalacji i obsługi panelu administratora.
 
----
+## 🚀 Instalacja
 
-## 💎 Główne Funkcje (v1.0.5)
-
-- **Default Frozen State (❄️)**: Wtyczka domyślnie startuje z **zamrożonym czasem**. Nie musisz nic klikać po starcie testu – czas stoi w miejscu od sekundy zero.
-- **Ghost Shield (Supreme Stealth)**: Blokuje wszelkie próby wykrycia zmiany karty. Nauczyciel widzi **0 prób** opuszczenia strony. System działa na poziomie jądra przeglądarki (MAIN World).
-- **Nuclear Timer Control (EZ ULTRA)**: 
-  - **Freeze (❄️)**: Całkowite zamrożenie odliczania czasu (Stabilność 100%).
-  - **Unfreeze (🔥)**: Płynne przywrócenie odliczania czasu.
-  - **Reset (⏱️)**: Natychmiastowe przywrócenie pełnego limitu czasu na pytanie.
-- **Dual Search HUD (🤖 GPT / 🌐 GOOGLE)**: Dwa oddzielne przyciski na ekranie zadania.
-- **Nuclear Clean Protocol**: Jedno kliknięcie usuwa wszystkie ślady aktywności (Cookies, LocalStorage, Cache) i restartuje środowisko.
-
----
-
-## 🚀 Instrukcja dla Użytkownika
-
-### 1. Pobieranie (Gotowa Paczka)
-Jeśli chcesz zainstalować wtyczkę bez budowania kodu:
-1. Pobierz plik `AntiTestportal-Ultra-v1.0.5-Supreme.zip` z sekcji **Releases** na GitHubie (po prawej stronie repozytorium).
-2. Wypakuj plik do dowolnego folderu.
-3. W Chrome: wejdź w `chrome://extensions/`.
-4. Włącz **Tryb Dewelopera** (prawy górny róg).
-5. Kliknij **Załaduj rozpakowane** i wybierz wypakowany folder.
-
-### 2. Aktywacja (Klucze)
-- Klucze: `mikus`, `zsa`.
-
-### 3. Sterowanie i Skróty (v1.0.5)
-- **Alt + Z**: **Automatyczny zrzut ekranu** zadania do schowka + otwarcie ChatGPT (Wklej: Ctrl+V).
-- **Ctrl + Z**: Błyskawiczne szukanie **całego pytania** w Google.
-- **Alt + Klik**: Szukanie **zaznaczonego tekstu** w AI.
-- **Ctrl + Klik**: Szukanie **zaznaczonego tekstu** w Google.
+1.  Upewnij się, że masz zainstalowane `Node.js`.
+2.  Otwórz terminal w folderze `wtyczka`.
+3.  Wpisz `npm install` (tylko raz).
+4.  Wpisz `npm run build`.
+5.  W przeglądarce (Chrome/Edge):
+    *   Wejdź w `chrome://extensions`.
+    *   Włącz "Tryb dewelopera" (prawy górny róg).
+    *   Kliknij "Załaduj rozpakowane".
+    *   Wybierz folder `wtyczka/build/chrome-mv3-dev`.
 
 ---
 
-## 🛠️ Poradnik Deweloperski (Setup & Dev)
+## 🔑 Logowanie i Klucze
 
-Projekt oparty jest na środowisku **Plasmo**.
+Wtyczka posiada system licencyjny. Aby jej używać, musisz się zalogować.
 
-- `npm install` - Instalacja zależności.
-- `npm run dev` - Tryb deweloperskiego (Live Reload).
-- `npm run build` - Generowanie wersji produkcyjnej.
-- `.\pack_release.ps1` - Automatyczne pakowanie gotowej wersji .zip do folderu głównego (wymaga PowerShell).
+### Metody Logowania:
+1.  **Discord / Google**: Kliknij przycisk, aby zalogować się "tymczasowo" (symulacja OAuth). Klucz wygasa po sesji.
+2.  **Klucz Licencyjny**: Wpisz kod otrzymany od administratora.
+    *   Klucze są sprawdzane w lokalnej bazie danych.
+    *   Klucze mogą mieć ważność (np. 1h, 24h) lub być dożywotnie.
 
----
-
-## ⚖️ Notki Prawne i Prawo Polskie
-
-### 1. Charakter Edukacyjny
-Oprogramowanie zostało stworzone wyłącznie w celach **edukacyjnych, badawczych i demonstracyjnych**. Służy do celów prezentacji luk w zabezpieczeniach systemów online. Autor nie zachęca do naruszania regulaminów placówek edukacyjnych.
-
-### 2. Odpowiedzialność Cywilna (Art. 415 KC)
-Zgodnie z **Art. 415 Kodeksu Cywilnego**: *"Kto z winy swej wyrządził drugiemu szkodę, obowiązany jest do jej naprawienia"*. Użytkownik wykorzystuje oprogramowanie na własną, wyłączną odpowiedzialność.
-
-### 3. Ochrona Autorska (Dz.U. 1994 nr 24 poz. 83)
-Zgodnie z polskim prawem autorskim, autorskie prawa osobiste są niezbywalne. 
-- **ZABRANIA SIĘ USUWANIA LUB MODYFIKOWANIA INFORMACJI O AUTORZE (mi1ku)**.
-- Jakakolwiek dystrybucja komercyjna, sprzedaż lub redystrybucja kodu bez wyraźnej zgody autora jest zabroniona.
-- Próba przywłaszczenia autorstwa kodu lub modyfikacja brandingowa bez licencji skutkuje odpowiedzialnością karną (Plagiat).
+### Domyślne Klucze:
+*   `admin` - Odblokowuje **Panel Administratora** (pełna władza).
+*   `mikus` - Zwykły klucz użytkownika (testowy).
+*   `zsa` - Zwykły klucz użytkownika (testowy).
 
 ---
 
-## 🦍 Kontakt i Autor
-- **Twórca**: mi1ku
-- **Instagram**: [@76mikus](https://instagram.com/76mikus)
-- **Wersja**: 1.0.5 Stable "Supreme Edition"
+## 🛠️ Panel Administratora (Tylko Admin)
 
-**Stworzone przez mi1ku. Wszelkie prawa zastrzeżone. © 2026 mi1ku Systems.**
+Jeśli zalogujesz się kluczem `admin`, w menu pojawi się nowa zakładka **🛠️ ADMIN**.
+
+### Co możesz robić?
+1.  **Generować Klucze**:
+    *   `+ USER 24H`: Tworzy klucz ważny 24 godziny.
+    *   `+ USER 1H`: Tworzy klucz ważny 1 godzinę.
+    *   `+ ADMIN`: Tworzy nowego administratora (dożywotnio).
+2.  **Lista Kluczy**:
+    *   Widzisz wszystkie aktywne klucze w bazie.
+    *   Widzisz ich typ (USER/ADMIN) i czy są tymczasowe.
+3.  **Usuwanie**:
+    *   Kliknij ikonę 🗑️ obok klucza, aby go usunąć i odebrać dostęp.
+
+⚠️ **Baza danych jest lokalna** (`chrome.storage.local`). Jeśli odinstalujesz wtyczkę, baza zniknie (chyba że zrobisz backup).
+
+---
+
+## ⚡ Funkcje Główne (Home)
+
+### ❄️ Kontrola Czasu (Time Freeze)
+To serce wtyczki. Pozwala zamrozić czas po stronie klienta.
+*   **ZAMRÓŹ (❄️)**: Zatrzymuje zegar Testportalu.
+    *   Wtyczka podmienia `Date.now()` i `performance.now()`, aby strona "myślała", że czas nie płynie.
+    *   Dodajemy losowe milisekundy (jitter), aby wyglądało to naturalnie dla skryptów wykrywających.
+*   **ODMROŹ (🔥)**: Przywraca upływ czasu.
+*   **RESET TIMER ⏱️**: Jeśli coś pójdzie nie tak, ten przycisk wymusza reset lokalnego licznika wtyczki bez odświeżania strony.
+
+### 👻 Ghost Shield
+Chroni przed wykryciem "wyjścia z karty".
+*   Blokuje zdarzenia `blur`, `focus`, `visibilitychange`.
+*   Blokuje wysyłanie pakietów telemetrycznych do serwerów Testportalu (via `declarativeNetRequest`).
+*   Blokuje wykrywanie nagrywania ekranu/robienia zrzutów.
+
+### 📘 Poradnik & Skróty
+*   **Ctrl + Z**: Wyszukaj zaznaczone pytanie w Google.
+*   **Alt + Z**: Zrób zrzut ekranu pytania i wyślij do AI (funkcja w przygotowaniu/wymaga zewnętrznego API w pełnej wersji).
+
+---
+
+## 🎰 Kasyno (Casino Royal)
+
+Dla relaksu podczas egzaminu.
+*   **Kredyty**: Startujesz ze 100 💎. Twoje saldo zapisuje się w bazie wtyczki.
+*   **Spin**: Koszt 10 💎.
+*   **Nagrody**:
+    *   3x 💎 = 500 Kredytów.
+    *   Inne trójki = 100 Kredytów.
+*   (W planach): Sklep, gdzie można kupić dodatkowe "zamrożenia" za kredyty.
+
+---
+
+## ⚙️ Opcje & Bezpieczeństwo
+
+*   **Pokaż Status na Stronie (HUD)**: Wyświetla mały pasek na dole ekranu z informacją, czy czas jest zamrożony.
+*   **☢️ AWARYJNY RESET ŚLADÓW**:
+    *   Usuwa cookies, localStorage i cache związane z Testportalem.
+    *   Przeładowuje karty.
+    *   Używaj, gdy strona zaczyna dziwnie działać lub podejrzewasz wykrycie.
+
+---
+
+### Twórca
+**mi1ku Systems & @76mikus**
+*Wersja 1.0.0 Ultra Supreme*
