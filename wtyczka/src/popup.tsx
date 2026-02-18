@@ -54,7 +54,7 @@ function IndexPopup() {
             const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
             if (tabs[0]?.id) {
                 await chrome.tabs.sendMessage(tabs[0].id, { type: "RESET_TIMER" });
-                showMessage("CZAS ZRESETOWANY ⏱️", "success");
+                showMessage("ZRESETOWANO ⏱️", "success");
             }
         } catch (e) {
             showMessage("KLIKNIJ F5 NA STRONIE TESTU", "error");
@@ -89,15 +89,32 @@ function IndexPopup() {
             ) : (
                 <>
                     {/* MODUŁ CZASU */}
-                    <div className="module-box" style={{ background: 'rgba(30, 41, 59, 0.4)' }}>
+                    <div className="module-box" style={{
+                        background: 'rgba(30, 41, 59, 0.4)',
+                        border: '1px solid rgba(96, 165, 250, 0.2)'
+                    }}>
                         <div className="module-header">
-                            <span className="module-title" style={{ color: '#60a5fa' }}>KONTROLA CZASU (ULTRA)</span>
-                            <div className={`status-pill ${pluginConfig.timeFreeze ? 'active' : ''}`}>
-                                {pluginConfig.timeFreeze ? 'ZAMROŻONY' : 'PŁYNIE'}
+                            <span className="module-title" style={{ color: '#60a5fa' }}>KONTROLA CZASU EZ ULTRA</span>
+                            <div
+                                className={`status-pill ${pluginConfig.timeFreeze ? 'active' : ''}`}
+                                style={{
+                                    background: pluginConfig.timeFreeze
+                                        ? 'linear-gradient(135deg, #3b82f6, #60a5fa)'
+                                        : 'linear-gradient(135deg, #10b981, #34d399)',
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                                }}
+                            >
+                                {pluginConfig.timeFreeze ? 'ZAMROŻONY' : 'ODMROŻONY'}
                             </div>
                         </div>
                         <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                            <button className={`btn ${pluginConfig.timeFreeze ? 'btn-outline' : 'btn-primary'}`} style={{ flex: 1, fontSize: '9px' }} onClick={() => pluginConfig.setTimeFreeze(!pluginConfig.timeFreeze)}>
+                            <button
+                                className={`btn ${pluginConfig.timeFreeze ? 'btn-outline' : 'btn-primary'}`}
+                                style={{ flex: 1, fontSize: '9px', borderColor: '#3b82f6' }}
+                                onClick={() => pluginConfig.setTimeFreeze(!pluginConfig.timeFreeze)}
+                            >
                                 {pluginConfig.timeFreeze ? 'ODMROŹ' : 'ZAMRÓŹ'}
                             </button>
                             <button className="btn btn-primary" style={{ flex: 1, fontSize: '9px', background: 'linear-gradient(45deg, #8b5cf6, #d946ef)' }} onClick={handleResetTimer}>
@@ -109,7 +126,7 @@ function IndexPopup() {
                     {/* GHOST SHIELD */}
                     <div className="module-box" style={{ borderColor: 'rgba(52, 211, 153, 0.3)' }}>
                         <div className="module-header">
-                            <span className="module-title" style={{ color: '#34d399' }}>GHOST SHIELD (76MIKUS)</span>
+                            <span className="module-title" style={{ color: '#34d399' }}>GHOST SHIELD</span>
                             <label className="switch">
                                 <input type="checkbox" checked={pluginConfig.antiAntiTampering} onChange={(e) => pluginConfig.setAntiAntiTampering(e.target.checked)} />
                                 <span className="slider" style={{ backgroundColor: pluginConfig.antiAntiTampering ? '#10b981' : '#334155' }}></span>
@@ -120,15 +137,19 @@ function IndexPopup() {
                     {/* PORADNIK & POMOC */}
                     <div className="module-box" style={{ background: 'rgba(255,255,255,0.05)', border: '1px dashed rgba(255,255,255,0.2)' }}>
                         <div className="module-header" style={{ cursor: 'pointer' }} onClick={() => setShowGuide(!showGuide)}>
-                            <span className="module-title" style={{ fontSize: '10px' }}>📘 PORADNIK & TIPY (1.0)</span>
+                            <span className="module-title" style={{ fontSize: '10px' }}>📘 PORADNIK & SKRÓTY (v1.0)</span>
                             <span style={{ fontSize: '10px' }}>{showGuide ? '▲' : '▼'}</span>
                         </div>
                         {showGuide && (
                             <div style={{ marginTop: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.8)', lineHeight: '1.4' }}>
-                                <p>💎 <b>SZUKAJ AI:</b> Przycisk na ekranie Testportalu automatycznie pobiera treść pytania (bez numeru!) i wrzuca do AI.</p>
-                                <p>❄️ <b>Mrożenie:</b> "Freeze" zatrzymuje zegar Testportalu w miejscu. Możesz go włączyć i wyłączyć w locie.</p>
-                                <p>🚀 <b>Reset:</b> "Reset Timer" cofa zegar do pełnej wartości. Najlepiej używać po wejściu na pytanie.</p>
-                                <p>🔇 <b>Niewykrywalność:</b> Ghost Shield blokuje wysyłanie raportów o ściąganiu do nauczyciela.</p>
+                                <p>⚡ <b>Alt + S:</b> Błyskawiczne szukanie całego zadania w Perplexity AI.</p>
+                                <p>🌐 <b>Alt + G:</b> Błyskawiczne szukanie całego zadania w Google.</p>
+                                <p>💎 <b>Szukanie AI:</b> Przycisk na ekranie robi to samo bez użycia klawiatury.</p>
+                                <p>❄️ <b>Mrożenie:</b> "Freeze" zatrzymuje zegar w miejscu (dynamicznie!).</p>
+                                <p>🚀 <b>Reset:</b> "Reset Timer" cofa zegar do pełnej wartości.</p>
+                                <hr style={{ opacity: 0.1, margin: '6px 0' }} />
+                                <p>🖱️ <b>Ctrl + Klik:</b> Szukaj zaznaczonego tekstu w Google.</p>
+                                <p>🖱️ <b>Alt + Klik:</b> Szukaj zaznaczonego tekstu w AI.</p>
                             </div>
                         )}
                     </div>

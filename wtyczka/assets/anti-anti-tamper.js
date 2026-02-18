@@ -12,6 +12,19 @@
         return w;
     };
 
+    const smartSearch = (engine) => {
+        const questionEl = document.querySelector('.question-container') || document.querySelector('.question') || document.body;
+        let text = questionEl.innerText.split('\n').slice(0, 6).join(' ').replace(/\s+/g, ' ').trim();
+        text = text.replace(/^(Pytanie\s*\d+\:?|\d+[\.\)\:]\s*)/i, '').trim();
+        if (text) {
+            const query = engine === 'ai' ? "Rozwiąż to zadanie z Testportalu: " + text : text;
+            const url = engine === 'ai'
+                ? `https://www.perplexity.ai/search?q=${encodeURIComponent(query)}`
+                : `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+            window.open(url, '_blank');
+        }
+    };
+
     // --- 1. GHOST HUD (v1.0 Ready) ---
     const createHUD = () => {
         if (document.getElementById('mikus-hud-container')) return;
@@ -28,7 +41,7 @@
                 <span style="letter-spacing: 0.5px;">ULTRA 1.0: <span id="mikus-status-text">GHOST ACTIVE</span></span>
             </div>
             <div id="mikus-actions" style="display: flex; gap: 8px; pointer-events: auto;">
-                <button id="mikus-btn-search" title="Smart Search" style="background: #8b5cf6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); transition: all 0.2s;">
+                <button id="mikus-btn-search" title="Smart Search (Alt+S)" style="background: #8b5cf6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); transition: all 0.2s;">
                     🔍 SZUKAJ AI
                 </button>
             </div>
@@ -39,19 +52,7 @@
         `;
         (document.body || document.documentElement).appendChild(hud);
 
-        document.getElementById('mikus-btn-search').onclick = () => {
-            // Smart Scrape: bierze treść zadania, usuwa numery pytań (np. "1.", "Pytanie 1:")
-            const questionEl = document.querySelector('.question-container') || document.querySelector('.question') || document.body;
-            let text = questionEl.innerText.split('\n').slice(0, 6).join(' ').replace(/\s+/g, ' ').trim();
-
-            // Regex do usuwania numeru pytania na początku
-            text = text.replace(/^(Pytanie\s*\d+\:?|\d+[\.\)\:]\s*)/i, '').trim();
-
-            if (text) {
-                // Perplexity jest lepsze do AI - otwiera bezpośrednio
-                window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent("Rozwiąż to zadanie z Testportalu: " + text)}`, '_blank');
-            }
-        };
+        document.getElementById('mikus-btn-search').onclick = () => smartSearch('ai');
     };
 
     const updateHudDisplay = () => {
@@ -65,42 +66,44 @@
         if (statusText) statusText.innerText = isTimeFreezeEnabled ? "TIME WARPED" : "GHOST ACTIVE";
     };
 
-    // --- 2. THE NUCLEAR TIMER (Fix for Reset/Freeze/Unfreeze) ---
-    // Definiujemy getter/setter na globalnym obiekcie, którego Testportal nie podmieni łatwo
+    // --- 2. THE NUCLEAR TIMER ---
     const setupNuclearTimer = () => {
         if (!window.Testportal || !window.Testportal.Timer) return;
         const timer = window.Testportal.Timer;
-
-        // Zapobiegamy wielokrotnemu definiowaniu
         if (timer.__is_patched) return;
         timer.__is_patched = true;
 
-        // Hack dla timerów opartych na instancjach i setInterval
-        // Próbujemy nadpisać TimeLeft, żeby zwracał nasze mrożenie ALBO oryginał
         const originalGetTimeLeft = timer.getTimeLeft;
-
         Object.defineProperty(timer, 'getTimeLeft', {
             get: () => {
                 return _c(() => {
-                    if (isTimeFreezeEnabled) {
-                        return window.__ultra_frozen_val || 3600; // 1h
-                    }
+                    if (isTimeFreezeEnabled) return window.__ultra_frozen_val || 3600;
                     return originalGetTimeLeft ? originalGetTimeLeft.call(timer) : 3600;
                 }, 'getTimeLeft');
             },
             configurable: true
         });
 
-        // Obsługa resetu
         timer.originalReset = timer.reset;
         timer.reset = _c(function () {
             window.__ultra_frozen_val = null;
             if (this.originalReset) this.originalReset();
-            console.log("[Ultra] Hard timer reset executed");
         }, 'reset');
     };
 
-    // --- 3. ANTI-TAMPER ---
+    // --- 3. KEYBOARD SHORTCUTS ---
+    window.addEventListener('keydown', (e) => {
+        if (e.altKey && e.key.toLowerCase() === 's') {
+            e.preventDefault();
+            smartSearch('ai');
+        }
+        if (e.altKey && e.key.toLowerCase() === 'g') {
+            e.preventDefault();
+            smartSearch('google');
+        }
+    }, true);
+
+    // --- 4. ANTI-TAMPER ---
     window.logToServer = _c(() => false, 'logToServer');
     try {
         Object.defineProperty(document, 'hasFocus', {
@@ -119,7 +122,7 @@
         document.addEventListener(ev, silence, true);
     });
 
-    // --- 4. COMMAND LISTENERS ---
+    // --- 5. COMMAND LISTENERS ---
     window.addEventListener("ultra_cmd_reset", () => {
         if (window.Testportal && window.Testportal.Timer) {
             window.Testportal.Timer.init?.();
@@ -132,10 +135,7 @@
     window.addEventListener("ultra_cmd_freeze", (e) => {
         isTimeFreezeEnabled = e.detail;
         if (isTimeFreezeEnabled && window.Testportal?.Timer?.getTimeLeft) {
-            // Zapisujemy obecny czas jako punkt mrożenia
-            try {
-                window.__ultra_frozen_val = window.Testportal.Timer.getTimeLeft();
-            } catch (e) { window.__ultra_frozen_val = 3600; }
+            try { window.__ultra_frozen_val = window.Testportal.Timer.getTimeLeft(); } catch (e) { window.__ultra_frozen_val = 3600; }
         }
         updateHudDisplay();
     });
@@ -150,13 +150,10 @@
         updateHudDisplay();
     });
 
-    // Pętla synchronizacji
     setInterval(() => {
         if (!document.getElementById('mikus-hud-container')) createHUD();
         setupNuclearTimer();
         updateHudDisplay();
-
-        // Blokada cheat_detected
         // @ts-ignore
         window.cheat_detected = false;
         // @ts-ignore
