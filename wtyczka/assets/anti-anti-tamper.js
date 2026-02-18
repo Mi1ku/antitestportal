@@ -3,7 +3,9 @@
 
     let isHudEnabled = true;
     let isGhostShieldEnabled = true;
-    let isTimeFreezeEnabled = true; // DOMYŚLNIE ZAMROŻONY ❄️
+    let isTimeFreezeEnabled = false; // Default to FALSE to avoid immediate detection/issues
+    let timeFreezeStartTimestamp = 0;
+    let performanceFreezeStart = 0;
 
     const _c = (fn, n) => {
         const w = function () { return fn.apply(this, arguments); };
@@ -12,6 +14,25 @@
         return w;
     };
 
+    // --- NAJWAŻNIEJSZE: MROŻENIE CZASU (Data + Performance) ---
+    const originalDateNow = Date.now;
+    const originalPerformanceNow = performance.now.bind(performance);
+
+    Date.now = _c(() => {
+        if (isTimeFreezeEnabled && timeFreezeStartTimestamp > 0) {
+            return timeFreezeStartTimestamp + Math.floor(Math.random() * 100); // Slight jitter to look alive
+        }
+        return originalDateNow();
+    }, 'now');
+
+    performance.now = _c(() => {
+        if (isTimeFreezeEnabled && performanceFreezeStart > 0) {
+            return performanceFreezeStart + (Math.random() * 2);
+        }
+        return originalPerformanceNow();
+    }, 'now');
+
+
     const smartSearch = (engine) => {
         if (engine === 'gpt') {
             window.dispatchEvent(new CustomEvent("ultra_req_capture"));
@@ -19,10 +40,12 @@
         }
 
         const questionEl = document.querySelector('.question-container') || document.querySelector('.question') || document.body;
-        let text = questionEl.innerText.split('\n').slice(0, 6).join(' ').replace(/\s+/g, ' ').trim();
+        let text = questionEl.innerText.split('\n').slice(0, 15).join(' ').replace(/\s+/g, ' ').trim();
+        // Remove common prefixes
         text = text.replace(/^(Pytanie\s*\d+\:?|\d+[\.\)\:]\s*)/i, '').trim();
+
         if (text) {
-            const query = engine === 'ai' ? "Rozwiąż to zadanie z Testportalu: " + text : text;
+            const query = engine === 'ai' ? "Rozwiąż to zadanie z Testportalu skrótowo: " + text : text;
             const url = engine === 'ai'
                 ? `https://www.perplexity.ai/search?q=${encodeURIComponent(query)}`
                 : `https://www.google.com/search?q=${encodeURIComponent(query)}`;
@@ -66,45 +89,58 @@
     const updateHudDisplay = () => {
         const hud = document.getElementById('mikus-hud-container');
         if (!hud) return;
-        const shouldShow = isHudEnabled && (isGhostShieldEnabled || isTimeFreezeEnabled);
+        const shouldShow = isHudEnabled; // Always show if enabled, let status text change
         hud.style.opacity = shouldShow ? "1" : "0";
         hud.style.visibility = shouldShow ? "visible" : "hidden";
         hud.style.pointerEvents = shouldShow ? "auto" : "none";
+
         const statusText = document.getElementById('mikus-status-text');
-        if (statusText) statusText.innerText = isTimeFreezeEnabled ? "TIME WARPED" : "GHOST ACTIVE";
+        if (statusText) {
+            if (isTimeFreezeEnabled) {
+                statusText.innerText = "TIME FROZEN ❄️";
+                statusText.style.color = "#60a5fa";
+            } else if (isGhostShieldEnabled) {
+                statusText.innerText = "SECURE 🛡️";
+                statusText.style.color = "#34d399";
+            } else {
+                statusText.innerText = "READY";
+                statusText.style.color = "#94a3b8";
+            }
+        }
     };
 
-    const setupNuclearTimer = () => {
+    // --- TIMER PATCHING ---
+    const patchTestportalTimer = () => {
         if (!window.Testportal || !window.Testportal.Timer) return;
+
         const timer = window.Testportal.Timer;
-        if (timer.__is_patched) return;
-        timer.__is_patched = true;
+        if (timer.__ultra_patched) return; // Prevent double patch
 
-        const originalGetTimeLeft = timer.getTimeLeft;
-        Object.defineProperty(timer, 'getTimeLeft', {
-            get: () => {
-                return _c(() => {
-                    if (isTimeFreezeEnabled) {
-                        // Jeśli mrozimy po raz pierwszy, zapisujemy czas
-                        if (!window.__ultra_frozen_val) {
-                            try { window.__ultra_frozen_val = originalGetTimeLeft.call(timer); }
-                            catch (e) { window.__ultra_frozen_val = 3600; }
-                        }
-                        return window.__ultra_frozen_val;
-                    }
-                    return originalGetTimeLeft ? originalGetTimeLeft.call(timer) : 3600;
-                }, 'getTimeLeft');
-            },
-            configurable: true
-        });
+        console.log("[Ultra] Patching Testportal Timer...");
 
-        timer.originalReset = timer.reset;
-        timer.reset = _c(function () {
-            window.__ultra_frozen_val = null;
-            if (this.originalReset) this.originalReset();
-        }, 'reset');
+        // Backup original methods
+        timer._originalGetTimeLeft = timer.getTimeLeft;
+        timer._originalInit = timer.init;
+
+        // Override getTimeLeft
+        // To jest główna funkcja którą Testportal sprawdza czas
+        timer.getTimeLeft = _c(function () {
+            if (isTimeFreezeEnabled && window.__ultra_frozen_val) {
+                return window.__ultra_frozen_val;
+            }
+            // If we are not frozen, or dont have a value, return real time
+            // But we can also cap it to "safe" limits if needed
+            if (this._originalGetTimeLeft) {
+                return this._originalGetTimeLeft.apply(this, arguments);
+            }
+            return 3600; // Fallback
+        }, 'getTimeLeft');
+
+        timer.__ultra_patched = true;
     };
 
+
+    // Listeners
     window.addEventListener('keydown', (e) => {
         // AI SEARCH (Całe pytanie): Alt + Z
         if (e.altKey && !e.ctrlKey && e.key.toLowerCase() === 'z') {
@@ -118,41 +154,71 @@
         }
     }, true);
 
+    // Block standard detection methods
     window.logToServer = _c(() => false, 'logToServer');
+
+    // Focus/Blur blocker
     try {
         Object.defineProperty(document, 'hasFocus', {
-            get: () => { if (isGhostShieldEnabled) throw new ReferenceError("antiTestportalFeature"); return true; },
+            get: () => {
+                if (isGhostShieldEnabled) return true; // Always focused
+                return true;
+            },
+            configurable: true
+        });
+        Object.defineProperty(document, 'hidden', {
+            get: () => false,
+            configurable: true
+        });
+        Object.defineProperty(document, 'visibilityState', {
+            get: () => 'visible',
             configurable: true
         });
     } catch (e) { }
 
-    const silence = (e) => {
+    const stopEvent = (e) => {
         if (!isGhostShieldEnabled) return;
-        silence_event(e);
-    };
-    function silence_event(e) {
         e.stopImmediatePropagation();
         e.stopPropagation();
-    }
-    ['blur', 'visibilitychange', 'mouseleave', 'focusout', 'mozvisibilitychange', 'webkitvisibilitychange', 'pagehide', 'beforeunload'].forEach(ev => {
-        window.addEventListener(ev, silence, true);
-        document.addEventListener(ev, silence, true);
+    };
+
+    ['blur', 'focusout', 'mouseleave', 'visibilitychange', 'webkitvisibilitychange', 'mozvisibilitychange'].forEach(evt => {
+        window.addEventListener(evt, stopEvent, true);
+        document.addEventListener(evt, stopEvent, true);
     });
 
+    // --- COMMUNICATION HUB ---
     window.addEventListener("ultra_cmd_reset", () => {
+        console.log("[Ultra] CMD: RESET TIMER");
+        window.__ultra_frozen_val = null;
         if (window.Testportal && window.Testportal.Timer) {
-            window.Testportal.Timer.init?.();
-            window.Testportal.Timer.reset?.();
-            window.Testportal.Timer.start?.();
-            window.__ultra_frozen_val = null;
+            // Force re-init if possible or just unfreeze logic
+            // W Testportalu reset często jest zablokowany, więc symulujemy odświeżenie stanu
+            if (window.Testportal.Timer.init) window.Testportal.Timer.init();
         }
+        // Force refresh page to sync with server time if heavily recognized? 
+        // No, better just unfreeze locally.
     });
 
     window.addEventListener("ultra_cmd_freeze", (e) => {
-        isTimeFreezeEnabled = e.detail;
-        if (isTimeFreezeEnabled && window.Testportal?.Timer?.getTimeLeft) {
-            try { window.__ultra_frozen_val = window.Testportal.Timer.getTimeLeft(); } catch (e) { window.__ultra_frozen_val = 3600; }
+        const newVal = e.detail;
+        console.log(`[Ultra] CMD: FREEZE = ${newVal}`);
+
+        isTimeFreezeEnabled = newVal;
+
+        if (isTimeFreezeEnabled) {
+            // Capture current state
+            timeFreezeStartTimestamp = originalDateNow();
+            performanceFreezeStart = originalPerformanceNow();
+
+            if (window.Testportal?.Timer?.getTimeLeft) {
+                window.__ultra_frozen_val = window.Testportal.Timer.getTimeLeft();
+            } else {
+                window.__ultra_frozen_val = 3600; // Default safe backup
+            }
         } else {
+            timeFreezeStartTimestamp = 0;
+            performanceFreezeStart = 0;
             window.__ultra_frozen_val = null;
         }
         updateHudDisplay();
@@ -168,14 +234,23 @@
         updateHudDisplay();
     });
 
+    // Main Loop
     setInterval(() => {
         if (!document.getElementById('mikus-hud-container')) createHUD();
-        setupNuclearTimer();
+        patchTestportalTimer();
         updateHudDisplay();
+
+        // Anti-Anti-Cheat variable sync
         // @ts-ignore
-        window.cheat_detected = false;
-        // @ts-ignore
-        window.remainingTime = isTimeFreezeEnabled ? (window.__ultra_frozen_val || 3600) : (window.remainingTime || 3600);
-    }, 400);
+        if (typeof window.cheat_detected !== 'undefined') window.cheat_detected = false;
+
+        // Force visible variables if site checks them
+        if (isTimeFreezeEnabled && window.__ultra_frozen_val) {
+            // Update global variable if exists
+            // @ts-ignore
+            if (typeof window.remainingTime !== 'undefined') window.remainingTime = window.__ultra_frozen_val;
+        }
+
+    }, 500);
 
 })();

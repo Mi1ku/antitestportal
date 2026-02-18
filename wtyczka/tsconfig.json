@@ -9,6 +9,11 @@
     "./**/*.tsx"
   ],
   "compilerOptions": {
+    "target": "ESNext",
+    "lib": [
+      "DOM",
+      "ESNext"
+    ],
     "paths": {
       "~*": [
         "./src/*"
