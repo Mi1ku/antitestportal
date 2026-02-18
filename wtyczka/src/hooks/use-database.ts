@@ -8,9 +8,14 @@ const SECRET_SALT = "mi1ku_supreme_76_ultra_safety_999";
 
 const encodeData = (data: any): string => {
     const json = JSON.stringify(data);
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(json);
+    const saltBytes = encoder.encode(SECRET_SALT);
+
     let result = "";
-    for (let i = 0; i < json.length; i++) {
-        result += String.fromCharCode(json.charCodeAt(i) ^ SECRET_SALT.charCodeAt(i % SECRET_SALT.length));
+    for (let i = 0; i < bytes.length; i++) {
+        const xored = bytes[i] ^ saltBytes[i % saltBytes.length];
+        result += String.fromCharCode(xored);
     }
     return btoa(result);
 };
@@ -18,13 +23,17 @@ const encodeData = (data: any): string => {
 const decodeData = (encoded: string): any => {
     try {
         const decoded = atob(encoded);
-        let result = "";
+        const saltBytes = new TextEncoder().encode(SECRET_SALT);
+        const bytes = new Uint8Array(decoded.length);
+
         for (let i = 0; i < decoded.length; i++) {
-            result += String.fromCharCode(decoded.charCodeAt(i) ^ SECRET_SALT.charCodeAt(i % SECRET_SALT.length));
+            bytes[i] = decoded.charCodeAt(i) ^ saltBytes[i % saltBytes.length];
         }
-        return JSON.parse(result);
+
+        const decoder = new TextDecoder();
+        return JSON.parse(decoder.decode(bytes));
     } catch (e) {
-        console.error("Database Decryption Failed!");
+        console.error("Database Decryption Failed!", e);
         return null;
     }
 };

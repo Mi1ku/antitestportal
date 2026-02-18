@@ -14,6 +14,7 @@ function IndexPopup() {
     const [inputKey, setInputKey] = useState("");
     const [uiMessage, setUiMessage] = useState({ text: "", type: "" });
     const [showGuide, setShowGuide] = useState(false);
+    const [showAdminGuide, setShowAdminGuide] = useState(false);
     const [activeTab, setActiveTab] = useState<ActiveTab>("home");
     const [updateStatus, setUpdateStatus] = useState<string>("v1.2.0 (Supreme)");
 
@@ -122,6 +123,21 @@ function IndexPopup() {
                     </div>
                     <button className="btn btn-primary" onClick={handleActivate}>AKTYWUJ SUPREME</button>
                 </div>
+
+                <div className="module-box" style={{ background: 'rgba(255,255,255,0.02)', marginTop: '5px' }}>
+                    <div className="module-header" onClick={() => setShowGuide(!showGuide)} style={{ cursor: 'pointer' }}>
+                        <span className="module-title" style={{ fontSize: '10px' }}>📦 INSTRUKCJA INSTALACJI</span>
+                        <span style={{ fontSize: '10px' }}>{showGuide ? '▲' : '▼'}</span>
+                    </div>
+                    {showGuide && (
+                        <div style={{ marginTop: '8px', fontSize: '9px', color: 'rgba(255,255,255,0.6)', lineHeight: '1.4' }}>
+                            <p>1. Skopiuj swój <b>HWID</b> powyżej.</p>
+                            <p>2. Wyślij go do <b>@76mikus</b> na Instagramie.</p>
+                            <p>3. Po otrzymaniu klucza, wklej go i aktywuj.</p>
+                        </div>
+                    )}
+                </div>
+
                 <div className="footer-info">mi1ku Premium Systems | @76mikus</div>
             </div>
         );
@@ -164,14 +180,19 @@ function IndexPopup() {
                         </div>
                     </div>
 
-                    <div className="module-box">
-                        <div className="module-header">
-                            <span className="module-title" style={{ color: '#34d399' }}>GHOST SHIELD EX</span>
-                            <label className="switch">
-                                <input type="checkbox" checked={pluginConfig.antiAntiTampering} onChange={(e) => pluginConfig.setAntiAntiTampering(e.target.checked)} />
-                                <span className="slider"></span>
-                            </label>
+                    <div className="module-box" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                        <div className="module-header" onClick={() => setShowGuide(!showGuide)} style={{ cursor: 'pointer' }}>
+                            <span className="module-title" style={{ fontSize: '10px' }}>⌨️ SKRÓTY KLAWISZOWE</span>
+                            <span style={{ fontSize: '10px' }}>{showGuide ? '▲' : '▼'}</span>
                         </div>
+                        {showGuide && (
+                            <div style={{ marginTop: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.6)', lineHeight: '1.4' }}>
+                                <p>🚀 <b>Ctrl + Z:</b> Szukaj zadania w Google.</p>
+                                <p>🖼️ <b>Alt + Z:</b> Snapshot zadania do schowka + AI.</p>
+                                <p>❄️ <b>Ctrl + Alt + F:</b> Przełącz mrożenie czasu.</p>
+                                <p>🖱️ <b>Ctrl + Klik:</b> Szukaj zaznaczenia w Google.</p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="module-box" style={{ background: 'rgba(255,255,255,0.05)' }}>
@@ -231,6 +252,20 @@ function IndexPopup() {
                                 <button onClick={() => deleteKey(k.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>❌</button>
                             </div>
                         ))}
+                    </div>
+
+                    <div className="module-box" style={{ background: 'rgba(139, 92, 246, 0.05)', border: '1px dashed var(--primary)', marginTop: '10px' }}>
+                        <div className="module-header" onClick={() => setShowAdminGuide(!showAdminGuide)} style={{ cursor: 'pointer' }}>
+                            <span className="module-title" style={{ fontSize: '10px' }}>👑 PORADNIK ADMINISTRATORA</span>
+                            <span style={{ fontSize: '10px' }}>{showAdminGuide ? '▲' : '▼'}</span>
+                        </div>
+                        {showAdminGuide && (
+                            <div style={{ marginTop: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.4' }}>
+                                <p>🔑 <b>Generowanie:</b> Wpisz klucz, wybierz rolę i czas. Kliknij "DODAJ".</p>
+                                <p>🔒 <b>HWID:</b> Klucze `user` blokują się na pierwszym użytej maszynie (ikona kłódki 🔒).</p>
+                                <p>💻 <b>DevTools:</b> Użyj `window.__SUPREME_DEV__` w konsoli popupu do zarządzania bazą "z palca".</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

@@ -8,7 +8,7 @@
     "dev": "plasmo dev",
     "build": "plasmo build && npm run obfuscate",
     "package": "plasmo package",
-    "obfuscate": "javascript-obfuscator ./build/chrome-mv3-prod --output ./build/chrome-mv3-prod --compact true --self-defending true --string-array true"
+    "obfuscate": "npx javascript-obfuscator ./build/chrome-mv3-prod --output ./build/chrome-mv3-prod --compact true --self-defending true --string-array true"
   },
   "dependencies": {
     "@plasmohq/messaging": "^0.7.2",
