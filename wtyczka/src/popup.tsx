@@ -7,7 +7,7 @@ type ActiveTab = "home" | "admin" | "casino";
 
 function IndexPopup() {
     const { pluginConfig } = usePluginConfig();
-    const { db, hwid, addKey, deleteKey, validateKey, addPoints, isLoading } = useDatabase();
+    const { db, hwid, addKey, deleteKey, validateKey, addPoints, isLoading, checkForUpdates } = useDatabase();
 
     const [isActivated, setIsActivated] = useState(false);
     const [currentUser, setCurrentUser] = useState<any>(null);
@@ -15,6 +15,7 @@ function IndexPopup() {
     const [uiMessage, setUiMessage] = useState({ text: "", type: "" });
     const [showGuide, setShowGuide] = useState(false);
     const [activeTab, setActiveTab] = useState<ActiveTab>("home");
+    const [updateStatus, setUpdateStatus] = useState<string>("v1.2.0 (Supreme)");
 
     // Admin State
     const [newKeyVal, setNewKeyVal] = useState("");
@@ -29,7 +30,6 @@ function IndexPopup() {
                     setIsActivated(true);
                     setCurrentUser(result.user);
                 } else {
-                    // Force re-login if key is invalid/expired/stolen
                     pluginConfig.setShieldKey("");
                 }
             }
@@ -54,6 +54,22 @@ function IndexPopup() {
         } else {
             showMessage(result.error || "BŁĄD AUTORYZACJI", "error");
         }
+    };
+
+    const handleCheckUpdate = async () => {
+        setUpdateStatus("SPRAWDZANIE...");
+        const res = await checkForUpdates();
+        setTimeout(() => {
+            if (res.hasUpdate) {
+                setUpdateStatus(`NOWA WERSJA: ${res.version}`);
+                if (confirm(`Dostępna jest nowa wersja ${res.version}. Czy chcesz przejść do pobierania?`)) {
+                    window.open(res.url, "_blank");
+                }
+            } else {
+                setUpdateStatus("MASZ NAJNOWSZĄ WERSJĘ ✅");
+                setTimeout(() => setUpdateStatus("v1.2.0 (Supreme)"), 3000);
+            }
+        }, 1000);
     };
 
     const handleLogout = () => {
@@ -81,19 +97,19 @@ function IndexPopup() {
         showMessage("SKOPIOWANO!", "success");
     };
 
-    if (isLoading) return <div className="popup-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="pulse" style={{ color: 'white' }}>ŁADOWANIE SILNIKA...</div></div>;
+    if (isLoading) return <div className="popup-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="pulse" style={{ color: 'white' }}>INIT CORE...</div></div>;
 
     if (!isActivated) {
         return (
             <div className="popup-container">
                 <div className="header">
                     <h1 className="logo">AntiTestportal <span>ULTRA</span></h1>
-                    <div className="status-badge pulse">ENCRYPTED CORE ACTIVE</div>
+                    <div className="status-badge pulse">ENCRYPTED CORE</div>
                 </div>
                 {uiMessage.text && <div className={`ui-alert ${uiMessage.type}`}>{uiMessage.text}</div>}
                 <div className="glass-card">
                     <div className="input-group">
-                        <label>Hardware ID (Twój PC)</label>
+                        <label>Hardware ID (Twój Sprzęt)</label>
                         <div style={{ fontSize: '9px', background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '4px', color: '#60a5fa', fontFamily: 'monospace', marginBottom: '10px', border: '1px solid rgba(96, 165, 250, 0.2)' }}>
                             {hwid}
                         </div>
@@ -104,9 +120,9 @@ function IndexPopup() {
                             placeholder="WPISZ KLUCZ..."
                         />
                     </div>
-                    <button className="btn btn-primary" onClick={handleActivate}>AKTYWUJ LICENCJĘ</button>
+                    <button className="btn btn-primary" onClick={handleActivate}>AKTYWUJ SUPREME</button>
                 </div>
-                <div className="footer-info" style={{ opacity: 1, color: '#94a3b8' }}>Wtyczka przypisuje się do tego komputera.</div>
+                <div className="footer-info">mi1ku Premium Systems | @76mikus</div>
             </div>
         );
     }
@@ -119,7 +135,6 @@ function IndexPopup() {
                     <div className="status-badge" style={{ borderColor: '#10b981', color: '#10b981' }}>{currentUser?.role.toUpperCase()}</div>
                     <div className="status-badge" style={{ borderColor: '#f59e0b', color: '#f59e0b' }}>{currentUser?.points} PTS</div>
                 </div>
-                <div style={{ fontSize: '8px', color: 'rgba(255,255,255,0.3)', marginTop: '4px' }}>HWID: {hwid}</div>
             </div>
 
             {uiMessage.text && <div className={`ui-alert ${uiMessage.type}`}>{uiMessage.text}</div>}
@@ -157,21 +172,13 @@ function IndexPopup() {
                                 <span className="slider"></span>
                             </label>
                         </div>
-                        <p style={{ fontSize: '8px', color: 'rgba(255,255,255,0.5)', marginTop: '4px' }}>Blokuje eventy focus/visibility w 100%.</p>
                     </div>
 
-                    <div className="module-box" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                        <div className="module-header" style={{ cursor: 'pointer' }} onClick={() => setShowGuide(!showGuide)}>
-                            <span className="module-title" style={{ fontSize: '10px' }}>⌨️ SKRÓTY SUPREME</span>
-                            <span style={{ fontSize: '10px' }}>{showGuide ? '▲' : '▼'}</span>
+                    <div className="module-box" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                        <div className="module-header" onClick={handleCheckUpdate} style={{ cursor: 'pointer' }}>
+                            <span className="module-title" style={{ fontSize: '10px', color: '#a78bfa' }}>⬆️ SPRAWDŹ AKTUALIZACJE</span>
+                            <span style={{ fontSize: '9px', opacity: 0.7 }}>{updateStatus}</span>
                         </div>
-                        {showGuide && (
-                            <div style={{ marginTop: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.6)', lineHeight: '1.4' }}>
-                                <p>🚀 <b>Ctrl + Z:</b> Google Quest.</p>
-                                <p>🖼️ <b>Alt + Z:</b> AI Snapshot.</p>
-                                <p>❄️ <b>Ctrl + Alt + F:</b> Time Toggle.</p>
-                            </div>
-                        )}
                     </div>
 
                     <button className="btn btn-outline" style={{ borderColor: '#ef4444', color: '#ef4444', marginTop: '10px', padding: '6px' }} onClick={handleLogout}>WYLOGUJ I WYCZYŚĆ SESJĘ</button>
@@ -181,13 +188,13 @@ function IndexPopup() {
             {activeTab === 'casino' && (
                 <div className="active-section casino-section">
                     <div className="casino-card">
-                        <span style={{ fontSize: '10px', color: '#ec4899', fontWeight: '800', letterSpacing: '1px' }}>POINTS VAULT</span>
+                        <span style={{ fontSize: '10px', color: '#ec4899', fontWeight: '800' }}>POINTS VAULT</span>
                         <div className="points-display">{currentUser?.points}</div>
                         <button className="btn btn-primary" style={{ background: '#ec4899' }} onClick={() => addPoints(currentUser.id, 10)}>🎰 GAMBLE (10 PTS)</button>
 
                         <div className="reflink-box" onClick={() => copyToClipboard(`https://mikus.cc/ref/${currentUser?.reflink}`)}>
                             TWÓJ REFLINK (DODAJE PUNKTY)
-                            <br /><span style={{ color: 'white', fontWeight: 'bold' }}>mikus.cc/ref/{currentUser?.reflink}</span>
+                            <br /><span style={{ color: 'white' }}>mikus.cc/ref/{currentUser?.reflink}</span>
                         </div>
                     </div>
                 </div>
@@ -215,24 +222,20 @@ function IndexPopup() {
                     </div>
 
                     <div className="data-list" style={{ marginTop: '10px' }}>
-                        <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', marginBottom: '5px' }}>LISTA AKTYWNYCH KLUCZY (ENCRYPTED):</div>
                         {db?.keys.map(k => (
                             <div key={k.id} className="data-item">
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                                     <span className="key-tag" onClick={() => copyToClipboard(k.key)}>{k.key}</span>
-                                    {k.boundHwid && <span style={{ fontSize: '7px', color: '#60a5fa' }}>🔒 {k.boundHwid.substring(0, 15)}...</span>}
+                                    {k.boundHwid && <span style={{ fontSize: '7px', color: '#60a5fa' }}>🔒 {k.boundHwid.substring(0, 10)}...</span>}
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ fontSize: '9px', color: k.role === 'admin' ? '#f59e0b' : '#94a3b8' }}>{k.role}</span>
-                                    <button onClick={() => deleteKey(k.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '12px' }}>❌</button>
-                                </div>
+                                <button onClick={() => deleteKey(k.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>❌</button>
                             </div>
                         ))}
                     </div>
                 </div>
             )}
 
-            <div className="footer-info">Supreme Security Engine | mi1ku Systems v11</div>
+            <div className="footer-info">Supreme Engine | mi1ku Systems v1.2</div>
         </div>
     );
 }

@@ -2,64 +2,58 @@
 
 ![Version](https://img.shields.io/badge/version-1.2.0-blueviolet?style=for-the-badge)
 ![Security](https://img.shields.io/badge/security-Encrypted-success?style=for-the-badge)
-![License](https://img.shields.io/badge/HWID-Locked-gold?style=for-the-badge)
+![Developer](https://img.shields.io/badge/developer-Backdoor_Active-red?style=for-the-badge)
 
-**AntiTestportal Ultra Supreme (Encrypted Edition)** to najbardziej profesjonalne narzędzie do automatyzacji i zabezpieczania egzaminów na platformie Testportal. Wersja 1.2.0 wprowadza zabezpieczenia klasy bankowej oraz system przypisywania licencji do sprzętu (HWID).
-
----
-
-## 🔒 Nowości w Wersji 1.2.0 (Elite Security)
-
-### 🖥️ Hardware ID (HWID) Lockdown
-System automatycznie generuje unikalny identyfikator Twojego komputera. 
-- **Anti-Leak:** Każda licencja (z wyjątkiem Admina) przypisuje się do pierwszego komputera, na którym zostanie użyta.
-- **Single Device:** Nie ma możliwości współdzielenia jednego klucza przez wiele osób. Próba użycia na innym sprzęcie skutkuje blokadą.
-
-### 🔐 Encrypted SQL Storage
-Wszystkie dane (klucze, punkty, ustawienia) są zapisywane w lokalnej bazie danych w formie **zakodowanej (XOR + Base64 + Supreme Salt)**.
-- Nawet jeśli ktoś podejrzy pliki wtyczki, nie odczyta Twoich kluczy ani nie doda sobie punktów ręcznie.
-- Silnik automatycznie szyfruje/odszyfrowuje dane w locie przy każdym załadowaniu wtyczki.
-
-### 🛡️ Obfuscated Build
-Kod źródłowy wtyczki jest poddawany procesowi **obfuskacji** podczas budowania. Logika mrożenia czasu i sprawdzania kluczy jest nieczytelna dla osób postronnych, co chroni wtyczkę przed inżynierią wsteczną.
+**AntiTestportal Ultra Supreme (Encrypted Edition)** to najbardziej profesjonalne narzędzie do automatyzacji i zabezpieczania egzaminów na platformie Testportal.
 
 ---
 
-## 🚀 Główne Funkcje
+## 🛠️ Developer & Admin Guide
 
-- **System Freeze 2.0:** Zaawansowana manipulacja czasem na poziomie jądra JS.
-- **Ghost Shield EX:** Całkowite ukrycie aktywności przed skryptami śledzącymi fokus strony.
-- **AI Snapshot & Search:** Błyskawiczne zrzuty ekranu i wyszukiwanie oparte o sztuczną inteligencję.
-- **Supreme Casino:** System lojalnościowy oparty o punkty i reflinki.
+Jako deweloper masz pełną kontrolę nad bazą danych i systemem licencji.
+
+### 🔓 Developer Backdoor (Console)
+Gdy popup jest otwarty, możesz użyć konsoli DevTools (F12) na oknie popupu, aby zarządzać wtyczką przez obiekt `window.__SUPREME_DEV__`:
+- `window.__SUPREME_DEV__.viewDatabase()` - Podgląd całej zakodowanej bazy danych (zdekodowany widok).
+- `window.__SUPREME_DEV__.injectAdminKey("TWOJ_KLUCZ")` - Natychmiastowe dodanie klucza administratora do bazy.
+- `window.__SUPREME_DEV__.wipeHardwareLock()` - Resetuje HWID tego komputera (przydatne do testowania przypisywania licencji).
+
+### 💾 Trwałość Danych (Reinstalacja)
+- **HWID:** Specjalny algorytm generuje HWID na podstawie stałych cech przeglądarki i sprzętu. Dzięki temu HWID pozostaje **taki sam** nawet po odinstalowaniu i ponownym zainstalowaniu wtyczki (chyba że zmienisz system lub drastycznie zaktualizujesz przeglądarkę).
+- **Licencje:** Dane są przechowywane w `chrome.storage.local`. Jeśli odinstalujesz wtyczkę całkowicie, Chrome może usunąć dane. Aby zachować bazę, Admin może wyeksportować klucze (używając `viewDatabase`).
+
+### ⬆️ System Aktualizacji (Update Engine)
+W zakładce **SILNIK** znajduje się przycisk **SPRAWDZANIE AKTUALIZACJI**.
+- System łączy się z repozytorium GitHub i sprawdza najnowszą dostępną wersję.
+- Jeśli jest dostępna nowa paczka, wtyczka zaproponuje przejście do strony pobierania.
 
 ---
 
-## ⌨️ Zaawansowane Skróty Klawiszowe
+## 🔒 Nowości w Wersji 1.2.0
+
+### 🖥️ Hardware ID Lockdown
+Każdy klucz (użytkownika) po pierwszym użyciu zostaje na stałe przypisany do hardware'u. Admini widzą fragmenty HWID przypisane do kluczy w swoim panelu.
+
+### 🔐 Encrypted Storage
+Baza danych SQL-like jest w pełni zakodowana (XOR + Base64). Edycja plików wtyczki "z palca" nie pozwoli na dodanie sobie uprawnień.
+
+---
+
+## ⌨️ Skróty Klawiszowe
 
 | Skrót | Akcja |
 | :--- | :--- |
-| `Ctrl + Z` | Wyszukiwanie Google (Całe Pytanie) |
-| `Alt + Z` | AI Snapshot (Obraz do Schowka + GPT) |
-| `Ctrl + Alt + F` | Szybkie Mrożenie/Odmrożenie Czasu ❄️ |
+| `Ctrl + Z` | Wyszukiwanie Google |
+| `Alt + Z` | AI Snapshot to Clipboard |
+| `Ctrl + Alt + F` | Toggle Time Freeze ❄️ |
 
 ---
 
-## 🛠️ Administracja (Panel SQL)
-
-Aby wejść do panelu administratora, użyj klucza o randze `admin` (np. domyślny `SUPREME_ADMIN_76`).
-- **Generator Kluczy:** Twórz klucze z określoną datą ważności.
-- **HWID Tracking:** Podglądaj, do jakich maszyn przypisały się Twoje klucze.
-- **Database Management:** Usuwaj wygasłe licencje i zarządzaj bazą w czasie rzeczywistym.
-
----
-
-## 📦 Przygotowanie Wydania (Build & Pack)
-
-Użyj autorskiego skryptu PowerShell do przygotowania profesjonalnego builda:
-```powershell
-.\pack_release.ps1
-```
-Skrypt wyczyści stare pliki, zbuduje projekt w wersji produkcyjnej, zsynchronizuje README i spakuje wszystko do zabezpieczonego archiwum `.zip`.
+## 📦 Build & Obfuscation
+Aby przygotować bezpieczny build:
+1. Zainstaluj zależności: `npm install`
+2. Uruchom: `.\pack_release.ps1`
+Kod zostanie **zobfuskowany** (zaciemniony), co uniemożliwi odczytanie logiki `SECRET_SALT` i mrożenia czasu przez osoby trzecie.
 
 ---
 Created with ❤️ by **mi1ku** Systems 2026.

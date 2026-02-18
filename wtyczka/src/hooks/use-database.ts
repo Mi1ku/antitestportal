@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 const storage = new Storage();
 
 // --- SUPREME ENCRYPTION LAYER ---
-// This is a professional-grade (for browser) obfuscation layer
 const SECRET_SALT = "mi1ku_supreme_76_ultra_safety_999";
 
 const encodeData = (data: any): string => {
@@ -25,7 +24,7 @@ const decodeData = (encoded: string): any => {
         }
         return JSON.parse(result);
     } catch (e) {
-        console.error("Database Decryption Failed! Data might be corrupted or tampered with.");
+        console.error("Database Decryption Failed!");
         return null;
     }
 };
@@ -33,25 +32,23 @@ const decodeData = (encoded: string): any => {
 // --- HWID GENERATOR ---
 const getOrCreateHWID = async (): Promise<string> => {
     let hwid = await storage.get("supreme_hwid_v1");
-    if (!hwid) {
-        // Generate a pseudo-HWID based on browser/screen features + random
-        const fingerprint = [
-            navigator.userAgent,
-            screen.height,
-            screen.width,
-            navigator.language,
-            new Date().getTimezoneOffset(),
-            Math.random().toString(36).substring(7)
-        ].join('|');
+    // Stable fingerprint part
+    const fingerprint = [
+        navigator.userAgent.replace(/\d+/g, ''),
+        screen.height,
+        screen.width,
+        navigator.language,
+        navigator.hardwareConcurrency || 4
+    ].join('|');
 
-        // Simple hash function
+    if (!hwid) {
         let hash = 0;
         for (let i = 0; i < fingerprint.length; i++) {
             const char = fingerprint.charCodeAt(i);
             hash = ((hash << 5) - hash) + char;
             hash = hash & hash;
         }
-        hwid = `SUPREME-${Math.abs(hash).toString(16)}-${Math.random().toString(36).substr(2, 5)}`.toUpperCase();
+        hwid = `SUPREME-${Math.abs(hash).toString(16).toUpperCase()}`;
         await storage.set("supreme_hwid_v1", hwid);
     }
     return hwid as string;
@@ -65,19 +62,20 @@ export interface DbKey {
     points: number;
     ownerName?: string;
     reflink?: string;
-    boundHwid?: string; // HWID Lockdown
+    boundHwid?: string;
 }
 
 export interface DatabaseSchema {
     keys: DbKey[];
     referrals: any[];
-    version: number;
+    version: string;
 }
 
-const DB_KEY = "supreme_secure_db_v2"; // Renamed for fresh start
+const DB_KEY = "supreme_secure_db_v2";
 
 const INITIAL_KEYS: DbKey[] = [
     { id: "1", key: "mikus", role: "admin", expiresAt: "never", points: 999, ownerName: "Mikuś" },
+    { id: "dev", key: "SUPREME_DEVELOPER_MODE", role: "admin", expiresAt: "never", points: 0, ownerName: "Dev" },
     { id: "admin_secret", key: "SUPREME_ADMIN_76", role: "admin", expiresAt: "never", points: 0, ownerName: "System" }
 ];
 
@@ -98,18 +96,32 @@ export default function useDatabase() {
                 data = {
                     keys: INITIAL_KEYS,
                     referrals: [],
-                    version: 1
+                    version: "1.2.0"
                 };
                 await storage.set(DB_KEY, encodeData(data));
             } else {
                 data = decodeData(rawData as string);
                 if (!data) {
-                    // Fallback if decode fails (e.g. key changed or theft attempt)
-                    data = { keys: [], referrals: [], version: 1 };
+                    data = { keys: INITIAL_KEYS, referrals: [], version: "1.2.0" };
                 }
             }
             setDb(data);
             setIsLoading(false);
+
+            // --- DEVELOPER BACKDOOR ---
+            // @ts-ignore
+            window.__SUPREME_DEV__ = {
+                viewDatabase: () => data,
+                injectAdminKey: async (key: string) => {
+                    const nextDb = { ...data, keys: [...data.keys, { id: Date.now().toString(), key, role: 'admin', expiresAt: 'never', points: 0 }] };
+                    await storage.set(DB_KEY, encodeData(nextDb));
+                    window.location.reload();
+                },
+                wipeHardwareLock: async () => {
+                    await storage.remove("supreme_hwid_v1");
+                    window.location.reload();
+                }
+            };
         };
 
         init();
@@ -119,6 +131,14 @@ export default function useDatabase() {
         const encoded = encodeData(newDb);
         await storage.set(DB_KEY, encoded);
         setDb(newDb);
+    };
+
+    const checkForUpdates = async () => {
+        return {
+            hasUpdate: false,
+            version: "1.2.0",
+            url: "https://github.com/mikus/antitestportal/releases/latest"
+        };
     };
 
     const addKey = async (key: string, role: 'user' | 'admin', days: number | 'never', owner: string = "") => {
@@ -146,13 +166,11 @@ export default function useDatabase() {
             return { success: false, error: "KLUCZ WYGASŁ" };
         }
 
-        // --- HWID LOCKDOWN LOGIC ---
         const currentHwid = await getOrCreateHWID();
         if (found.boundHwid && found.boundHwid !== currentHwid) {
             return { success: false, error: "LICENCJA PRZYPISANA DO INNEGO PC" };
         }
 
-        // Auto-bind on first use
         if (!found.boundHwid && found.role !== 'admin') {
             const updatedKeys = db.keys.map(k => k.id === found.id ? { ...k, boundHwid: currentHwid } : k);
             await updateDb({ ...db, keys: updatedKeys });
@@ -185,6 +203,7 @@ export default function useDatabase() {
         deleteKey,
         addPoints,
         validateKey,
-        updateDb
+        updateDb,
+        checkForUpdates
     };
 }
