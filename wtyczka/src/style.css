@@ -448,37 +448,132 @@ input:checked+.slider:before {
     font-family: monospace;
 }
 
-/* --- CASINO --- */
-.casino-card {
-    background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-    border: 1px solid rgba(236, 72, 153, 0.3);
-    border-radius: 16px;
+/* --- PREMIUM CASINO UI --- */
+.casino-section {
+    padding: 10px;
+}
+
+.glass-premium {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     padding: 15px;
     text-align: center;
 }
 
-.points-display {
-    font-size: 24px;
-    font-weight: 800;
-    color: #fbbf24;
-    margin: 10px 0;
-    text-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+.diamond-header {
+    margin-bottom: 20px;
 }
 
-.reflink-box {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px dashed var(--primary);
-    padding: 8px;
-    border-radius: 8px;
-    margin-top: 10px;
-    font-size: 10px;
-    color: var(--text-dim);
-    cursor: pointer;
+.diamond-icon {
+    font-size: 28px;
+    display: block;
+    filter: drop-shadow(0 0 10px #60a5fa);
 }
+
+.pts-count {
+    font-size: 24px;
+    font-weight: 900;
+    background: linear-gradient(to bottom, #fff, #60a5fa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.slot-machine {
+    background: rgba(15, 23, 42, 0.6);
+    border: 2px solid #334155;
+    border-radius: 8px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.slot-window {
+    font-size: 24px;
+    font-weight: bold;
+    color: #60a5fa;
+    text-shadow: 0 0 15px rgba(96, 165, 250, 0.5);
+}
+
+.slot-spinning {
+    animation: slot-spin 0.1s infinite linear;
+}
+
+@keyframes slot-spin {
+    0% {
+        transform: translateY(-5px);
+    }
+
+    50% {
+        transform: translateY(5px);
+    }
+
+    100% {
+        transform: translateY(-5px);
+    }
+}
+
+.reflink-section {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.reflink-box-premium {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 6px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.reflink-box-premium:hover {
+    border-color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.reflink-box-premium strong {
+    color: #a78bfa;
+    letter-spacing: 2px;
+    font-size: 14px;
+}
+
+.copy-hint {
+    font-size: 7px;
+    opacity: 0.5;
+    text-transform: uppercase;
+}
+
+.gamble-btn:active {
+    transform: scale(0.95);
+}
+
+.gamble-btn.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Custom Scrollbar */

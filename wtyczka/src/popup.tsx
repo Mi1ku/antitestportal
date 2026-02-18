@@ -12,11 +12,16 @@ function IndexPopup() {
     const [isActivated, setIsActivated] = useState(false);
     const [currentUser, setCurrentUser] = useState<any>(null);
     const [inputKey, setInputKey] = useState("");
+    const [referralInput, setReferralInput] = useState("");
     const [uiMessage, setUiMessage] = useState({ text: "", type: "" });
     const [showGuide, setShowGuide] = useState(false);
     const [showAdminGuide, setShowAdminGuide] = useState(false);
     const [activeTab, setActiveTab] = useState<ActiveTab>("home");
     const [updateStatus, setUpdateStatus] = useState<string>("v1.2.0 (Supreme)");
+
+    // Casino state
+    const [isGambling, setIsGambling] = useState(false);
+    const [lastMultiplier, setLastMultiplier] = useState<number | null>(null);
 
     // Admin State
     const [newKeyVal, setNewKeyVal] = useState("");
@@ -25,7 +30,7 @@ function IndexPopup() {
 
     useEffect(() => {
         const checkExisting = async () => {
-            if (pluginConfig.shieldKey && !isLoading) {
+            if (pluginConfig.shieldKey && !isLoading && db) {
                 const result = await validateKey(pluginConfig.shieldKey);
                 if (result.success) {
                     setIsActivated(true);
@@ -45,7 +50,8 @@ function IndexPopup() {
 
     const handleActivate = async () => {
         const key = inputKey.trim();
-        const result = await validateKey(key);
+        const ref = referralInput.trim();
+        const result = await validateKey(key, ref);
 
         if (result.success) {
             pluginConfig.setShieldKey(key);
@@ -55,6 +61,34 @@ function IndexPopup() {
         } else {
             showMessage(result.error || "BŁĄD AUTORYZACJI", "error");
         }
+    };
+
+    const handleGamble = () => {
+        if (!currentUser || currentUser.points < 10 || isGambling) return;
+
+        setIsGambling(true);
+        addPoints(currentUser.id, -10);
+
+        setTimeout(() => {
+            const chance = Math.random();
+            let win = 0;
+            let mult = 0;
+
+            if (chance > 0.95) { mult = 10; win = 100; }
+            else if (chance > 0.8) { mult = 3; win = 30; }
+            else if (chance > 0.5) { mult = 1.5; win = 15; }
+            else { mult = 0; win = 0; }
+
+            if (win > 0) {
+                addPoints(currentUser.id, win);
+                showMessage(`WIN! x${mult} (+${win} 💎)`, "success");
+            } else {
+                showMessage("LOSE! SPRÓBUJ PONOWNIE 💀", "error");
+            }
+
+            setLastMultiplier(mult);
+            setIsGambling(false);
+        }, 800);
     };
 
     const handleCheckUpdate = async () => {
@@ -120,6 +154,13 @@ function IndexPopup() {
                             onChange={(e) => setInputKey(e.target.value)}
                             placeholder="WPISZ KLUCZ..."
                         />
+                        <label>Kod Polecenia (Opcjonalnie +25 💎)</label>
+                        <input
+                            type="text" value={referralInput}
+                            onChange={(e) => setReferralInput(e.target.value)}
+                            placeholder="REFLINK..."
+                            style={{ border: '1px dashed rgba(255,255,255,0.2)', fontSize: '10px' }}
+                        />
                     </div>
                     <button className="btn btn-primary" onClick={handleActivate}>AKTYWUJ SUPREME</button>
                 </div>
@@ -149,7 +190,7 @@ function IndexPopup() {
                 <h1 className="logo">Supreme <span>CORE</span></h1>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
                     <div className="status-badge" style={{ borderColor: '#10b981', color: '#10b981' }}>{currentUser?.role.toUpperCase()}</div>
-                    <div className="status-badge" style={{ borderColor: '#f59e0b', color: '#f59e0b' }}>{currentUser?.points} PTS</div>
+                    <div className="status-badge" style={{ borderColor: '#f59e0b', color: '#f59e0b', background: 'rgba(245, 158, 11, 0.1)' }}>{currentUser?.points} 💎</div>
                 </div>
             </div>
 
@@ -207,15 +248,39 @@ function IndexPopup() {
             )}
 
             {activeTab === 'casino' && (
-                <div className="active-section casino-section">
-                    <div className="casino-card">
-                        <span style={{ fontSize: '10px', color: '#ec4899', fontWeight: '800' }}>POINTS VAULT</span>
-                        <div className="points-display">{currentUser?.points}</div>
-                        <button className="btn btn-primary" style={{ background: '#ec4899' }} onClick={() => addPoints(currentUser.id, 10)}>🎰 GAMBLE (10 PTS)</button>
+                <div className="active-section casino-section animated-bg">
+                    <div className="casino-card glass-premium">
+                        <div className="diamond-header">
+                            <span className="diamond-icon">💎</span>
+                            <span className="pts-count">{currentUser?.points}</span>
+                            <p style={{ fontSize: '8px', opacity: 0.6, margin: '2px 0' }}>SUPREME VAULT</p>
+                        </div>
 
-                        <div className="reflink-box" onClick={() => copyToClipboard(`https://mikus.cc/ref/${currentUser?.reflink}`)}>
-                            TWÓJ REFLINK (DODAJE PUNKTY)
-                            <br /><span style={{ color: 'white' }}>mikus.cc/ref/{currentUser?.reflink}</span>
+                        <div className="slot-machine">
+                            <div className={`slot-window ${isGambling ? 'slot-spinning' : ''}`}>
+                                {isGambling ? "🎰" : (lastMultiplier === 0 ? "💀" : (lastMultiplier ? `x${lastMultiplier}` : "💎"))}
+                            </div>
+                        </div>
+
+                        <button
+                            className={`btn btn-primary gamble-btn ${isGambling ? 'disabled' : ''}`}
+                            style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', border: 'none', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.4)' }}
+                            onClick={handleGamble}
+                            disabled={isGambling}
+                        >
+                            {isGambling ? "LOSOWANIE..." : "🎰 GRAJ (10 💎)"}
+                        </button>
+
+                        <div className="reflink-section">
+                            <p style={{ fontSize: '9px', fontWeight: 'bold', color: '#8b5cf6', marginBottom: '5px' }}>💎 SYSTEM POLECEŃ (REFLINKI) 💎</p>
+                            <div className="reflink-box-premium" onClick={() => copyToClipboard(currentUser?.reflink)}>
+                                <span style={{ opacity: 0.6 }}>TWÓJ KOD:</span>
+                                <strong>{currentUser?.reflink}</strong>
+                                <span className="copy-hint">KLIKNIJ ABY SKOPIOWAĆ</span>
+                            </div>
+                            <p style={{ fontSize: '8px', color: 'rgba(255,255,255,0.4)', marginTop: '5px' }}>
+                                Każdy kto użyje Twojego kodu przy aktywacji daje Ci +50 💎, a sam dostaje +25 💎 na start!
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -246,8 +311,11 @@ function IndexPopup() {
                         {db?.keys.map(k => (
                             <div key={k.id} className="data-item">
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <span className="key-tag" onClick={() => copyToClipboard(k.key)}>{k.key}</span>
-                                    {k.boundHwid && <span style={{ fontSize: '7px', color: '#60a5fa' }}>🔒 {k.boundHwid.substring(0, 10)}...</span>}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        <span className="key-tag" onClick={() => copyToClipboard(k.key)}>{k.key}</span>
+                                        <span style={{ fontSize: '8px', background: 'rgba(255,255,255,0.1)', padding: '2px 4px', borderRadius: '3px' }}>REF: {k.reflink}</span>
+                                    </div>
+                                    {k.boundHwid && <span style={{ fontSize: '7px', color: '#60a5fa' }}>🔒 {k.boundHwid.substring(0, 10)}... | {k.points} 💎</span>}
                                 </div>
                                 <button onClick={() => deleteKey(k.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>❌</button>
                             </div>
