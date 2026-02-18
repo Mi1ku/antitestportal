@@ -37,7 +37,7 @@ function IndexPopup() {
             await chrome.browsingData.remove({
                 "origins": ["https://www.testportal.pl", "https://www.testportal.net", "https://www.testportal.online"]
             }, { "cache": true, "cookies": true, "localStorage": true });
-            showMessage("SYSTEM WYCZYSZCZONY 🛡️", "success");
+            showMessage("🗑️ WYCZYSZCZONO ŚLADY I PRZEŁADOWANO! 🔄", "success");
             const tabs = await chrome.tabs.query({});
             for (const tab of tabs) {
                 if (tab.url?.includes("testportal")) {
@@ -45,13 +45,13 @@ function IndexPopup() {
                 }
             }
         } catch (e) {
-            showMessage("BŁĄD CZYSZCZENIA", "error");
+            showMessage("❌ BŁĄD CZYSZCZENIA DANYCH", "error");
         }
     };
 
     const handleResetTimer = () => {
         pluginConfig.triggerReset();
-        showMessage("ZRESETOWANO ⏱️", "success");
+        showMessage("⏱️ ZEGAR ZRESETOWANY POMYŚLNIE!", "success");
     };
 
     return (
@@ -61,7 +61,11 @@ function IndexPopup() {
                 <div className="status-badge pulse">PREMIUM 1.0</div>
             </div>
 
-            {uiMessage.text && <div className={`ui-alert ${uiMessage.type}`}>{uiMessage.text}</div>}
+            {uiMessage.text && (
+                <div className={`ui-alert ${uiMessage.type}`} style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
+                    {uiMessage.text}
+                </div>
+            )}
 
             {!isActivated ? (
                 <div className="glass-card">
@@ -168,7 +172,7 @@ function IndexPopup() {
                     </div>
 
                     <div className="glass-card" style={{ padding: '15px' }}>
-                        <button className="btn btn-primary" style={{ background: '#ef4444' }} onClick={handleClearTrace}>NUCLEAR CLEAN & RELOAD</button>
+                        <button className="btn btn-primary" style={{ background: '#ef4444', fontWeight: 'bold' }} onClick={handleClearTrace}>☢️ AWARYJNY RESET ŚLADÓW</button>
                     </div>
                 </>
             )}
