@@ -143,10 +143,10 @@ function IndexPopup() {
                         </div>
                         {showGuide && (
                             <div style={{ marginTop: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.8)', lineHeight: '1.4' }}>
-                                <p>💎 <b>SZUKAJ:</b> Na HUDzie masz dwa przyciski (✨ AI i 🌐 GOOGLE) dla całego zadania.</p>
-                                <p>⌨️ <b>SKRÓTY:</b> Ctrl+Shift+X (AI) oraz Ctrl+Shift+Z (Google).</p>
-                                <p>❄️ <b>Mrożenie:</b> "Freeze" zatrzymuje zegar (Ikona ❄️). Odmrażanie to (Ikona 🔥).</p>
-                                <p>🚀 <b>Reset:</b> "Reset Timer" cofa zegar do pełnej wartości paska.</p>
+                                <p>💎 <b>DWA PRZYCISKI:</b> Na HUDzie w rogu strony masz teraz ✨ AI (Perplexity) oraz 🌐 GOOGLE do szukania całego zadania.</p>
+                                <p>⌨️ <b>SKRÓTY:</b> Ctrl+Shift+X (AI) oraz Ctrl+Shift+Z (Google) - szukają bez klikania!</p>
+                                <p>❄️ <b>Mrożenie:</b> Ikona ❄️ oznacza stop zegara. 🔥 oznacza, że czas płynie.</p>
+                                <p>🚀 <b>Reset:</b> "Reset Timer" cofa zegar do pełnej wartości (na żywo!).</p>
                                 <hr style={{ opacity: 0.1, margin: '6px 0' }} />
                                 <p>🖱️ <b>Ctrl + Klik:</b> Szukaj zaznaczonego tekstu w Google.</p>
                                 <p>🖱️ <b>Alt + Klik:</b> Szukaj zaznaczonego tekstu w AI.</p>

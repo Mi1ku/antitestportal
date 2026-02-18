@@ -11,7 +11,7 @@
   - **Freeze (❄️)**: Całkowite zamrożenie odliczania czasu. System nadpisuje natywny licznik Testportalu.
   - **Unfreeze (🔥)**: Płynne przywrócenie odliczania czasu bez odświeżania strony.
   - **Reset (⏱️)**: Natychmiastowe przywrócenie pełnego limitu czasu na pytanie.
-- **Dual AI/Google Search**: Dwa oddzielne systemy wyszukiwania na ekranie zadania, automatycznie usuwające numerację pytań i prefiksy ("Pytanie 1:").
+- **Dual Search HUD (✨ AI / 🌐 GOOGLE)**: Dwa oddzielne przyciski na ekranie zadania do natychmiastowego wyszukiwania całego zadania, automatycznie usuwające numerację pytań i prefiksy ("Pytanie 1:").
 - **Nuclear Clean Protocol**: Jedno kliknięcie usuwa wszystkie ślady aktywności (Cookies, LocalStorage, Cache) i restartuje środowisko.
 
 ---
@@ -26,7 +26,8 @@
 ### 2. Aktywacja (Klucze)
 - Klucze: `mikus`, `zsa`.
 
-### 3. Skróty Klawiszowe (v1.0.2)
+### 3. Sterowanie i Skróty (v1.0.2)
+- **HUD na stronie**: Zawiera status oraz dwa przyciski szukania: **✨ AI** (Perplexity) i **🌐 GOOGLE**.
 - **Ctrl + Shift + X**: Błyskawiczne szukanie **całego pytania** w Perplexity AI.
 - **Ctrl + Shift + Z**: Błyskawiczne szukanie **całego pytania** w Google.
 - **Alt + Klik**: Szukanie **zaznaczonego tekstu** w AI.
