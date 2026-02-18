@@ -2,40 +2,42 @@
 
 ![Version](https://img.shields.io/badge/version-1.2.0-blueviolet?style=for-the-badge)
 ![Security](https://img.shields.io/badge/security-Encrypted-success?style=for-the-badge)
-![Developer](https://img.shields.io/badge/developer-Backdoor_Active-red?style=for-the-badge)
+![License](https://img.shields.io/badge/HWID-Locked-gold?style=for-the-badge)
 
-**AntiTestportal Ultra Supreme (Encrypted Edition)** to najbardziej profesjonalne narzędzie do automatyzacji i zabezpieczania egzaminów na platformie Testportal.
-
----
-
-## 🛠️ Developer & Admin Guide
-
-Jako deweloper masz pełną kontrolę nad bazą danych i systemem licencji.
-
-### 🔓 Developer Backdoor (Console)
-Gdy popup jest otwarty, możesz użyć konsoli DevTools (F12) na oknie popupu, aby zarządzać wtyczką przez obiekt `window.__SUPREME_DEV__`:
-- `window.__SUPREME_DEV__.viewDatabase()` - Podgląd całej zakodowanej bazy danych (zdekodowany widok).
-- `window.__SUPREME_DEV__.injectAdminKey("TWOJ_KLUCZ")` - Natychmiastowe dodanie klucza administratora do bazy.
-- `window.__SUPREME_DEV__.wipeHardwareLock()` - Resetuje HWID tego komputera (przydatne do testowania przypisywania licencji).
-
-### 💾 Trwałość Danych (Reinstalacja)
-- **HWID:** Specjalny algorytm generuje HWID na podstawie stałych cech przeglądarki i sprzętu. Dzięki temu HWID pozostaje **taki sam** nawet po odinstalowaniu i ponownym zainstalowaniu wtyczki (chyba że zmienisz system lub drastycznie zaktualizujesz przeglądarkę).
-- **Licencje:** Dane są przechowywane w `chrome.storage.local`. Jeśli odinstalujesz wtyczkę całkowicie, Chrome może usunąć dane. Aby zachować bazę, Admin może wyeksportować klucze (używając `viewDatabase`).
-
-### ⬆️ System Aktualizacji (Update Engine)
-W zakładce **SILNIK** znajduje się przycisk **SPRAWDZANIE AKTUALIZACJI**.
-- System łączy się z repozytorium GitHub i sprawdza najnowszą dostępną wersję.
-- Jeśli jest dostępna nowa paczka, wtyczka zaproponuje przejście do strony pobierania.
+**AntiTestportal Ultra Supreme** to najbardziej zaawansowane rozszerzenie do optymalizacji pracy z platformą Testportal. Stworzone dla elity, wyposażone w systemy anty-detekcji, mrożenie czasu oraz zabezpieczenia klasy premium.
 
 ---
 
-## 🔒 Nowości w Wersji 1.2.0
+## 🚀 Instrukcja Instalacji (Dla Użytkownika)
 
-### 🖥️ Hardware ID Lockdown
-Każdy klucz (użytkownika) po pierwszym użyciu zostaje na stałe przypisany do hardware'u. Admini widzą fragmenty HWID przypisane do kluczy w swoim panelu.
+Jeśli otrzymałeś paczkę `.zip` od administratora, wykonaj poniższe kroki:
 
-### 🔐 Encrypted Storage
-Baza danych SQL-like jest w pełni zakodowana (XOR + Base64). Edycja plików wtyczki "z palca" nie pozwoli na dodanie sobie uprawnień.
+1.  **Pobierz i rozpakuj:** Pobierz plik `AntiTestportal-Ultra-Supreme.zip` i rozpakuj go do dowolnego folderu (np. na Pulpit).
+2.  **Otwórz Rozszerzenia:** W przeglądarce Chrome/Edge wpisz w pasku adresu: `chrome://extensions/`.
+3.  **Tryb Dewelopera:** Włącz przełącznik **"Tryb dewelopera"** (prawy górny róg ekranu).
+4.  **Załaduj rozszerzenie:** Kliknij przycisk **"Załaduj rozpakowane"** i wybierz folder, do którego rozpakowałeś wtyczkę.
+5.  **Aktywacja:** Kliknij ikonę puzzla na pasku przeglądarki, przypnij wtyczkę i otwórz ją. Skopiuj swój **Hardware ID** i wyślij go do [@76mikus](https://instagram.com/76mikus) w celu wygenerowania klucza.
+6.  **Gotowe!** Wklej otrzymany klucz i ciesz się pełnym dostępem.
+
+---
+
+## 🔥 Kluczowe Funkcje
+
+### ❄️ System Freeze 2.0
+Zatrzymaj czas lokalny Testportalu za pomocą jednego kliknięcia lub skrótu klawiszowego. 
+- **Nuclear Reset:** Przycisk "RESET" cofa zegar do pełnej wartości bez odświeżania strony (No-F5).
+- **Auto-Sync:** Silnik co 400ms pilnuje, aby zegar nie ruszył z miejsca.
+
+### 🛡️ Ghost Shield EX (Advanced bypass)
+Niewidoczna osłona przed systemami "anty-ściągania".
+- Blokuje wykrywanie wychodzenia z karty (eventy `blur`, `visibilitychange`).
+- Fałszuje status fokusowania strony (`document.hasFocus`).
+- Automatycznie zeruje liczniki podejrzanej aktywności na stronie.
+
+### 🖼️ AI Snapshot & Smart Search
+- **Alt + Z:** Błyskawiczny zrzut ekranu pytania, który trafia do schowka. Wtyczka automatycznie otwiera ChatGPT/Perplexity.
+- **Ctrl + Z:** Wycinanie tekstu pytania i natychmiastowe wyszukiwanie w Google.
+- **Ctrl + Klik:** Szybkie wyszukiwanie zaznaczonego tekstu.
 
 ---
 
@@ -43,17 +45,38 @@ Baza danych SQL-like jest w pełni zakodowana (XOR + Base64). Edycja plików wty
 
 | Skrót | Akcja |
 | :--- | :--- |
-| `Ctrl + Z` | Wyszukiwanie Google |
-| `Alt + Z` | AI Snapshot to Clipboard |
-| `Ctrl + Alt + F` | Toggle Time Freeze ❄️ |
+| `Ctrl + Z` | Szukaj pytania w Google |
+| `Alt + Z` | Screenshot pytania do AI |
+| `Ctrl + Alt + F` | Szybkie Mrożenie/Odmrożenie Czasu ❄️ |
+| `Ctrl + Klik` | Szukaj zaznowania w Google |
 
 ---
 
-## 📦 Build & Obfuscation
-Aby przygotować bezpieczny build:
-1. Zainstaluj zależności: `npm install`
-2. Uruchom: `.\pack_release.ps1`
-Kod zostanie **zobfuskowany** (zaciemniony), co uniemożliwi odczytanie logiki `SECRET_SALT` i mrożenia czasu przez osoby trzecie.
+## 🛠️ Panel Dewelopera & Admina
+
+Jako administrator lub deweloper masz dostęp do potężnych narzędzi zarządzania.
+
+### 🔓 Developer Backdoor (Dla dewelopera)
+Otwórz konsolę (F12) na oknie popupu i użyj obiektu `window.__SUPREME_DEV__`:
+- `viewDatabase()` - Podgląd zdekodowanej bazy danych.
+- `injectAdminKey("KLUCZ")` - Natychmiastowe dodanie admina do bazy lokalnej.
+- `wipeHardwareLock()` - Reset HWID Twojego PC (przydatne do testów).
+
+### ⚙️ Panel Administracyjny
+Dostępny po zalogowaniu na klucz typu `admin`:
+- **Generator Kluczy:** Ustawiaj czas ważności (1 dzień, 30 dni, Unlimited).
+- **HWID Tracker:** Zobacz, do jakich maszyn przypisane są Twoje licencje.
+- **Points Management:** Zarządzaj punktami użytkowników w Kasynie.
+
+### ⬆️ Update Engine
+Zawsze miej najnowszą wersję. Przycisk **"Sprawdź aktualizacje"** w zakładce SILNIK łączy się z serwerem i sprawdza dostępność nowej paczki.
+
+---
+
+## 🔒 Bezpieczeństwo
+- **Hardware ID Lockdown:** Każda licencja jest przypisana do jednego urządzenia.
+- **Encrypted SQL:** Baza danych jest zaszyfrowana algorytmem XOR + Base64.
+- **Code Obfuscation:** Kod źródłowy jest zaciemniony, co chroni solę szyfrującą.
 
 ---
 Created with ❤️ by **mi1ku** Systems 2026.
