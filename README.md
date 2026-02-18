@@ -1,73 +1,66 @@
-# 🦍 AntiTestportal Ultra
+# 💎 AntiTestportal Ultra Supreme 💎
 
-**AntiTestportal Ultra** to potężne, profesjonalne narzędzie do całkowitego bypassu zabezpieczeń platformy Testportal. Wersja 1.0.5 "Supreme" wprowadza najbardziej zaawansowane mechanizmy niewykrywalności i wsparcia AI, stworzone w całości przez Mi1ku.
+![Version](https://img.shields.io/badge/version-1.2.0-blueviolet?style=for-the-badge)
+![Security](https://img.shields.io/badge/security-Encrypted-success?style=for-the-badge)
+![License](https://img.shields.io/badge/HWID-Locked-gold?style=for-the-badge)
 
----
-
-## 💎 Główne Funkcje (v1.0.5)
-
-- **Default Frozen State (❄️)**: Wtyczka domyślnie startuje z **zamrożonym czasem**. Nie musisz nic klikać po starcie testu – czas stoi w miejscu od sekundy zero.
-- **Ghost Shield (Supreme Stealth)**: Blokuje wszelkie próby wykrycia zmiany karty. Nauczyciel widzi **0 prób** opuszczenia strony. System działa na poziomie jądra przeglądarki (MAIN World).
-- **Nuclear Timer Control (EZ ULTRA)**: 
-  - **Freeze (❄️)**: Całkowite zamrożenie odliczania czasu (Stabilność 100%).
-  - **Unfreeze (🔥)**: Płynne przywrócenie odliczania czasu.
-  - **Reset (⏱️)**: Natychmiastowe przywrócenie pełnego limitu czasu na pytanie.
-- **Dual Search HUD (🤖 GPT / 🌐 GOOGLE)**: Dwa oddzielne przyciski na ekranie zadania.
-- **Nuclear Clean Protocol**: Jedno kliknięcie usuwa wszystkie ślady aktywności (Cookies, LocalStorage, Cache) i restartuje środowisko.
+**AntiTestportal Ultra Supreme (Encrypted Edition)** to najbardziej profesjonalne narzędzie do automatyzacji i zabezpieczania egzaminów na platformie Testportal. Wersja 1.2.0 wprowadza zabezpieczenia klasy bankowej oraz system przypisywania licencji do sprzętu (HWID).
 
 ---
 
-## 🚀 Instrukcja dla Użytkownika
+## 🔒 Nowości w Wersji 1.2.0 (Elite Security)
 
-### 1. Pobieranie (Gotowa Paczka)
-Jeśli chcesz zainstalować wtyczkę bez budowania kodu:
-1. Pobierz plik `AntiTestportal-Ultra-v1.0.5-Supreme.zip` z sekcji **Releases** na GitHubie (po prawej stronie repozytorium).
-2. Wypakuj plik do dowolnego folderu.
-3. W Chrome: wejdź w `chrome://extensions/`.
-4. Włącz **Tryb Dewelopera** (prawy górny róg).
-5. Kliknij **Załaduj rozpakowane** i wybierz wypakowany folder.
+### 🖥️ Hardware ID (HWID) Lockdown
+System automatycznie generuje unikalny identyfikator Twojego komputera. 
+- **Anti-Leak:** Każda licencja (z wyjątkiem Admina) przypisuje się do pierwszego komputera, na którym zostanie użyta.
+- **Single Device:** Nie ma możliwości współdzielenia jednego klucza przez wiele osób. Próba użycia na innym sprzęcie skutkuje blokadą.
 
-### 2. Aktywacja (Klucze)
-- Klucze: `mikus`, `zsa`.
+### 🔐 Encrypted SQL Storage
+Wszystkie dane (klucze, punkty, ustawienia) są zapisywane w lokalnej bazie danych w formie **zakodowanej (XOR + Base64 + Supreme Salt)**.
+- Nawet jeśli ktoś podejrzy pliki wtyczki, nie odczyta Twoich kluczy ani nie doda sobie punktów ręcznie.
+- Silnik automatycznie szyfruje/odszyfrowuje dane w locie przy każdym załadowaniu wtyczki.
 
-### 3. Sterowanie i Skróty (v1.0.5)
-- **Alt + Z**: **Automatyczny zrzut ekranu** zadania do schowka + otwarcie ChatGPT (Wklej: Ctrl+V).
-- **Ctrl + Z**: Błyskawiczne szukanie **całego pytania** w Google.
-- **Alt + Klik**: Szukanie **zaznaczonego tekstu** w AI.
-- **Ctrl + Klik**: Szukanie **zaznaczonego tekstu** w Google.
+### 🛡️ Obfuscated Build
+Kod źródłowy wtyczki jest poddawany procesowi **obfuskacji** podczas budowania. Logika mrożenia czasu i sprawdzania kluczy jest nieczytelna dla osób postronnych, co chroni wtyczkę przed inżynierią wsteczną.
 
 ---
 
-## 🛠️ Poradnik Deweloperski (Setup & Dev)
+## 🚀 Główne Funkcje
 
-Projekt oparty jest na środowisku **Plasmo**.
-
-- `npm install` - Instalacja zależności.
-- `npm run dev` - Tryb deweloperskiego (Live Reload).
-- `npm run build` - Generowanie wersji produkcyjnej.
-- `.\pack_release.ps1` - Automatyczne pakowanie gotowej wersji .zip do folderu głównego (wymaga PowerShell).
+- **System Freeze 2.0:** Zaawansowana manipulacja czasem na poziomie jądra JS.
+- **Ghost Shield EX:** Całkowite ukrycie aktywności przed skryptami śledzącymi fokus strony.
+- **AI Snapshot & Search:** Błyskawiczne zrzuty ekranu i wyszukiwanie oparte o sztuczną inteligencję.
+- **Supreme Casino:** System lojalnościowy oparty o punkty i reflinki.
 
 ---
 
-## ⚖️ Notki Prawne i Prawo Polskie
+## ⌨️ Zaawansowane Skróty Klawiszowe
 
-### 1. Charakter Edukacyjny
-Oprogramowanie zostało stworzone wyłącznie w celach **edukacyjnych, badawczych i demonstracyjnych**. Służy do celów prezentacji luk w zabezpieczeniach systemów online. Autor nie zachęca do naruszania regulaminów placówek edukacyjnych.
-
-### 2. Odpowiedzialność Cywilna (Art. 415 KC)
-Zgodnie z **Art. 415 Kodeksu Cywilnego**: *"Kto z winy swej wyrządził drugiemu szkodę, obowiązany jest do jej naprawienia"*. Użytkownik wykorzystuje oprogramowanie na własną, wyłączną odpowiedzialność.
-
-### 3. Ochrona Autorska (Dz.U. 1994 nr 24 poz. 83)
-Zgodnie z polskim prawem autorskim, autorskie prawa osobiste są niezbywalne. 
-- **ZABRANIA SIĘ USUWANIA LUB MODYFIKOWANIA INFORMACJI O AUTORZE (mi1ku)**.
-- Jakakolwiek dystrybucja komercyjna, sprzedaż lub redystrybucja kodu bez wyraźnej zgody autora jest zabroniona.
-- Próba przywłaszczenia autorstwa kodu lub modyfikacja brandingowa bez licencji skutkuje odpowiedzialnością karną (Plagiat).
+| Skrót | Akcja |
+| :--- | :--- |
+| `Ctrl + Z` | Wyszukiwanie Google (Całe Pytanie) |
+| `Alt + Z` | AI Snapshot (Obraz do Schowka + GPT) |
+| `Ctrl + Alt + F` | Szybkie Mrożenie/Odmrożenie Czasu ❄️ |
 
 ---
 
-## 🦍 Kontakt i Autor
-- **Twórca**: mi1ku
-- **Instagram**: [@76mikus](https://instagram.com/76mikus)
-- **Wersja**: 1.0.5 Stable "Supreme Edition"
+## 🛠️ Administracja (Panel SQL)
 
-**Stworzone przez mi1ku. Wszelkie prawa zastrzeżone. © 2026 mi1ku Systems.**
+Aby wejść do panelu administratora, użyj klucza o randze `admin` (np. domyślny `SUPREME_ADMIN_76`).
+- **Generator Kluczy:** Twórz klucze z określoną datą ważności.
+- **HWID Tracking:** Podglądaj, do jakich maszyn przypisały się Twoje klucze.
+- **Database Management:** Usuwaj wygasłe licencje i zarządzaj bazą w czasie rzeczywistym.
+
+---
+
+## 📦 Przygotowanie Wydania (Build & Pack)
+
+Użyj autorskiego skryptu PowerShell do przygotowania profesjonalnego builda:
+```powershell
+.\pack_release.ps1
+```
+Skrypt wyczyści stare pliki, zbuduje projekt w wersji produkcyjnej, zsynchronizuje README i spakuje wszystko do zabezpieczonego archiwum `.zip`.
+
+---
+Created with ❤️ by **mi1ku** Systems 2026.
+Official Support: [@76mikus](https://instagram.com/76mikus)

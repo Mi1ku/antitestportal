@@ -1,75 +1,102 @@
 import "./style.css";
 import { useState, useEffect } from "react";
 import usePluginConfig from "~hooks/use-plugin-config";
-import validKeys from "./valid_keys.json";
+import useDatabase from "~hooks/use-database";
+
+type ActiveTab = "home" | "admin" | "casino";
 
 function IndexPopup() {
     const { pluginConfig } = usePluginConfig();
+    const { db, hwid, addKey, deleteKey, validateKey, addPoints, isLoading } = useDatabase();
+
     const [isActivated, setIsActivated] = useState(false);
+    const [currentUser, setCurrentUser] = useState<any>(null);
     const [inputKey, setInputKey] = useState("");
     const [uiMessage, setUiMessage] = useState({ text: "", type: "" });
     const [showGuide, setShowGuide] = useState(false);
+    const [activeTab, setActiveTab] = useState<ActiveTab>("home");
+
+    // Admin State
+    const [newKeyVal, setNewKeyVal] = useState("");
+    const [newKeyRole, setNewKeyRole] = useState<'user' | 'admin'>("user");
+    const [newKeyDays, setNewKeyDays] = useState<string>("30");
 
     useEffect(() => {
-        if (pluginConfig.shieldKey && validKeys.includes(pluginConfig.shieldKey)) {
-            setIsActivated(true);
-        }
-    }, [pluginConfig.shieldKey]);
+        const checkExisting = async () => {
+            if (pluginConfig.shieldKey && !isLoading) {
+                const result = await validateKey(pluginConfig.shieldKey);
+                if (result.success) {
+                    setIsActivated(true);
+                    setCurrentUser(result.user);
+                } else {
+                    // Force re-login if key is invalid/expired/stolen
+                    pluginConfig.setShieldKey("");
+                }
+            }
+        };
+        checkExisting();
+    }, [pluginConfig.shieldKey, isLoading, db]);
 
     const showMessage = (text: string, type: "success" | "error") => {
         setUiMessage({ text, type });
         setTimeout(() => setUiMessage({ text: "", type: "" }), 3000);
     };
 
-    const handleActivate = () => {
+    const handleActivate = async () => {
         const key = inputKey.trim();
-        if (validKeys.includes(key)) {
+        const result = await validateKey(key);
+
+        if (result.success) {
             pluginConfig.setShieldKey(key);
             setIsActivated(true);
-            showMessage("WITAJ W ELICIE ULTRA 1.0 💎", "success");
+            setCurrentUser(result.user);
+            showMessage(`WITAJ ${result.user.role.toUpperCase()} 💎`, "success");
         } else {
-            showMessage("BŁĘDNY KLUCZ LICENCYJNY", "error");
+            showMessage(result.error || "BŁĄD AUTORYZACJI", "error");
         }
     };
 
-    const handleClearTrace = async () => {
-        try {
-            await chrome.browsingData.remove({
-                "origins": ["https://www.testportal.pl", "https://www.testportal.net", "https://www.testportal.online"]
-            }, { "cache": true, "cookies": true, "localStorage": true });
-            showMessage("🗑️ WYCZYSZCZONO ŚLADY I PRZEŁADOWANO! 🔄", "success");
-            const tabs = await chrome.tabs.query({});
-            for (const tab of tabs) {
-                if (tab.url?.includes("testportal")) {
-                    if (tab.id) await chrome.tabs.reload(tab.id);
-                }
-            }
-        } catch (e) {
-            showMessage("❌ BŁĄD CZYSZCZENIA DANYCH", "error");
-        }
+    const handleLogout = () => {
+        pluginConfig.setShieldKey("");
+        setIsActivated(false);
+        setCurrentUser(null);
+        setActiveTab("home");
     };
 
     const handleResetTimer = () => {
         pluginConfig.triggerReset();
-        showMessage("⏱️ ZEGAR ZRESETOWANY POMYŚLNIE!", "success");
+        showMessage("⏱️ ZEGAR ZRESETOWANY!", "success");
     };
 
-    return (
-        <div className="popup-container">
-            <div className="header">
-                <h1 className="logo">AntiTestportal <span>ULTRA</span></h1>
-                <div className="status-badge pulse">PREMIUM 1.0</div>
-            </div>
+    const handleCreateKey = () => {
+        if (!newKeyVal) return;
+        const days = newKeyDays === "never" ? "never" : parseInt(newKeyDays);
+        addKey(newKeyVal, newKeyRole, days as any, "Generated");
+        setNewKeyVal("");
+        showMessage("KLUCZ UTWORZONY!", "success");
+    };
 
-            {uiMessage.text && (
-                <div className={`ui-alert ${uiMessage.type}`} style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
-                    {uiMessage.text}
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+        showMessage("SKOPIOWANO!", "success");
+    };
+
+    if (isLoading) return <div className="popup-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="pulse" style={{ color: 'white' }}>ŁADOWANIE SILNIKA...</div></div>;
+
+    if (!isActivated) {
+        return (
+            <div className="popup-container">
+                <div className="header">
+                    <h1 className="logo">AntiTestportal <span>ULTRA</span></h1>
+                    <div className="status-badge pulse">ENCRYPTED CORE ACTIVE</div>
                 </div>
-            )}
-
-            {!isActivated ? (
+                {uiMessage.text && <div className={`ui-alert ${uiMessage.type}`}>{uiMessage.text}</div>}
                 <div className="glass-card">
                     <div className="input-group">
+                        <label>Hardware ID (Twój PC)</label>
+                        <div style={{ fontSize: '9px', background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '4px', color: '#60a5fa', fontFamily: 'monospace', marginBottom: '10px', border: '1px solid rgba(96, 165, 250, 0.2)' }}>
+                            {hwid}
+                        </div>
                         <label>Klucz Licencyjny</label>
                         <input
                             type="text" value={inputKey}
@@ -77,106 +104,135 @@ function IndexPopup() {
                             placeholder="WPISZ KLUCZ..."
                         />
                     </div>
-                    <button className="btn btn-primary" onClick={handleActivate}>AKTYWUJ DOSTĘP</button>
-                    <div className="support-links">
-                        <p>Klucze: <b>mikus</b>, <b>zsa</b></p>
-                        <p>Instagram: <a href="https://instagram.com/76mikus" target="_blank">@76mikus</a></p>
-                    </div>
+                    <button className="btn btn-primary" onClick={handleActivate}>AKTYWUJ LICENCJĘ</button>
                 </div>
-            ) : (
-                <>
-                    {/* MODUŁ CZASU */}
-                    <div className="module-box" style={{
-                        background: 'rgba(30, 41, 59, 0.4)',
-                        border: '1px solid rgba(96, 165, 250, 0.2)'
-                    }}>
+                <div className="footer-info" style={{ opacity: 1, color: '#94a3b8' }}>Wtyczka przypisuje się do tego komputera.</div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="popup-container">
+            <div className="header" style={{ marginBottom: '15px' }}>
+                <h1 className="logo">Supreme <span>CORE</span></h1>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                    <div className="status-badge" style={{ borderColor: '#10b981', color: '#10b981' }}>{currentUser?.role.toUpperCase()}</div>
+                    <div className="status-badge" style={{ borderColor: '#f59e0b', color: '#f59e0b' }}>{currentUser?.points} PTS</div>
+                </div>
+                <div style={{ fontSize: '8px', color: 'rgba(255,255,255,0.3)', marginTop: '4px' }}>HWID: {hwid}</div>
+            </div>
+
+            {uiMessage.text && <div className={`ui-alert ${uiMessage.type}`}>{uiMessage.text}</div>}
+
+            <div className="tab-container">
+                <button className={`tab-btn ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>🏠 SILNIK</button>
+                <button className={`tab-btn ${activeTab === 'casino' ? 'active' : ''}`} onClick={() => setActiveTab('casino')}>🎰 KASYNO</button>
+                {currentUser?.role === 'admin' && (
+                    <button className={`tab-btn ${activeTab === 'admin' ? 'active' : ''}`} onClick={() => setActiveTab('admin')}>⚙️ ADMIN</button>
+                )}
+            </div>
+
+            {activeTab === 'home' && (
+                <div className="active-section">
+                    <div className="module-box" style={{ background: 'rgba(30, 41, 59, 0.4)', border: '1px solid rgba(96, 165, 250, 0.2)' }}>
                         <div className="module-header">
-                            <span className="module-title" style={{ color: '#60a5fa' }}>KONTROLA CZASU EZ ULTRA</span>
-                            <div
-                                className={`status-pill ${pluginConfig.timeFreeze ? 'active' : ''}`}
-                                style={{
-                                    background: pluginConfig.timeFreeze
-                                        ? 'linear-gradient(135deg, #3b82f6, #60a5fa)'
-                                        : 'linear-gradient(135deg, #10b981, #34d399)',
-                                    color: 'white',
-                                    fontWeight: 'bold',
-                                    padding: '4px 10px',
-                                    fontSize: '12px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px'
-                                }}
-                            >
-                                {pluginConfig.timeFreeze ? (
-                                    <><span>❄️</span> ZAMROŻONY</>
-                                ) : (
-                                    <><span>🔥</span> ODMROŻONY</>
-                                )}
+                            <span className="module-title" style={{ color: '#60a5fa' }}>SYSTEM FREEZE 2.0</span>
+                            <div className={`status-pill ${pluginConfig.timeFreeze ? 'active' : ''}`} style={{ background: pluginConfig.timeFreeze ? '#3b82f6' : '#10b981' }}>
+                                {pluginConfig.timeFreeze ? 'FROZEN ❄️' : 'WARM 🔥'}
                             </div>
                         </div>
                         <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                            <button
-                                className={`btn ${pluginConfig.timeFreeze ? 'btn-outline' : 'btn-primary'}`}
-                                style={{ flex: 1, fontSize: '9px', borderColor: '#3b82f6' }}
-                                onClick={() => pluginConfig.setTimeFreeze(!pluginConfig.timeFreeze)}
-                            >
+                            <button className="btn btn-outline" style={{ flex: 1, fontSize: '9px' }} onClick={() => pluginConfig.setTimeFreeze(!pluginConfig.timeFreeze)}>
                                 {pluginConfig.timeFreeze ? '🔥 ODMROŹ' : '❄️ ZAMRÓŹ'}
                             </button>
-                            <button className="btn btn-primary" style={{ flex: 1, fontSize: '9px', background: 'linear-gradient(45deg, #8b5cf6, #d946ef)' }} onClick={handleResetTimer}>
-                                ⏱️ RESET TIMER
-                            </button>
+                            <button className="btn btn-primary" style={{ flex: 1, fontSize: '9px' }} onClick={handleResetTimer}>⏱️ RESET</button>
                         </div>
                     </div>
 
-                    {/* GHOST SHIELD */}
-                    <div className="module-box" style={{ borderColor: 'rgba(52, 211, 153, 0.3)' }}>
+                    <div className="module-box">
                         <div className="module-header">
-                            <span className="module-title" style={{ color: '#34d399' }}>GHOST SHIELD</span>
+                            <span className="module-title" style={{ color: '#34d399' }}>GHOST SHIELD EX</span>
                             <label className="switch">
                                 <input type="checkbox" checked={pluginConfig.antiAntiTampering} onChange={(e) => pluginConfig.setAntiAntiTampering(e.target.checked)} />
-                                <span className="slider" style={{ backgroundColor: pluginConfig.antiAntiTampering ? '#10b981' : '#334155' }}></span>
+                                <span className="slider"></span>
                             </label>
                         </div>
+                        <p style={{ fontSize: '8px', color: 'rgba(255,255,255,0.5)', marginTop: '4px' }}>Blokuje eventy focus/visibility w 100%.</p>
                     </div>
 
-                    {/* PORADNIK & POMOC */}
-                    <div className="module-box" style={{ background: 'rgba(255,255,255,0.05)', border: '1px dashed rgba(255,255,255,0.2)' }}>
+                    <div className="module-box" style={{ background: 'rgba(255,255,255,0.02)' }}>
                         <div className="module-header" style={{ cursor: 'pointer' }} onClick={() => setShowGuide(!showGuide)}>
-                            <span className="module-title" style={{ fontSize: '10px' }}>📘 PORADNIK & SKRÓTY (v1.0.3)</span>
+                            <span className="module-title" style={{ fontSize: '10px' }}>⌨️ SKRÓTY SUPREME</span>
                             <span style={{ fontSize: '10px' }}>{showGuide ? '▲' : '▼'}</span>
                         </div>
                         {showGuide && (
-                            <div style={{ marginTop: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.8)', lineHeight: '1.4' }}>
-                                <p>❄️ <b>Mrożenie:</b> Ikona ❄️ to stop zegara. 🔥 to start.</p>
-                                <p>🚀 <b>Reset:</b> "Reset Timer" cofa zegar do pełnej wartości (No-F5).</p>
-                                <hr style={{ opacity: 0.1, margin: '6px 0' }} />
-                                <p>🔍 <b>SZUKAJ CAŁE ZADANIE:</b></p>
-                                <p>⚡ <b>Ctrl + Z:</b> Szukaj całego pytania w Google.</p>
-                                <p>🤖 <b>Alt + Z:</b> Zrób screen zadania do schowka i otwórz ChatGPT.</p>
-                                <hr style={{ opacity: 0.1, margin: '6px 0' }} />
-                                <p>🔍 <b>SZUKAJ ZAZNACZONY TEKST:</b></p>
-                                <p>🖱️ <b>Ctrl + Klik:</b> Szukaj zaznaczenia w Google.</p>
-                                <p>🖱️ <b>Alt + Klik:</b> Szukaj zaznaczenia w AI.</p>
+                            <div style={{ marginTop: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.6)', lineHeight: '1.4' }}>
+                                <p>🚀 <b>Ctrl + Z:</b> Google Quest.</p>
+                                <p>🖼️ <b>Alt + Z:</b> AI Snapshot.</p>
+                                <p>❄️ <b>Ctrl + Alt + F:</b> Time Toggle.</p>
                             </div>
                         )}
                     </div>
 
-                    <div className="module-box" style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <div className="module-header">
-                            <span className="module-title" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>POKAŻ STATUS NA STRONIE</span>
-                            <label className="switch" style={{ transform: 'scale(0.8)' }}>
-                                <input type="checkbox" checked={pluginConfig.showHud} onChange={(e) => pluginConfig.setShowHud(e.target.checked)} />
-                                <span className="slider"></span>
-                            </label>
+                    <button className="btn btn-outline" style={{ borderColor: '#ef4444', color: '#ef4444', marginTop: '10px', padding: '6px' }} onClick={handleLogout}>WYLOGUJ I WYCZYŚĆ SESJĘ</button>
+                </div>
+            )}
+
+            {activeTab === 'casino' && (
+                <div className="active-section casino-section">
+                    <div className="casino-card">
+                        <span style={{ fontSize: '10px', color: '#ec4899', fontWeight: '800', letterSpacing: '1px' }}>POINTS VAULT</span>
+                        <div className="points-display">{currentUser?.points}</div>
+                        <button className="btn btn-primary" style={{ background: '#ec4899' }} onClick={() => addPoints(currentUser.id, 10)}>🎰 GAMBLE (10 PTS)</button>
+
+                        <div className="reflink-box" onClick={() => copyToClipboard(`https://mikus.cc/ref/${currentUser?.reflink}`)}>
+                            TWÓJ REFLINK (DODAJE PUNKTY)
+                            <br /><span style={{ color: 'white', fontWeight: 'bold' }}>mikus.cc/ref/{currentUser?.reflink}</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'admin' && (
+                <div className="active-section admin-section">
+                    <div className="module-box" style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--primary)' }}>
+                        <span className="module-title" style={{ color: 'var(--primary-bright)' }}>GENERATOR LICENCJI</span>
+                        <div style={{ marginTop: '10px' }}>
+                            <input type="text" placeholder="KLUCZ..." value={newKeyVal} onChange={(e) => setNewKeyVal(e.target.value)} style={{ marginBottom: '8px' }} />
+                            <div style={{ display: 'flex', gap: '5px', marginBottom: '8px' }}>
+                                <select value={newKeyRole} onChange={(e) => setNewKeyRole(e.target.value as any)} style={{ background: '#0f172a', color: 'white', border: '1px solid #334155', borderRadius: '4px', flex: 1, fontSize: '10px' }}>
+                                    <option value="user">USER</option>
+                                    <option value="admin">ADMIN</option>
+                                </select>
+                                <select value={newKeyDays} onChange={(e) => setNewKeyDays(e.target.value)} style={{ background: '#0f172a', color: 'white', border: '1px solid #334155', borderRadius: '4px', flex: 1, fontSize: '10px' }}>
+                                    <option value="1">1 DZIEŃ</option>
+                                    <option value="30">30 DNI</option>
+                                    <option value="never">NA ZAWSZE</option>
+                                </select>
+                            </div>
+                            <button className="btn btn-primary" onClick={handleCreateKey}>DODAJ DO BAZY</button>
                         </div>
                     </div>
 
-                    <div className="glass-card" style={{ padding: '15px' }}>
-                        <button className="btn btn-primary" style={{ background: '#ef4444', fontWeight: 'bold' }} onClick={handleClearTrace}>☢️ AWARYJNY RESET ŚLADÓW</button>
+                    <div className="data-list" style={{ marginTop: '10px' }}>
+                        <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', marginBottom: '5px' }}>LISTA AKTYWNYCH KLUCZY (ENCRYPTED):</div>
+                        {db?.keys.map(k => (
+                            <div key={k.id} className="data-item">
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <span className="key-tag" onClick={() => copyToClipboard(k.key)}>{k.key}</span>
+                                    {k.boundHwid && <span style={{ fontSize: '7px', color: '#60a5fa' }}>🔒 {k.boundHwid.substring(0, 15)}...</span>}
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span style={{ fontSize: '9px', color: k.role === 'admin' ? '#f59e0b' : '#94a3b8' }}>{k.role}</span>
+                                    <button onClick={() => deleteKey(k.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '12px' }}>❌</button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                </>
+                </div>
             )}
-            <div className="footer-info">mi1ku Systems 1.0 | @76mikus</div>
+
+            <div className="footer-info">Supreme Security Engine | mi1ku Systems v11</div>
         </div>
     );
 }

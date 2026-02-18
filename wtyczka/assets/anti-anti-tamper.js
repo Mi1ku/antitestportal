@@ -75,34 +75,57 @@
     };
 
     const setupNuclearTimer = () => {
-        if (!window.Testportal || !window.Testportal.Timer) return;
-        const timer = window.Testportal.Timer;
-        if (timer.__is_patched) return;
-        timer.__is_patched = true;
+        // --- TESTPORTAL V1 (Legendary) ---
+        if (window.Testportal && window.Testportal.Timer) {
+            const timer = window.Testportal.Timer;
+            if (!timer.__is_patched) {
+                timer.__is_patched = true;
+                const originalGetTimeLeft = timer.getTimeLeft;
 
-        const originalGetTimeLeft = timer.getTimeLeft;
-        Object.defineProperty(timer, 'getTimeLeft', {
-            get: () => {
-                return _c(() => {
-                    if (isTimeFreezeEnabled) {
-                        // Jeśli mrozimy po raz pierwszy, zapisujemy czas
-                        if (!window.__ultra_frozen_val) {
-                            try { window.__ultra_frozen_val = originalGetTimeLeft.call(timer); }
-                            catch (e) { window.__ultra_frozen_val = 3600; }
-                        }
-                        return window.__ultra_frozen_val;
-                    }
-                    return originalGetTimeLeft ? originalGetTimeLeft.call(timer) : 3600;
-                }, 'getTimeLeft');
-            },
-            configurable: true
-        });
+                Object.defineProperty(timer, 'getTimeLeft', {
+                    get: () => {
+                        return _c(() => {
+                            if (isTimeFreezeEnabled) {
+                                if (!window.__ultra_frozen_val) {
+                                    try { window.__ultra_frozen_val = originalGetTimeLeft.call(timer); }
+                                    catch (e) { window.__ultra_frozen_val = timer.timeRemaining || 3600; }
+                                }
+                                return window.__ultra_frozen_val;
+                            }
+                            return originalGetTimeLeft ? originalGetTimeLeft.call(timer) : 3600;
+                        }, 'getTimeLeft');
+                    },
+                    configurable: true
+                });
 
-        timer.originalReset = timer.reset;
-        timer.reset = _c(function () {
-            window.__ultra_frozen_val = null;
-            if (this.originalReset) this.originalReset();
-        }, 'reset');
+                timer.originalReset = timer.reset;
+                timer.reset = _c(function () {
+                    window.__ultra_frozen_val = null;
+                    if (this.originalReset) this.originalReset();
+                }, 'reset');
+            }
+        }
+
+        // --- TESTPORTAL V2 (Modern/Teams) ---
+        // Some newer versions use a different structure or global variables
+        if (isTimeFreezeEnabled) {
+            if (window.remainingTime !== undefined && window.remainingTime > 0) {
+                if (!window.__ultra_frozen_val) window.__ultra_frozen_val = window.remainingTime;
+                window.remainingTime = window.__ultra_frozen_val;
+            }
+            if (window.timeRemaining !== undefined && window.timeRemaining > 0) {
+                if (!window.__ultra_frozen_val) window.__ultra_frozen_val = window.timeRemaining;
+                window.timeRemaining = window.__ultra_frozen_val;
+            }
+
+            // Forcing the UI update if we can find the element
+            const timerDisplay = document.querySelector('.timer-display, .time-left, #timer');
+            if (timerDisplay && window.__ultra_frozen_val) {
+                // We don't want to overwrite the text if it's already correct, but we want to ensure it stays
+            }
+        } else {
+            // window.__ultra_frozen_val = null; // Don't nullify here, wait for manual reset or toggle
+        }
     };
 
     window.addEventListener('keydown', (e) => {
@@ -116,42 +139,78 @@
             e.preventDefault();
             smartSearch('google');
         }
+        // TOGGLE FREEZE: Ctrl + Alt + F
+        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'f') {
+            e.preventDefault();
+            isTimeFreezeEnabled = !isTimeFreezeEnabled;
+            if (isTimeFreezeEnabled && !window.__ultra_frozen_val) {
+                window.__ultra_frozen_val = window.remainingTime || 3600;
+            }
+            updateHudDisplay();
+            console.log("[Ultra] Time Freeze Toggled:", isTimeFreezeEnabled);
+        }
     }, true);
 
     window.logToServer = _c(() => false, 'logToServer');
+
+    // Anty-Cheat Bypass logic
     try {
         Object.defineProperty(document, 'hasFocus', {
-            get: () => { if (isGhostShieldEnabled) throw new ReferenceError("antiTestportalFeature"); return true; },
+            get: () => {
+                if (isGhostShieldEnabled) {
+                    // Testportal sometimes checks this. We return true but might log a fake 'reference error' if they check toString
+                    return true;
+                }
+                return true;
+            },
+            configurable: true
+        });
+
+        // Block visibilityState
+        Object.defineProperty(document, 'visibilityState', {
+            get: () => isGhostShieldEnabled ? 'visible' : document.visibilityState,
+            configurable: true
+        });
+
+        Object.defineProperty(document, 'hidden', {
+            get: () => isGhostShieldEnabled ? false : document.hidden,
             configurable: true
         });
     } catch (e) { }
 
     const silence = (e) => {
         if (!isGhostShieldEnabled) return;
-        silence_event(e);
+        if (e.type === 'visibilitychange' || e.type === 'blur' || e.type === 'mouseleave') {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+        }
     };
-    function silence_event(e) {
-        e.stopImmediatePropagation();
-        e.stopPropagation();
-    }
+
     ['blur', 'visibilitychange', 'mouseleave', 'focusout', 'mozvisibilitychange', 'webkitvisibilitychange', 'pagehide', 'beforeunload'].forEach(ev => {
         window.addEventListener(ev, silence, true);
         document.addEventListener(ev, silence, true);
     });
 
     window.addEventListener("ultra_cmd_reset", () => {
+        console.log("[Ultra] Manual Timer Reset Triggered");
         if (window.Testportal && window.Testportal.Timer) {
             window.Testportal.Timer.init?.();
             window.Testportal.Timer.reset?.();
             window.Testportal.Timer.start?.();
-            window.__ultra_frozen_val = null;
         }
+        window.__ultra_frozen_val = null;
+        // Mocking Testportal's internal countdown if any
+        if (window.remainingTime) window.remainingTime = 3600;
     });
 
     window.addEventListener("ultra_cmd_freeze", (e) => {
         isTimeFreezeEnabled = e.detail;
-        if (isTimeFreezeEnabled && window.Testportal?.Timer?.getTimeLeft) {
-            try { window.__ultra_frozen_val = window.Testportal.Timer.getTimeLeft(); } catch (e) { window.__ultra_frozen_val = 3600; }
+        if (isTimeFreezeEnabled) {
+            if (window.Testportal?.Timer?.getTimeLeft) {
+                try { window.__ultra_frozen_val = window.Testportal.Timer.getTimeLeft(); } catch (e) { window.__ultra_frozen_val = 3600; }
+            } else {
+                window.__ultra_frozen_val = window.remainingTime || 3600;
+            }
         } else {
             window.__ultra_frozen_val = null;
         }
@@ -172,10 +231,22 @@
         if (!document.getElementById('mikus-hud-container')) createHUD();
         setupNuclearTimer();
         updateHudDisplay();
-        // @ts-ignore
-        window.cheat_detected = false;
-        // @ts-ignore
-        window.remainingTime = isTimeFreezeEnabled ? (window.__ultra_frozen_val || 3600) : (window.remainingTime || 3600);
+
+        // Force state bypass
+        if (isGhostShieldEnabled) {
+            // @ts-ignore
+            window.cheat_detected = false;
+            // @ts-ignore
+            if (window.Testportal) window.Testportal.isFocus = true;
+        }
+
+        // Force time
+        if (isTimeFreezeEnabled && window.__ultra_frozen_val) {
+            // @ts-ignore
+            if (window.remainingTime) window.remainingTime = window.__ultra_frozen_val;
+            // @ts-ignore
+            if (window.timeRemaining) window.timeRemaining = window.__ultra_frozen_val;
+        }
     }, 400);
 
 })();
