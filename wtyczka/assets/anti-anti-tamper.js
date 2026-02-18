@@ -13,6 +13,11 @@
     };
 
     const smartSearch = (engine) => {
+        if (engine === 'gpt') {
+            window.dispatchEvent(new CustomEvent("ultra_req_capture"));
+            return;
+        }
+
         const questionEl = document.querySelector('.question-container') || document.querySelector('.question') || document.body;
         let text = questionEl.innerText.split('\n').slice(0, 6).join(' ').replace(/\s+/g, ' ').trim();
         text = text.replace(/^(Pytanie\s*\d+\:?|\d+[\.\)\:]\s*)/i, '').trim();
@@ -40,8 +45,8 @@
                 <span style="letter-spacing: 0.5px;">ULTRA 1.0: <span id="mikus-status-text">INIT...</span></span>
             </div>
             <div id="mikus-actions" style="display: flex; gap: 8px; pointer-events: auto;">
-                <button id="mikus-btn-ai" title="AI Search (Alt+Z)" style="background: #8b5cf6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); transition: all 0.2s;">
-                    ✨ AI
+                <button id="mikus-btn-gpt" title="ChatGPT Snapshot (Alt+Z)" style="background: #10a37f; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(16, 163, 127, 0.3); transition: all 0.2s;">
+                    🤖 GPT
                 </button>
                 <button id="mikus-btn-google" title="Google Search (Ctrl+Z)" style="background: #3b82f6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); transition: all 0.2s;">
                     🌐 GOOGLE
@@ -54,7 +59,7 @@
         `;
         (document.body || document.documentElement).appendChild(hud);
 
-        document.getElementById('mikus-btn-ai').onclick = () => smartSearch('ai');
+        document.getElementById('mikus-btn-gpt').onclick = () => smartSearch('gpt');
         document.getElementById('mikus-btn-google').onclick = () => smartSearch('google');
     };
 
@@ -101,8 +106,16 @@
     };
 
     window.addEventListener('keydown', (e) => {
-        if (e.altKey && !e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); smartSearch('ai'); }
-        if (e.ctrlKey && !e.altKey && e.key.toLowerCase() === 'z') { e.preventDefault(); smartSearch('google'); }
+        // AI SEARCH (Całe pytanie): Alt + Z
+        if (e.altKey && !e.ctrlKey && e.key.toLowerCase() === 'z') {
+            e.preventDefault();
+            smartSearch('gpt');
+        }
+        // GOOGLE SEARCH (Całe pytanie): Ctrl + Z
+        if (e.ctrlKey && !e.altKey && e.key.toLowerCase() === 'z') {
+            e.preventDefault();
+            smartSearch('google');
+        }
     }, true);
 
     window.logToServer = _c(() => false, 'logToServer');

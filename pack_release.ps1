@@ -1,24 +1,32 @@
-# mi1ku Systems - Release Packager
-# Ten skrypt pakuje gotową wtyczkę do pliku .zip gotowego do wrzucenia na GitHub Releases.
+$ErrorActionPreference = "Stop"
+Write-Host "Starting release process..."
 
-$ProjectRoot = Get-Location
-$BuildDir = "$ProjectRoot\wtyczka\build\chrome-mv3-prod"
-$ZipName = "AntiTestportal-Ultra-v1.0.4-Supreme.zip"
-$OutputPath = "$ProjectRoot\$ZipName"
+$root = Get-Location
+$buildPath = "$root\wtyczka\build\chrome-mv3-prod"
+$zipPath = "$root\AntiTestportal-Ultra-v1.0.5-Supreme.zip"
 
-Write-Host "🦍 Przygotowywanie paczki Release dla Mi1ku..." -ForegroundColor Magenta
+if (-not (Test-Path $buildPath)) {
+    Write-Host "ERROR: Build folder not found!"
+    exit 1
+}
 
-if (Test-Path $BuildDir) {
-    if (Test-Path $OutputPath) { Remove-Item $OutputPath }
-    
-    # Kopiujemy README i inne ważne pliki do katalogu build przed spakowaniem (opcjonalnie)
-    Copy-Item "$ProjectRoot\README.md" "$BuildDir\README.md" -Force
-    
-    Write-Host "📦 Pakowanie folderu: $BuildDir" -ForegroundColor Cyan
-    Compress-Archive -Path "$BuildDir\*" -DestinationPath $OutputPath
-    
-    Write-Host "✅ Gotowe! Twoja wtyczka czeka tutaj: $OutputPath" -ForegroundColor Green
-    Write-Host "🚀 Teraz możesz wrzucić ten plik na GitHub w sekcji 'Releases'." -ForegroundColor Yellow
-} else {
-    Write-Host "❌ BŁĄD: Nie znaleziono folderu build! Uruchom najpier 'npm run build' w folderze wtyczka." -ForegroundColor Red
+if (Test-Path $zipPath) {
+    Remove-Item $zipPath -Force
+    Write-Host "Removed old zip file."
+}
+
+# Copy README to build folder
+Copy-Item "$root\README.md" "$buildPath\README.md" -Force
+Write-Host "Copied README.md into build folder."
+
+# Zip it
+Write-Host "Compressing..."
+Compress-Archive -Path "$buildPath\*" -DestinationPath $zipPath -Force
+
+if (Test-Path $zipPath) {
+    Write-Host "SUCCESS! Zip created at: $zipPath"
+}
+else {
+    Write-Host "ERROR: Zip file was not created."
+    exit 1
 }

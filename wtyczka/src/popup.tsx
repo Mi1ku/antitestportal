@@ -152,7 +152,7 @@ function IndexPopup() {
                                 <hr style={{ opacity: 0.1, margin: '6px 0' }} />
                                 <p>🔍 <b>SZUKAJ CAŁE ZADANIE:</b></p>
                                 <p>⚡ <b>Ctrl + Z:</b> Szukaj całego pytania w Google.</p>
-                                <p>⚡ <b>Alt + Z:</b> Szukaj całego pytania w AI (Perplexity).</p>
+                                <p>🤖 <b>Alt + Z:</b> Zrób screen zadania do schowka i otwórz ChatGPT.</p>
                                 <hr style={{ opacity: 0.1, margin: '6px 0' }} />
                                 <p>🔍 <b>SZUKAJ ZAZNACZONY TEKST:</b></p>
                                 <p>🖱️ <b>Ctrl + Klik:</b> Szukaj zaznaczenia w Google.</p>

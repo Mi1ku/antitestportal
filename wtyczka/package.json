@@ -39,7 +39,9 @@
       "browsingData",
       "tabs",
       "scripting",
-      "unlimitedStorage"
+      "unlimitedStorage",
+      "activeTab",
+      "clipboardWrite"
     ],
     "web_accessible_resources": [
       {

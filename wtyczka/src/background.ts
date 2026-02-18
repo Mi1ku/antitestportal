@@ -92,6 +92,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         return true; // Keep channel open for async response
     }
+
+    // --- 76mikus SUPREME SCREENSHOT ENGINE ---
+    if (request.type === "CAPTURE_SCREENSHOT") {
+        chrome.tabs.captureVisibleTab(null, { format: "png" }, (dataUrl) => {
+            if (chrome.runtime.lastError) {
+                sendResponse({ success: false, error: chrome.runtime.lastError.message });
+            } else {
+                sendResponse({ success: true, dataUrl: dataUrl });
+            }
+        });
+        return true; // Keep channel open
+    }
 });
 
 export const handler = async (req, res) => {
