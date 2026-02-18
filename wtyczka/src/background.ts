@@ -1,6 +1,3 @@
-import { Storage } from "@plasmohq/storage"
-import { PluginConfigKey, type PluginConfig } from "~hooks/use-plugin-config";
-
 /**
  * 🦍 76mikus SUPREME BACKGROUND v11.3.8
  * Handles dynamic network rules & FETCH_IMAGE requests.
@@ -70,41 +67,7 @@ const initSupremeRules = async () => {
 chrome.runtime.onInstalled.addListener(initSupremeRules);
 chrome.runtime.onStartup.addListener(initSupremeRules);
 
-// --- USER REQUESTED CONTENT (FETCH_IMAGE) ---
-// This handles cross-origin image fetching for the auto-solve engine
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.type === "FETCH_IMAGE") {
-        fetch(request.url)
-            .then(response => response.blob())
-            .then(blob => {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    sendResponse({ data: reader.result, success: true });
-                };
-                reader.onerror = () => {
-                    sendResponse({ success: false, error: "Failed to read blob" });
-                }
-                reader.readAsDataURL(blob);
-            })
-            .catch(error => {
-                sendResponse({ success: false, error: error.toString() });
-            });
 
-        return true; // Keep channel open for async response
-    }
-
-    // --- 76mikus SUPREME SCREENSHOT ENGINE ---
-    if (request.type === "CAPTURE_SCREENSHOT") {
-        chrome.tabs.captureVisibleTab(null, { format: "png" }, (dataUrl) => {
-            if (chrome.runtime.lastError) {
-                sendResponse({ success: false, error: chrome.runtime.lastError.message });
-            } else {
-                sendResponse({ success: true, dataUrl: dataUrl });
-            }
-        });
-        return true; // Keep channel open
-    }
-});
 
 export const handler = async (req, res) => {
     // Plasmo standard handler

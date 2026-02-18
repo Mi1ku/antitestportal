@@ -34,18 +34,13 @@
 
 
     const smartSearch = (engine) => {
-        if (engine === 'gpt') {
-            window.dispatchEvent(new CustomEvent("ultra_req_capture"));
-            return;
-        }
-
         const questionEl = document.querySelector('.question-container') || document.querySelector('.question') || document.body;
         let text = questionEl.innerText.split('\n').slice(0, 15).join(' ').replace(/\s+/g, ' ').trim();
         // Remove common prefixes
         text = text.replace(/^(Pytanie\s*\d+\:?|\d+[\.\)\:]\s*)/i, '').trim();
 
         if (text) {
-            const query = engine === 'ai' ? "Rozwiąż to zadanie z Testportalu skrótowo: " + text : text;
+            const query = text; // Just the text, user can add context if needed
             const url = engine === 'ai'
                 ? `https://www.perplexity.ai/search?q=${encodeURIComponent(query)}`
                 : `https://www.google.com/search?q=${encodeURIComponent(query)}`;
@@ -68,10 +63,10 @@
                 <span style="letter-spacing: 0.5px;">ULTRA 1.0: <span id="mikus-status-text">INIT...</span></span>
             </div>
             <div id="mikus-actions" style="display: flex; gap: 8px; pointer-events: auto;">
-                <button id="mikus-btn-gpt" title="ChatGPT Snapshot (Alt+Z)" style="background: #10a37f; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(16, 163, 127, 0.3); transition: all 0.2s;">
-                    🤖 GPT
+                <button id="mikus-btn-ai" title="Perplexity Search (Ctrl+Z)" style="background: #22d3ee; border: none; border-radius: 8px; color: black; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(34, 211, 238, 0.3); transition: all 0.2s;">
+                    🧠 AI
                 </button>
-                <button id="mikus-btn-google" title="Google Search (Ctrl+Z)" style="background: #3b82f6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); transition: all 0.2s;">
+                <button id="mikus-btn-google" title="Google Search" style="background: #3b82f6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); transition: all 0.2s;">
                     🌐 GOOGLE
                 </button>
             </div>
@@ -82,7 +77,7 @@
         `;
         (document.body || document.documentElement).appendChild(hud);
 
-        document.getElementById('mikus-btn-gpt').onclick = () => smartSearch('gpt');
+        document.getElementById('mikus-btn-ai').onclick = () => smartSearch('ai');
         document.getElementById('mikus-btn-google').onclick = () => smartSearch('google');
     };
 
@@ -141,16 +136,12 @@
 
 
     // Listeners
+    // Listeners
     window.addEventListener('keydown', (e) => {
-        // AI SEARCH (Całe pytanie): Alt + Z
-        if (e.altKey && !e.ctrlKey && e.key.toLowerCase() === 'z') {
-            e.preventDefault();
-            smartSearch('gpt');
-        }
-        // GOOGLE SEARCH (Całe pytanie): Ctrl + Z
+        // PERPLEXITY SEARCH (Całe pytanie): Ctrl + Z
         if (e.ctrlKey && !e.altKey && e.key.toLowerCase() === 'z') {
             e.preventDefault();
-            smartSearch('google');
+            smartSearch('ai');
         }
     }, true);
 

@@ -1,40 +1,3 @@
-# 🦍 AntiTestportal Ultra Supreme - Instrukcja Obsługi
-
-Witaj w elicie. To narzędzie to Twój scyzoryk szwajcarski do testów online. Poniżej znajdziesz pełny opis funkcji, instalacji i obsługi panelu administratora.
-
-## 🚀 Instalacja
-
-1.  Upewnij się, że masz zainstalowane `Node.js`.
-2.  Otwórz terminal w folderze `wtyczka`.
-3.  Wpisz `npm install` (tylko raz).
-4.  Wpisz `npm run build`.
-5.  W przeglądarce (Chrome/Edge):
-    *   Wejdź w `chrome://extensions`.
-    *   Włącz "Tryb dewelopera" (prawy górny róg).
-    *   Kliknij "Załaduj rozpakowane".
-    *   Wybierz folder `wtyczka/build/chrome-mv3-dev`.
-
----
-
-## 🔑 Logowanie i Klucze
-
-Wtyczka posiada system licencyjny. Aby jej używać, musisz się zalogować.
-
-### Metody Logowania:
-1.  **Klucz Licencyjny**: Wpisz kod otrzymany od administratora.
-    *   Klucze są sprawdzane w lokalnej bazie danych.
-    *   Klucze mogą mieć ważność (np. 1h, 24h) lub być dożywotnie.
-
-### Domyślne Klucze:
-*   `admin` - Odblokowuje **Panel Administratora** (pełna władza).
-*   `mikus` - Zwykły klucz użytkownika (testowy).
-*   `zsa` - Zwykły klucz użytkownika (testowy).
-
----
-
-## 🛠️ Panel Administratora (Tylko Admin)
-
-Jeśli zalogujesz się kluczem `admin`, w menu pojawi się nowa zakładka **🛠️ ADMIN**.
 
 ### Co możesz robić?
 1.  **Generować Klucze**:
@@ -98,3 +61,4 @@ Dla relaksu podczas egzaminu.
 ### Twórca
 **mi1ku Systems & @76mikus**
 *Wersja 1.0.0 Ultra Supreme*
+i ta baza db powinna dzialac tak jak ze usune z przegladarki wtyczke i wroce to dalej powinna dzialac logowac jak bylem zalogowany itp itd wiesz ocb tak na 100% premium cala apka
