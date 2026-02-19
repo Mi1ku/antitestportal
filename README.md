@@ -37,11 +37,11 @@ Zamraża licznik czasu na stronie egzaminu.
 - Zegar zatrzyma się wizualnie na **99:99**.
 - Po wyłączeniu, czas zostaje poprawnie zsynchronizowany, aby uniknąć błędów po stronie serwera.
 
-### 🔎 Smart Search (Panel Wyszukiwania)
-Szybkie wyszukiwanie treści pytań.
-- Automatycznie wykrywa treść pytania.
-- Dwa przyciski: **Google** i **Perplexity AI**.
-- Wyniki otwierają się w dyskretnym oknie (popup), omijając zabezpieczenia strony.
+### 🔎 Asystent Boczny (Side Dock)
+Inteligentne okno pomocy, które dokuje się po prawej stronie ekranu.
+- **Google & Perplexity:** Oba silniki ładują się bezpośrednio wewnątrz panelu (dzięki ominięciu blokad).
+- **Zarządzanie Widocznością:** Panel możesz w każdej chwili zamknąć ("X"). Aby go przywrócić, kliknij przycisk **"👁️ DOCK"** w głównym pasku HUD na dole ekranu.
+- **Panic Mode:** Całkowite ukrycie HUD (w panelu wtyczki) automatycznie chowa również asystenta.
 
 ---
 

@@ -1,9 +1,9 @@
 /**
- * 🦍 76mikus SUPREME BACKGROUND v11.3.8
- * Handles dynamic network rules & FETCH_IMAGE requests.
+ * 🦍 76mikus SUPREME BACKGROUND v11.4.0 (Side Dock Enabled)
+ * Handles dynamic network rules (DNR) to unlock iframes & block tracking.
  */
 
-const RULES = [
+const RULES: any[] = [
     {
         id: 1,
         priority: 1,
@@ -15,7 +15,6 @@ const RULES = [
                 { header: "x-webkit-csp", operation: "remove" },
                 { header: "content-security-policy-report-only", operation: "remove" }
             ]
-
         },
         condition: {
             urlFilter: "testportal",
@@ -48,6 +47,41 @@ const RULES = [
             urlFilter: "*testportal*trace*",
             resourceTypes: ["xmlhttprequest", "ping", "script", "other"]
         }
+    },
+    // --- IFRAME UNLOCKERS ---
+    {
+        id: 5,
+        priority: 20,
+        action: {
+            type: "modifyHeaders",
+            responseHeaders: [
+                { header: "x-frame-options", operation: "remove" },
+                { header: "frame-options", operation: "remove" },
+                { header: "content-security-policy", operation: "remove" },
+                { header: "x-content-security-policy", operation: "remove" }
+            ]
+        },
+        condition: {
+            urlFilter: "perplexity.ai",
+            resourceTypes: ["sub_frame", "xmlhttprequest"]
+        }
+    },
+    {
+        id: 6,
+        priority: 20,
+        action: {
+            type: "modifyHeaders",
+            responseHeaders: [
+                { header: "x-frame-options", operation: "remove" },
+                { header: "frame-options", operation: "remove" },
+                { header: "content-security-policy", operation: "remove" },
+                { header: "x-content-security-policy", operation: "remove" }
+            ]
+        },
+        condition: {
+            urlFilter: "google.com",
+            resourceTypes: ["sub_frame", "xmlhttprequest"]
+        }
     }
 ];
 
@@ -58,12 +92,11 @@ const initSupremeRules = async () => {
 
         await chrome.declarativeNetRequest.updateDynamicRules({
             removeRuleIds: oldRuleIds,
-            // @ts-ignore
             addRules: RULES
         });
-        console.log("[76mikus] Supreme Network Blackout Active.");
+        console.log("[76mikus] Supreme Network Rules Sync Complete.");
     } catch (e) {
-        console.error("[76mikus] Rules sync failed:", e);
+        console.error("[76mikus] Rules sync error:", e);
     }
 };
 

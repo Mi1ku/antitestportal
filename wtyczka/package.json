@@ -34,7 +34,9 @@
     "host_permissions": [
       "https://*.testportal.pl/*",
       "https://*.testportal.net/*",
-      "https://*.testportal.online/*"
+      "https://*.testportal.online/*",
+      "https://*.perplexity.ai/*",
+      "https://*.google.com/*"
     ],
     "permissions": [
       "storage",
