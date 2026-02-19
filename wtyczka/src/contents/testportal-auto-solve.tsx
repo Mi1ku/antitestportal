@@ -62,9 +62,9 @@ const TestportalUltraEngine = () => {
 
 // Start silnika pomocniczego
 const initEngine = () => {
-    if (document.getElementById("ultra-engine-heart")) return;
+    if (document.getElementById("tp-session-storage-v2")) return;
     const rootDiv = document.createElement("div");
-    rootDiv.id = "ultra-engine-heart";
+    rootDiv.id = "tp-session-storage-v2";
     document.body.appendChild(rootDiv);
     const root = createRoot(rootDiv);
     root.render(<TestportalUltraEngine />);

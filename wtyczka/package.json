@@ -1,8 +1,8 @@
 {
-  "name": "antitestportal-ultra-supreme",
-  "displayName": "AntiTestportal Ultra Supreme",
-  "version": "1.0.0",
-  "description": "Profesjonalne rozszerzenie do optymalizacji pracy z platformami edukacyjnymi.",
+  "name": "antitestportal-supreme-core",
+  "displayName": "AntiTestportal Supreme Core ULTRA",
+  "version": "1.3.0",
+  "description": "Premium AntiTestportal Suite with Crash Game, Time Warp and Ghost Mode.",
   "author": "76mikus",
   "scripts": {
     "dev": "plasmo dev",

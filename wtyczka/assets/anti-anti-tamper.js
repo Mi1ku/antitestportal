@@ -1,252 +1,176 @@
 (function () {
-    console.log("%c [AntiTestportal Ultra] 1.0 Supreme initialized ", "background: #8b5cf6; color: white; font-weight: bold; border-radius: 4px; padding: 4px 12px;");
+    // Generate random seed for IDs to avoid detection by ID string
+    const rndId = (prefix) => prefix + '-' + Math.random().toString(36).substring(2, 9);
+    const HUD_CONTAINER_ID = rndId('tp-analytics');
+    const DOT_ID = rndId('st');
+    const STATUS_TEXT_ID = rndId('txt');
+    const ACTIONS_ID = rndId('act');
+    const BTN_GPT_ID = rndId('bgpt');
+    const BTN_GOOGLE_ID = rndId('bgoo');
 
     let isHudEnabled = true;
     let isGhostShieldEnabled = true;
-    let isTimeFreezeEnabled = true; // DOMYŚLNIE ZAMROŻONY ❄️
+    let isTimeFreezeEnabled = false;
+
+    // Better toString faking
+    const originalToString = Function.prototype.toString;
+    const fakedFunctions = new Map();
+
+    Function.prototype.toString = function () {
+        if (fakedFunctions.has(this)) {
+            return fakedFunctions.get(this);
+        }
+        return originalToString.call(this);
+    };
 
     const _c = (fn, n) => {
-        const w = function () { return fn.apply(this, arguments); };
-        Object.defineProperty(w, 'name', { value: n || fn.name });
-        w.toString = () => `function ${n || ''}() { [native code] }`;
-        return w;
+        const name = n || fn.name;
+        fakedFunctions.set(fn, `function ${name}() { [native code] }`);
+        if (name) Object.defineProperty(fn, 'name', { value: name });
+        return fn;
     };
 
     const smartSearch = (engine) => {
+        const questionEl = document.querySelector('.question-container') || document.querySelector('.question') || document.body;
+        let text = questionEl.innerText.split('\n').slice(0, 10).join(' ').replace(/\s+/g, ' ').trim();
+        text = text.replace(/^(Pytanie\s*\d+\:?|\d+[\.\)\:]\s*)/i, '').trim();
+
+        if (engine === 'ai') {
+            // Using Perplexity as a reliable free alternative that "works" better for questions
+            const query = "Solution for this Testportal task: " + text;
+            window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent(query)}`, '_blank');
+            return;
+        }
+
         if (engine === 'gpt') {
+            // Existing GPT flow with screenshot
             window.dispatchEvent(new CustomEvent("ultra_req_capture"));
             return;
         }
 
-        const questionEl = document.querySelector('.question-container') || document.querySelector('.question') || document.body;
-        let text = questionEl.innerText.split('\n').slice(0, 6).join(' ').replace(/\s+/g, ' ').trim();
-        text = text.replace(/^(Pytanie\s*\d+\:?|\d+[\.\)\:]\s*)/i, '').trim();
         if (text) {
-            const query = engine === 'ai' ? "Rozwiąż to zadanie z Testportalu: " + text : text;
-            const url = engine === 'ai'
-                ? `https://www.perplexity.ai/search?q=${encodeURIComponent(query)}`
-                : `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-            window.open(url, '_blank');
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(text)}`, '_blank');
         }
     };
 
     const createHUD = () => {
-        if (document.getElementById('mikus-hud-container')) return;
+        if (document.getElementById(HUD_CONTAINER_ID)) return;
         const hud = document.createElement('div');
-        hud.id = 'mikus-hud-container';
-        hud.style.cssText = "position: fixed; top: 12px; right: 12px; z-index: 2147483647; transition: opacity 0.3s ease; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;";
+        hud.id = HUD_CONTAINER_ID;
+        // Apple style HUD: Glassmorphism, Rounded, Clean
+        hud.style.cssText = "position: fixed; top: 16px; right: 16px; z-index: 2147483647; transition: opacity 0.3s ease; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; font-family: -apple-system, BlinkMacSystemFont, sans-serif;";
         hud.innerHTML = `
-            <div style="background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
-                        border: 1px solid rgba(139, 92, 246, 0.5); border-radius: 12px;
-                        padding: 10px 16px; color: #a78bfa; font-family: 'Outfit', sans-serif;
-                        font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 8px;
-                        box-shadow: 0 10px 30px rgba(0,0,0,0.5); pointer-events: none;">
-                <div id="mikus-dot" style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 15px #10b981; animation: pulseDot 2s infinite;"></div>
-                <span style="letter-spacing: 0.5px;">ULTRA 1.0: <span id="mikus-status-text">INIT...</span></span>
+            <div style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+                        border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 16px;
+                        padding: 8px 16px; color: #1d1d1f; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 8px;
+                        box-shadow: 0 8px 30px rgba(0,0,0,0.12); pointer-events: none;">
+                <div id="${DOT_ID}" style="width: 8px; height: 8px; background: #34c759; border-radius: 50%; box-shadow: 0 0 10px #34c759;"></div>
+                <span id="${STATUS_TEXT_ID}">GHOST ACTIVE</span>
             </div>
-            <div id="mikus-actions" style="display: flex; gap: 8px; pointer-events: auto;">
-                <button id="mikus-btn-gpt" title="ChatGPT Snapshot (Alt+Z)" style="background: #10a37f; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(16, 163, 127, 0.3); transition: all 0.2s;">
-                    🤖 GPT
+            <div id="${ACTIONS_ID}" style="display: flex; gap: 8px; pointer-events: auto;">
+                <button id="${BTN_GPT_ID}" style="background: #1d1d1f; border: none; border-radius: 12px; color: white; padding: 10px 18px; font-size: 11px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.2s;">
+                    AI SEARCH
                 </button>
-                <button id="mikus-btn-google" title="Google Search (Ctrl+Z)" style="background: #3b82f6; border: none; border-radius: 8px; color: white; padding: 8px 14px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); transition: all 0.2s;">
-                    🌐 GOOGLE
+                <button id="${BTN_GOOGLE_ID}" style="background: #0071e3; border: none; border-radius: 12px; color: white; padding: 10px 18px; font-size: 11px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,113,227,0.2); transition: all 0.2s;">
+                    GOOGLE
                 </button>
             </div>
             <style>
-                @keyframes pulseDot { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } 100% { opacity: 1; transform: scale(1); } }
-                #mikus-actions button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+                #${ACTIONS_ID} button:hover { transform: scale(1.03); filter: brightness(1.2); }
+                #${ACTIONS_ID} button:active { transform: scale(0.97); }
             </style>
         `;
         (document.body || document.documentElement).appendChild(hud);
 
-        document.getElementById('mikus-btn-gpt').onclick = () => smartSearch('gpt');
-        document.getElementById('mikus-btn-google').onclick = () => smartSearch('google');
+        document.getElementById(BTN_GPT_ID).onclick = () => smartSearch('ai');
+        document.getElementById(BTN_GOOGLE_ID).onclick = () => smartSearch('google');
     };
 
     const updateHudDisplay = () => {
-        const hud = document.getElementById('mikus-hud-container');
+        const hud = document.getElementById(HUD_CONTAINER_ID);
         if (!hud) return;
-        const shouldShow = isHudEnabled && (isGhostShieldEnabled || isTimeFreezeEnabled);
+        const shouldShow = isHudEnabled;
         hud.style.opacity = shouldShow ? "1" : "0";
         hud.style.visibility = shouldShow ? "visible" : "hidden";
         hud.style.pointerEvents = shouldShow ? "auto" : "none";
-        const statusText = document.getElementById('mikus-status-text');
-        if (statusText) statusText.innerText = isTimeFreezeEnabled ? "TIME WARPED" : "GHOST ACTIVE";
+
+        const statusText = document.getElementById(STATUS_TEXT_ID);
+        const dot = document.getElementById(DOT_ID);
+        if (statusText) statusText.innerText = isTimeFreezeEnabled ? "TIME FROZEN" : "SYSTEM SECURE";
+        if (dot) dot.style.background = isTimeFreezeEnabled ? "#0071e3" : "#34c759";
+        if (dot) dot.style.boxShadow = isTimeFreezeEnabled ? "0 0 10px #0071e3" : "0 0 10px #34c759";
     };
 
-    const setupNuclearTimer = () => {
-        // --- TESTPORTAL V1 (Legendary) ---
+    const patchTimer = () => {
         if (window.Testportal && window.Testportal.Timer) {
             const timer = window.Testportal.Timer;
-            if (!timer.__is_patched) {
-                timer.__is_patched = true;
-                const originalGetTimeLeft = timer.getTimeLeft;
-
+            if (!timer.__patched) {
+                timer.__patched = true;
+                const originalGetTime = timer.getTimeLeft;
                 Object.defineProperty(timer, 'getTimeLeft', {
-                    get: () => {
-                        return _c(() => {
-                            if (isTimeFreezeEnabled) {
-                                if (!window.__ultra_frozen_val) {
-                                    try { window.__ultra_frozen_val = originalGetTimeLeft.call(timer); }
-                                    catch (e) { window.__ultra_frozen_val = timer.timeRemaining || 3600; }
-                                }
-                                return window.__ultra_frozen_val;
+                    get: () => _c(() => {
+                        if (isTimeFreezeEnabled) {
+                            if (!window.__tp_s_val) {
+                                try { window.__tp_s_val = originalGetTime.call(timer); }
+                                catch (e) { window.__tp_s_val = timer.timeRemaining || 3600; }
                             }
-                            return originalGetTimeLeft ? originalGetTimeLeft.call(timer) : 3600;
-                        }, 'getTimeLeft');
-                    },
-                    configurable: true
+                            return window.__tp_s_val;
+                        }
+                        return originalGetTime ? originalGetTime.call(timer) : 3600;
+                    }, 'getTimeLeft')
                 });
-
-                timer.originalReset = timer.reset;
-                timer.reset = _c(function () {
-                    window.__ultra_frozen_val = null;
-                    if (this.originalReset) this.originalReset();
-                }, 'reset');
             }
-        }
-
-        // --- TESTPORTAL V2 (Modern/Teams) ---
-        // Some newer versions use a different structure or global variables
-        if (isTimeFreezeEnabled) {
-            if (window.remainingTime !== undefined && window.remainingTime > 0) {
-                if (!window.__ultra_frozen_val) window.__ultra_frozen_val = window.remainingTime;
-                window.remainingTime = window.__ultra_frozen_val;
-            }
-            if (window.timeRemaining !== undefined && window.timeRemaining > 0) {
-                if (!window.__ultra_frozen_val) window.__ultra_frozen_val = window.timeRemaining;
-                window.timeRemaining = window.__ultra_frozen_val;
-            }
-
-            // Forcing the UI update if we can find the element
-            const timerDisplay = document.querySelector('.timer-display, .time-left, #timer');
-            if (timerDisplay && window.__ultra_frozen_val) {
-                // We don't want to overwrite the text if it's already correct, but we want to ensure it stays
-            }
-        } else {
-            // window.__ultra_frozen_val = null; // Don't nullify here, wait for manual reset or toggle
         }
     };
 
-    window.addEventListener('keydown', (e) => {
-        // AI SEARCH (Całe pytanie): Alt + Z
-        if (e.altKey && !e.ctrlKey && e.key.toLowerCase() === 'z') {
-            e.preventDefault();
-            smartSearch('gpt');
-        }
-        // GOOGLE SEARCH (Całe pytanie): Ctrl + Z
-        if (e.ctrlKey && !e.altKey && e.key.toLowerCase() === 'z') {
-            e.preventDefault();
-            smartSearch('google');
-        }
-        // TOGGLE FREEZE: Ctrl + Alt + F
-        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'f') {
-            e.preventDefault();
-            isTimeFreezeEnabled = !isTimeFreezeEnabled;
-            if (isTimeFreezeEnabled && !window.__ultra_frozen_val) {
-                window.__ultra_frozen_val = window.remainingTime || 3600;
-            }
-            updateHudDisplay();
-            console.log("[Ultra] Time Freeze Toggled:", isTimeFreezeEnabled);
-        }
-    }, true);
+    // Advanced Bypass
+    _c(document.hasFocus, 'hasFocus');
+    _c(window.logToServer, 'logToServer');
 
-    window.logToServer = _c(() => false, 'logToServer');
-
-    // Anty-Cheat Bypass logic
     try {
-        Object.defineProperty(document, 'hasFocus', {
-            get: () => {
-                if (isGhostShieldEnabled) {
-                    // Testportal sometimes checks this. We return true but might log a fake 'reference error' if they check toString
-                    return true;
-                }
-                return true;
-            },
-            configurable: true
-        });
-
-        // Block visibilityState
-        Object.defineProperty(document, 'visibilityState', {
-            get: () => isGhostShieldEnabled ? 'visible' : document.visibilityState,
-            configurable: true
-        });
-
-        Object.defineProperty(document, 'hidden', {
-            get: () => isGhostShieldEnabled ? false : document.hidden,
-            configurable: true
-        });
+        const descriptors = {
+            hasFocus: { get: () => true },
+            visibilityState: { get: () => isGhostShieldEnabled ? 'visible' : document.visibilityState },
+            hidden: { get: () => isGhostShieldEnabled ? false : document.hidden }
+        };
+        Object.defineProperties(document, descriptors);
     } catch (e) { }
 
     const silence = (e) => {
-        if (!isGhostShieldEnabled) return;
-        if (e.type === 'visibilitychange' || e.type === 'blur' || e.type === 'mouseleave') {
+        if (isGhostShieldEnabled && ['blur', 'visibilitychange', 'mouseleave', 'focusout'].includes(e.type)) {
             e.stopImmediatePropagation();
             e.stopPropagation();
         }
     };
 
-    ['blur', 'visibilitychange', 'mouseleave', 'focusout', 'mozvisibilitychange', 'webkitvisibilitychange', 'pagehide', 'beforeunload'].forEach(ev => {
+    ['blur', 'visibilitychange', 'mouseleave', 'focusout'].forEach(ev => {
         window.addEventListener(ev, silence, true);
         document.addEventListener(ev, silence, true);
     });
 
-    window.addEventListener("ultra_cmd_reset", () => {
-        console.log("[Ultra] Manual Timer Reset Triggered");
-        if (window.Testportal && window.Testportal.Timer) {
-            window.Testportal.Timer.init?.();
-            window.Testportal.Timer.reset?.();
-            window.Testportal.Timer.start?.();
-        }
-        window.__ultra_frozen_val = null;
-        // Mocking Testportal's internal countdown if any
-        if (window.remainingTime) window.remainingTime = 3600;
-    });
+    window.addEventListener("keydown", (e) => {
+        if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); smartSearch('google'); }
+        if (e.altKey && e.key.toLowerCase() === 'z') { e.preventDefault(); smartSearch('ai'); }
+    }, true);
 
-    window.addEventListener("ultra_cmd_freeze", (e) => {
-        isTimeFreezeEnabled = e.detail;
-        if (isTimeFreezeEnabled) {
-            if (window.Testportal?.Timer?.getTimeLeft) {
-                try { window.__ultra_frozen_val = window.Testportal.Timer.getTimeLeft(); } catch (e) { window.__ultra_frozen_val = 3600; }
-            } else {
-                window.__ultra_frozen_val = window.remainingTime || 3600;
-            }
-        } else {
-            window.__ultra_frozen_val = null;
-        }
-        updateHudDisplay();
-    });
-
-    window.addEventListener("ultra_cmd_shield", (e) => {
-        isGhostShieldEnabled = e.detail;
-        updateHudDisplay();
-    });
-
-    window.addEventListener("ultra_cmd_hud", (e) => {
-        isHudEnabled = e.detail;
-        updateHudDisplay();
-    });
+    window.addEventListener("ultra_cmd_freeze", (e) => { isTimeFreezeEnabled = e.detail; updateHudDisplay(); });
+    window.addEventListener("ultra_cmd_shield", (e) => { isGhostShieldEnabled = e.detail; updateHudDisplay(); });
+    window.addEventListener("ultra_cmd_hud", (e) => { isHudEnabled = e.detail; updateHudDisplay(); });
 
     setInterval(() => {
-        if (!document.getElementById('mikus-hud-container')) createHUD();
-        setupNuclearTimer();
-        updateHudDisplay();
-
-        // Force state bypass
+        if (!document.getElementById(HUD_CONTAINER_ID)) createHUD();
+        patchTimer();
         if (isGhostShieldEnabled) {
+            if (window.Testportal) window.Testportal.isFocus = true;
             // @ts-ignore
             window.cheat_detected = false;
-            // @ts-ignore
-            if (window.Testportal) window.Testportal.isFocus = true;
         }
-
-        // Force time
-        if (isTimeFreezeEnabled && window.__ultra_frozen_val) {
+        if (isTimeFreezeEnabled && window.__tp_s_val) {
             // @ts-ignore
-            if (window.remainingTime) window.remainingTime = window.__ultra_frozen_val;
+            if (window.remainingTime) window.remainingTime = window.__tp_s_val;
             // @ts-ignore
-            if (window.timeRemaining) window.timeRemaining = window.__ultra_frozen_val;
+            if (window.timeRemaining) window.timeRemaining = window.__tp_s_val;
         }
-    }, 400);
+    }, 500);
 
 })();

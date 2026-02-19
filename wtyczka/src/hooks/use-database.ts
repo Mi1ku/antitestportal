@@ -70,7 +70,7 @@ export interface DbKey {
     points: number;
     ownerName?: string;
     reflink: string;
-    boundHwid?: string;
+    boundHwids?: string[]; // Multiple HWIDs support
     referredBy?: string;
 }
 
@@ -80,7 +80,7 @@ export interface DatabaseSchema {
     version: string;
 }
 
-const DB_KEY = "supreme_secure_db_v2";
+const DB_KEY = "supreme_secure_db_v3";
 
 const INITIAL_KEYS: DbKey[] = [
     { id: "1", key: "mikus", role: "admin", expiresAt: "never", points: 999, ownerName: "Mikuś", reflink: "MIKUS76" },
@@ -102,39 +102,34 @@ export default function useDatabase() {
             let data: DatabaseSchema;
 
             if (!rawData) {
-                data = {
-                    keys: INITIAL_KEYS,
-                    referrals: [],
-                    version: "1.2.0"
-                };
+                // Migration from v2 if exists
+                const oldRaw = await storage.get("supreme_secure_db_v2");
+                if (oldRaw) {
+                    const oldData = decodeData(oldRaw as string);
+                    data = {
+                        ...oldData,
+                        keys: oldData.keys.map((k: any) => ({
+                            ...k,
+                            boundHwids: k.boundHwid ? [k.boundHwid] : []
+                        })),
+                        version: "1.3.0"
+                    };
+                } else {
+                    data = {
+                        keys: INITIAL_KEYS,
+                        referrals: [],
+                        version: "1.3.0"
+                    };
+                }
                 await storage.set(DB_KEY, encodeData(data));
             } else {
                 data = decodeData(rawData as string);
                 if (!data) {
-                    data = { keys: INITIAL_KEYS, referrals: [], version: "1.2.0" };
+                    data = { keys: INITIAL_KEYS, referrals: [], version: "1.3.0" };
                 }
             }
             setDb(data);
             setIsLoading(false);
-
-            // @ts-ignore
-            window.__SUPREME_DEV__ = {
-                viewDatabase: () => data,
-                injectAdminKey: async (key: string) => {
-                    const nextDb = { ...data, keys: [...data.keys, { id: Date.now().toString(), key, role: 'admin', expiresAt: 'never', points: 0, reflink: key.toUpperCase().substring(0, 8) }] };
-                    await storage.set(DB_KEY, encodeData(nextDb));
-                    window.location.reload();
-                },
-                wipeHardwareLock: async () => {
-                    await storage.remove("supreme_hwid_v1");
-                    window.location.reload();
-                },
-                addPoints: async (key: string, pts: number) => {
-                    const nextDb = { ...data, keys: data.keys.map(k => k.key === key ? { ...k, points: (k.points || 0) + pts } : k) };
-                    await storage.set(DB_KEY, encodeData(nextDb));
-                    window.location.reload();
-                }
-            };
         };
 
         const interval = setInterval(async () => {
@@ -157,11 +152,9 @@ export default function useDatabase() {
 
     const checkForUpdates = async () => {
         try {
-            // Real GitHub API call placeholder
-            // W prawdziwym środowisku tu by był fetch do Twojego repozytorium
             return {
                 hasUpdate: false,
-                version: "1.2.0",
+                version: "1.3.0",
                 url: "https://github.com/mikus/antitestportal/releases/latest"
             };
         } catch (e) {
@@ -178,9 +171,19 @@ export default function useDatabase() {
             expiresAt: days === 'never' ? 'never' : Date.now() + days * 24 * 60 * 60 * 1000,
             points: 0,
             ownerName: owner,
-            reflink: key.substring(0, 4).toUpperCase() + Math.floor(Math.random() * 999)
+            reflink: key.substring(0, 4).toUpperCase() + Math.floor(Math.random() * 999),
+            boundHwids: []
         };
         const nextDb = { ...db, keys: [...db.keys, newKey] };
+        await updateDb(nextDb);
+    };
+
+    const updateKey = async (id: string, updates: Partial<DbKey>) => {
+        if (!db) return;
+        const nextDb = {
+            ...db,
+            keys: db.keys.map(k => k.id === id ? { ...k, ...updates } : k)
+        };
         await updateDb(nextDb);
     };
 
@@ -195,34 +198,34 @@ export default function useDatabase() {
         }
 
         const currentHwid = await getOrCreateHWID();
-        if (found.boundHwid && found.boundHwid !== currentHwid) {
+        const hasHwid = found.boundHwids && found.boundHwids.includes(currentHwid);
+        const canBind = !found.boundHwids || found.boundHwids.length === 0;
+
+        if (!hasHwid && !canBind && found.role !== 'admin') {
             return { success: false, error: "LICENCJA PRZYPISANA DO INNEGO PC" };
         }
 
         let nextKeys = [...db.keys];
         let userWasUpdated = false;
 
-        // Auto-binding and Referral logic on FIRST activation (when boundHwid is null)
-        if (!found.boundHwid && found.role !== 'admin') {
+        // Auto-binding and Referral logic on FIRST activation
+        if (canBind && found.role !== 'admin') {
             userWasUpdated = true;
             let updatedPoints = found.points || 0;
 
             if (referralCode) {
                 const referrer = nextKeys.find(k => k.reflink.toLowerCase() === referralCode.toLowerCase().trim());
                 if (referrer && referrer.id !== found.id) {
-                    updatedPoints += 25; // Bonus for user
-                    // Give bonus to referrer
+                    updatedPoints += 25;
                     nextKeys = nextKeys.map(k => {
                         if (k.id === referrer.id) return { ...k, points: (k.points || 0) + 50 };
                         return k;
                     });
-                    console.log(`Referral applied! Referrer ${referrer.reflink} +50, User ${found.key} +25`);
                 }
             }
 
-            // Bind to HWID and update points
             nextKeys = nextKeys.map(k => {
-                if (k.id === found.id) return { ...k, boundHwid: currentHwid, points: updatedPoints };
+                if (k.id === found.id) return { ...k, boundHwids: [currentHwid], points: updatedPoints };
                 return k;
             });
         }
@@ -255,6 +258,7 @@ export default function useDatabase() {
         hwid,
         isLoading,
         addKey,
+        updateKey,
         deleteKey,
         addPoints,
         validateKey,
