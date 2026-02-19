@@ -57,7 +57,6 @@ export default function useDatabase() {
     const [db, setDb] = useState<DatabaseSchema | null>(null);
     const [hwid, setHwid] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
-    const didLoadRef = useRef(false);
 
     useEffect(() => {
         const dbRef = ref(fdb, 'supreme_v1');
@@ -67,32 +66,7 @@ export default function useDatabase() {
             console.log("[Supreme DB] HWID Ready:", hw);
         });
 
-        const timer = setTimeout(() => {
-            if (!didLoadRef.current) {
-                console.warn("[Supreme DB] Connection timed out. Falling back to local state.");
-                setDb({
-                    keys: [{
-                        id: "admin",
-                        key: "admin",
-                        ownerName: "mi1ku",
-                        role: "admin",
-                        points: 9999,
-                        boundHwids: [],
-                        maxHwids: 100,
-                        reflink: "ADMIN_REF",
-                        expiresAt: 'never'
-                    }],
-                    version: "1.0.0",
-                    bannedHwids: []
-                });
-                setIsLoading(false);
-            }
-        }, 6000);
-
         const unsubscribe = onValue(dbRef, (snapshot) => {
-            clearTimeout(timer); // Cancel fallback on response
-            didLoadRef.current = true;
-
             if (snapshot.exists()) {
                 const data = snapshot.val();
                 setDb(data);
@@ -104,14 +78,12 @@ export default function useDatabase() {
                 setIsLoading(false);
             }
         }, (err) => {
-            clearTimeout(timer);
             console.error("[Supreme DB] Firebase Error:", err);
             setIsLoading(false);
         });
 
         return () => {
             unsubscribe();
-            clearTimeout(timer);
         };
     }, []);
 

@@ -1,5 +1,5 @@
 $ErrorActionPreference = "Stop"
-$projectName = "AntiTestportal-Plus-v1.5.0"
+$projectName = "AntiTestportal-Supreme-v1.0"
 $root = $PSScriptRoot
 $wtyczkaPath = "$root\wtyczka"
 $buildPath = "$wtyczkaPath\build\chrome-mv3-prod"
