@@ -1,64 +1,60 @@
-# 💎 AntiTestportal v1.1 💎
+# 💎 AntiTestportal+ v1.0
 
 ![Status](https://img.shields.io/badge/STATUS-UNDETECTED-brightgreen?style=for-the-badge&logo=shield)
-![Version](https://img.shields.io/badge/version-1.1-blue?style=for-the-badge)
-![Security](https://img.shields.io/badge/security-Firebase--Cloud-red?style=for-the-badge&logo=firebase)
+![Version](https://img.shields.io/badge/version-1.0-blue?style=for-the-badge)
+![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
 
-**AntiTestportal** to nowoczesne i skuteczne narzędzie do omijania zabezpieczeń platformy Testportal. Wersja 1.1 została zaprojektowana z myślą o prostocie użycia i maksymalnym bezpieczeństwie.
-
----
-
-## 🚀 PORADNIK DLA UŻYTKOWNIKA (Instalacja)
-
-Jeśli zakupiłeś klucz licencyjny, postępuj zgodnie z poniższą instrukcją:
-
-1.  **Pobierz wtyczkę:** Otrzymasz plik `.zip` z najnowszą wersją. Wypakuj go do dowolnego folderu na pulpicie.
-2.  **Otwórz Chrome:** Wpisz w pasku adresu `chrome://extensions`.
-3.  **Włącz Tryb Dewelopera:** Przełącznik znajduje się w prawym górnym rogu ekranu.
-4.  **Załaduj wtyczkę:** Kliknij przycisk **"Załaduj rozpakowane"** i wybierz folder, który wypakowałeś w kroku 1.
-5.  **Gotowe!** Ikonka "ANTI" pojawi się na pasku.
-
-Po kliknięciu w ikonkę, zostaniesz poproszony o podanie klucza.
-👉 **Wpisz klucz, który otrzymałeś na Instagramie od [`76mikus`](https://www.instagram.com/76mikus/).**
-*(Uwaga: Każdy klucz ma limit urządzeń!)*
+**AntiTestportal+** to zaawansowane narzędzie edukacyjne, zaprojektowane do bezpiecznego wspomagania procesu rozwiązywania testów na platformie Testportal. Wersja **1.0** skupia się na stabilności, niewykrywalności i prostocie obsługi.
 
 ---
 
-## 👻 FUNKCJE (Co to potrafi?)
+## 📥 Przewodnik Użytkownika
 
-### 🛡️ Ghost Shield (Niewykrywalność)
-Wtyczka automatycznie blokuje próby wykrycia Twojej aktywności przez Testportal.
-- Nie wykrywa wyjścia z karty ("Uczciwy Rozwiązywacz").
-- Nie wykrywa utraty focusu.
-- Działa w tle od razu po zalogowaniu.
+### Instalacja
+1.  **Pobierz:** Otrzymasz plik `AntiTestportal-v1.0.zip`. Wypakuj go do folderu na pulpicie.
+2.  **Otwórz Chrome:** Przejdź do `chrome://extensions`.
+3.  **Tryb Dewelopera:** Włącz suwak **"Tryb dewelopera"** (prawy górny róg).
+4.  **Załaduj:** Kliknij **"Załaduj rozpakowane"** i wskaż wypakowany folder.
+5.  **Gotowe!** Ikonka "A" pojawi się na pasku.
 
-### ❄️ Nielimitowany Czas (Nuclear Timer)
-Gdy czas się kończy, włącz ten tryb, aby zyskać nieskończoność.
-- W panelu wtyczki kliknij **"Nielimitowany Czas"**.
-- Zegar systemowy zostanie nadpisany, a licznik pokaże **99 godz. 99 min. 99 sek.**
-- **Pamiętaj:** Używaj z głową! Nie trzymaj włączonego przez godzinę.
-
-### 📚 Wbudowany Poradnik
-Masz wątpliwości? Wtyczka posiada teraz wbudowaną zakładkę **HELP**, gdzie znajdziesz szybkie instrukcje obsługi bezpośrednio w panelu.
-
-### 🤖 Auto-Answer Genius (AI & Google)
-Wtyczka potrafi dyskretnie wyświetlać podpowiedzi bezpośrednio pod pytaniem.
-- **Wybór Silnika:** W zakładce SYSTEM możesz wybrać **Google** lub **Perplexity AI**.
-- Skrót **CTRL + Z**: Wyszukaj w Google.
-- Skrót **CTRL + SHIFT + Z**: Zapytaj sztuczną inteligencję (Perplexity).
+### Pierwsze Kroki
+Po kliknięciu ikonki, zostaniesz poproszony o **Klucz Licencyjny**.
+👉 Wpisz klucz otrzymany od administratora, aby aktywować funkcje.
 
 ---
 
-## 💻 DOKUMENTACJA TECHNICZNA (Dla Developerów)
+## 🛠️ Główne Funkcje
 
-Sekcja przeznaczona dla osób chcących rozwijać projekt lub skompilować go samodzielnie ze źródeł.
+### 🛡️ Ghost Shield (Tryb Niewidzialny)
+Chroni przed wykryciem przez mechanizmy anty-cheat platformy.
+- Blokuje detekcję wyjścia z karty (blur).
+- Blokuje wykrywanie zmiany okna.
+- Działa w tle, nie wymagając uwagi użytkownika.
 
-### ⚙️ Wymagania
-- **Node.js**: v16 lub nowszy
-- **NPM / PNPM / Yarn**: Menedżer pakietów
-- **PowerShell**: Do skryptów budujących (Windows)
+### ❄️ Nielimitowany Czas (Time Freeze)
+Zamraża licznik czasu na stronie egzaminu.
+- Kliknij **"Nielimitowany Czas"** w panelu.
+- Zegar zatrzyma się wizualnie na **99:99**.
+- Po wyłączeniu, czas zostaje poprawnie zsynchronizowany, aby uniknąć błędów po stronie serwera.
 
-### 📥 Instalacja Środowiska
+### 🔎 Smart Search (Panel Wyszukiwania)
+Szybkie wyszukiwanie treści pytań.
+- Automatycznie wykrywa treść pytania.
+- Dwa przyciski: **Google** i **Perplexity AI**.
+- Wyniki otwierają się w dyskretnym oknie (popup), omijając zabezpieczenia strony.
+
+---
+
+## 💻 Przewodnik dla Deweloperów
+
+Sekcja przeznaczona dla osób chcących rozwijać projekt lub kompilować go ze źródeł.
+
+### Wymagania
+- **Node.js**: v16+
+- **PNPM / NPM**: Menedżer pakietów
+- **PowerShell**: Do skryptów wydawniczych (Windows)
+
+### Instalacja Środowiska
 1. Sklonuj repozytorium:
    ```bash
    git clone https://github.com/twoj-repo/antitestportal.git
@@ -67,38 +63,57 @@ Sekcja przeznaczona dla osób chcących rozwijać projekt lub skompilować go sa
 2. Zainstaluj zależności:
    ```bash
    npm install
+   # lub
+   pnpm install
    ```
 
-### 🔧 Konfiguracja Firebase
-Projekt wymaga własnej bazy danych Firebase Realtime Database.
-1. Utwórz projekt w konsoli Firebase.
-2. Skopiuj dane konfiguracyjne (API Key, Project ID itp.).
-3. Podmień konfigurację w pliku: `src/hooks/use-database.ts`.
-
-### 🔨 Budowanie i Rozwój
-- **Tryb Development (Hot Reload):**
-  Uruchamia serwer developerski z nasłuchiwaniem zmian.
+### Komendy Budowania
+- **Development (Hot Reload):**
   ```bash
   npm run dev
   ```
-- **Budowanie Produkcyjne:**
-  Kompiluje wtyczkę do folderu `build/chrome-mv3-prod`.
+  Uruchamia serwer developerski Plasmo. Zmiany w kodzie są natychmiast widoczne w przeglądarce.
+
+- **Produkcja (Build):**
   ```bash
   npm run build
   ```
-- **Pakowanie Release (.zip):**
-  Automatyczny skrypt tworzący gotową paczkę dla użytkownika (`AntiTestportal-v1.0.zip`).
-  ```powershell
-  ..\pack_release.ps1
-  ```
+  Tworzy zoptymalizowaną, zminimalizowaną wersję wtyczki w folderze `build/chrome-mv3-prod`.
+  Skrypt automatycznie wykonuje obfusjację kodu (javascript-obfuscator).
 
-### 🔍 Skróty Klawiszowe (Power User)
-| Skrót | Funkcja |
-| :--- | :--- |
-| **Ctrl + Z** | Szybkie szukanie pytania w Google (nowa karta/okno) |
-| **Ctrl + Shift + Z** | Szybkie szukanie pytania w Perplexity AI |
+- **Pakowanie (Release):**
+  ```powershell
+  ./pack_release.ps1
+  ```
+  Skrypt PowerShell, który:
+  1. Usuwa stare archiwa ZIP.
+  2. Uruchamia `npm run build`.
+  3. Kopiuje README.md.
+  4. Tworzy gotową paczkę `AntiTestportal-v1.0.zip`.
+
+### Struktura Projektu
+- `src/popup.tsx`: Główny interfejs UI (React).
+- `src/contents/`: Skrypty wstrzykiwane (Content Scripts).
+  - `testportal-anti-tamper.tsx`: Główna logika Ghost Shield i Time Freeze.
+  - `isolated-relay.ts`: Komunikacja ze światem zewnętrznym (Isolated World).
+- `src/hooks/`: Hooki React (zarządzanie stanem, config).
+
+---
+
+## ❓ FAQ
+
+**Q: Błąd "Extension context invalidated".**
+A: Odśwież stronę testu (F5). Dzieje się tak po aktualizacji wtyczki w tle.
+
+**Q: Nie działa na stronie panelu nauczyciela.**
+A: To celowe. Wtyczka działa tylko na stronach egzaminu (`/exam/`), aby nie powodować konfliktów.
+
+---
+
+## ⚠️ Disclaimer
+
+Oprogramowanie służy wyłącznie do celów edukacyjnych i testowania zabezpieczeń własnych systemów. Autor nie ponosi odpowiedzialności za użycie niezgodne z regulaminem placówek edukacyjnych.
 
 ---
 
 **Created by mi1ku Systems 2026.**
-*Wszelkie prawa zastrzeżone.*

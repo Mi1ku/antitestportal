@@ -21,7 +21,7 @@ export const config: PlasmoCSConfig = {
     ██║   ██║██╔══██║██║   ██║╚════██║   ██║   
     ╚██████╔╝██║  ██║╚██████╔╝███████║   ██║   
      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   
-    >>> SUPREME v1.0.8 GHOST ULTIMATE READY <<<
+    >>> ANTITESTPORTAL+ v1.0 GHOST READY <<<
     `;
 
     // --- SCOPE GUARD ---
@@ -148,120 +148,70 @@ export const config: PlasmoCSConfig = {
         } catch (e) { }
     };
 
-    // --- NUCLEAR STEALTH & EVENTS 2.0 (DYNAMIC) ---
+    // --- NUCLEAR STEALTH & EVENTS 3.0 (SAFE INSTANCE WRAP) ---
     const blockedEvents = ['blur', 'visibilitychange', 'mouseleave', 'focusout', 'pagehide', 'beforeunload'];
-    const originalAddEventListener = Window.prototype.addEventListener;
-    const originalRemoveEventListener = Window.prototype.removeEventListener;
-    const originalDocAddEventListener = Document.prototype.addEventListener;
-    const originalDocRemoveEventListener = Document.prototype.removeEventListener;
 
-    const listenerMap = new WeakMap();
+    // Save original instance methods (not prototypes to avoid integrity checks on prototypes)
+    const originalWinAdd = window.addEventListener;
+    const originalDocAdd = document.addEventListener;
 
-    const createEventProxy = (listener: any) => {
-        if (listenerMap.has(listener)) return listenerMap.get(listener);
-
-        const proxy = function (this: any, event: any) {
-            if (isGhostShieldEnabled && blockedEvents.includes(event.type)) {
-                // Runtime check - if shield is ON, block execution
-                event.stopImmediatePropagation();
-                event.stopPropagation();
-                // console.log(`%c[GHOST] Blocked dynamic event: ${event.type}`, "color: orange");
+    const wrapAddEventListener = (original: Function, name: string) => {
+        return _c(function (this: any, type: string, listener: any, options: any) {
+            // DYNAMIC CHECK: If shield is ON and event is blocked -> MUTE IT
+            if (isGhostShieldEnabled && blockedEvents.includes(type)) {
+                // console.log(`%c[GHOST] Muted dynamic event: ${type}`, "color: #00ffcc; opacity: 0.5;");
                 return;
             }
-            // If shield is OFF, execute original
-            if (typeof listener === 'function') {
-                return listener.apply(this, arguments);
-            } else if (listener && typeof listener.handleEvent === 'function') {
-                return listener.handleEvent(event);
-            }
-        };
-
-        listenerMap.set(listener, proxy);
-        return proxy;
+            // Otherwise -> PASS THROUGH
+            return original.apply(this, arguments);
+        }, name);
     };
 
-    // Override Window AEL
-    Window.prototype.addEventListener = new Proxy(originalAddEventListener, {
-        apply(target, thisArg, args: any[]) {
-            const [type, listener, options] = args;
-            if (blockedEvents.includes(type) && listener) {
-                const proxy = createEventProxy(listener);
-                return Reflect.apply(target, thisArg, [type, proxy, options]);
-            }
-            return Reflect.apply(target, thisArg, args);
-        }
-    });
-
-    // Override Document AEL
-    Document.prototype.addEventListener = new Proxy(originalDocAddEventListener, {
-        apply(target, thisArg, args: any[]) {
-            const [type, listener, options] = args;
-            if (blockedEvents.includes(type) && listener) {
-                const proxy = createEventProxy(listener);
-                return Reflect.apply(target, thisArg, [type, proxy, options]);
-            }
-            return Reflect.apply(target, thisArg, args);
-        }
-    });
-
-    // Handle RemoveEventListener to avoid leaks/errors
-    const handleRemove = (target: any, thisArg: any, args: any[]) => {
-        const [type, listener, options] = args;
-        if (blockedEvents.includes(type) && listener && listenerMap.has(listener)) {
-            const proxy = listenerMap.get(listener);
-            return Reflect.apply(target, thisArg, [type, proxy, options]);
-        }
-        return Reflect.apply(target, thisArg, args);
-    };
-
-    Window.prototype.removeEventListener = new Proxy(originalRemoveEventListener, { verify: false, apply: handleRemove } as any);
-    Document.prototype.removeEventListener = new Proxy(originalDocRemoveEventListener, { verify: false, apply: handleRemove } as any);
+    // Override instances directly (safer than prototype proxying)
+    try {
+        window.addEventListener = wrapAddEventListener(originalWinAdd, 'addEventListener');
+        document.addEventListener = wrapAddEventListener(originalDocAdd, 'addEventListener');
+    } catch (e) { }
 
     // --- PROPERTY SYNC (DYNAMIC) ---
-    const helpPatch = (obj: any, prop: string, valueFn: () => any) => {
-        const origDesc = Object.getOwnPropertyDescriptor(obj, prop) || Object.getOwnPropertyDescriptor(Object.getPrototypeOf(obj), prop);
-        Object.defineProperty(obj, prop, {
-            get: function () {
-                if (isGhostShieldEnabled) return valueFn();
-                return origDesc && origDesc.get ? origDesc.get.call(this) : (this as any)[`_${prop}`];
-            },
-            configurable: true
-        });
-    };
-
+    // Safely patch properties using Object.defineProperty on instances
     try {
         const docProto = Document.prototype;
-        // Fix for visibilityState - get original getter from prototype
         const origVisDesc = Object.getOwnPropertyDescriptor(docProto, 'visibilityState');
         const origHiddenDesc = Object.getOwnPropertyDescriptor(docProto, 'hidden');
 
         Object.defineProperty(document, 'visibilityState', {
-            get: function () {
+            get: _c(function () {
                 if (isGhostShieldEnabled) return 'visible';
                 return origVisDesc ? origVisDesc.get?.call(this) : 'visible';
-            }, configurable: true
+            }, 'get visibilityState'),
+            configurable: true
         });
 
         Object.defineProperty(document, 'hidden', {
-            get: function () {
+            get: _c(function () {
                 if (isGhostShieldEnabled) return false;
                 return origHiddenDesc ? origHiddenDesc.get?.call(this) : false;
-            }, configurable: true
+            }, 'get hidden'),
+            configurable: true
         });
 
-        // Patch hasFocus
         const origHasFocus = document.hasFocus;
-        document.hasFocus = function () {
+        document.hasFocus = _c(function () {
             if (isGhostShieldEnabled) return true;
             return origHasFocus.apply(this);
-        }
+        }, 'hasFocus');
 
-        // Patch webdriver dynamic
+        // Patch webdriver safely
+        // Only patch if it exists or we want to hide it. 
+        // Chrome default is undefined if not automated. Automated is true/false.
+        // We force false if enabled, otherwise undefined.
         Object.defineProperty(navigator, 'webdriver', {
-            get: function () {
+            get: _c(function () {
                 if (isGhostShieldEnabled) return false;
                 return undefined;
-            }, configurable: true
+            }, 'get webdriver'),
+            configurable: true
         });
 
     } catch (e) {
@@ -437,56 +387,142 @@ export const config: PlasmoCSConfig = {
     const updateAnswerFrame = () => {
         // [FIX] Nie pokazuj bota na stronie wyników ani startowej
         if (window.location.href.includes('test-result') || window.location.href.includes('LoadTestStart')) {
-            const existingFrame = document.getElementById('shield-answer-frame') as HTMLIFrameElement;
-            if (existingFrame) existingFrame.style.display = 'none';
+            const existingPanel = document.getElementById('shield-smart-search');
+            if (existingPanel) existingPanel.style.display = 'none';
             return;
         }
 
-        const existingFrame = document.getElementById('shield-answer-frame') as HTMLIFrameElement;
+        const existingPanel = document.getElementById('shield-smart-search');
 
-        // Jeśli bot wyłączony LUB brak ochrony (user wylogowany/shield off), chowamy ramkę
+        // Jeśli bot wyłączony LUB brak ochrony (user wylogowany/shield off), chowamy panel
         if (!isAnswerBotEnabled || !isGhostShieldEnabled) {
-            if (existingFrame) existingFrame.style.display = 'none';
+            if (existingPanel) existingPanel.style.display = 'none';
             return;
         }
 
         const qText = getQuestionText();
-        if (!qText) return;
+        // Jeśli nie znaleziono tekstu, też chowamy (żeby nie wisiał pusty panel)
+        if (!qText) {
+            if (existingPanel) existingPanel.style.display = 'none';
+            return;
+        }
 
-        if (qText !== lastQuestion) {
-            lastQuestion = qText;
+        const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(qText)}`;
+        const perplexityUrl = `https://www.perplexity.ai/search?q=${encodeURIComponent(qText)}`;
 
-            let url = "";
-            if (searchEngine === 'perplexity') {
-                url = `https://www.perplexity.ai/search?q=${encodeURIComponent(qText)}`;
-            } else {
-                url = `https://www.google.com/search?igu=1&q=${encodeURIComponent(qText)}`;
-            }
+        if (!existingPanel) {
+            // Próba znalezienia kontenera
+            const qContainer =
+                document.querySelector('.question-container') ||
+                document.querySelector('.test-content') ||
+                document.querySelector('.question_essence') ||
+                document.querySelector('#question_essence') ||
+                document.querySelector('.question-view');
 
-            if (!existingFrame) {
-                // Próba znalezienia kontenera - szersza lista selektorów
-                const qContainer =
-                    document.querySelector('.question-container') ||
-                    document.querySelector('.test-content') ||
-                    document.querySelector('.question_essence') ||
-                    document.querySelector('#question_essence') ||
-                    document.querySelector('.question-view');
+            if (qContainer) {
+                // Remove old iframe if exists
+                const oldIframe = document.getElementById('shield-answer-frame');
+                if (oldIframe) oldIframe.remove();
 
-                if (qContainer) {
-                    const f = document.createElement('iframe');
-                    f.id = 'shield-answer-frame';
-                    f.style.cssText = `width:100%;height:350px;border:none;border-radius:12px;margin-top:15px;box-shadow:0 0 20px rgba(0,0,0,0.3);z-index:999;display:block;`;
-                    f.src = url;
-                    qContainer.appendChild(f);
-                } else {
-                    console.log("[GHOST] Nie znaleziono kontenera dla Auto-Answer.");
+                const p = document.createElement('div');
+                p.id = 'shield-smart-search';
+                p.style.cssText = `
+                    width: 100%;
+                    padding: 15px;
+                    margin-top: 20px;
+                    border-radius: 12px;
+                    background: rgba(10, 10, 15, 0.85);
+                    backdrop-filter: blur(12px);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+                    font-family: 'Inter', sans-serif;
+                    z-index: 999;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    color: #fff;
+                    transition: all 0.3s ease;
+                `;
+
+                p.innerHTML = `
+                    <div style="font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">
+                        🤖 AntiTestportal Smart Search
+                    </div>
+                    <div id="smart-q-preview" style="font-size: 13px; color: #ddd; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 95%;">
+                        ${qText}
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                        <button id="btn-smart-google" style="
+                            flex: 1;
+                            background: linear-gradient(135deg, #4285F4, #34A853);
+                            border: none;
+                            padding: 8px 12px;
+                            border-radius: 8px;
+                            color: white;
+                            font-weight: 600;
+                            font-size: 12px;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 6px;
+                            transition: transform 0.2s;
+                        ">
+                            <span>🔎</span> Google
+                        </button>
+                        <button id="btn-smart-perplexity" style="
+                            flex: 1;
+                            background: linear-gradient(135deg, #229ba3, #156d73);
+                            border: none;
+                            padding: 8px 12px;
+                            border-radius: 8px;
+                            color: white;
+                            font-weight: 600;
+                            font-size: 12px;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 6px;
+                            transition: transform 0.2s;
+                        ">
+                            <span>🧠</span> Perplexity AI
+                        </button>
+                    </div>
+                `;
+
+                qContainer.appendChild(p);
+
+                // Add hover effects via JS
+                const b1 = p.querySelector('#btn-smart-google') as HTMLElement;
+                const b2 = p.querySelector('#btn-smart-perplexity') as HTMLElement;
+
+                if (b1) {
+                    b1.onmouseover = () => b1.style.transform = "translateY(-2px)";
+                    b1.onmouseout = () => b1.style.transform = "translateY(0)";
+                    b1.onclick = () => window.open(googleUrl, 'GoogleSearch', 'width=500,height=800,menubar=0,toolbar=0,location=0,scrollbars=1,resizable=1');
                 }
+                if (b2) {
+                    b2.onmouseover = () => b2.style.transform = "translateY(-2px)";
+                    b2.onmouseout = () => b2.style.transform = "translateY(0)";
+                    b2.onclick = () => window.open(perplexityUrl, 'PerplexitySearch', 'width=500,height=800,menubar=0,toolbar=0,location=0,scrollbars=1,resizable=1');
+                }
+
             } else {
-                existingFrame.style.display = 'block';
-                if (existingFrame.src !== url) existingFrame.src = url;
+                console.log("[GHOST] Nie znaleziono kontenera dla Smart Search.");
             }
         } else {
-            if (existingFrame) existingFrame.style.display = 'block';
+            // Update existing panel
+            existingPanel.style.display = 'flex';
+            const preview = existingPanel.querySelector('#smart-q-preview');
+            const b1 = existingPanel.querySelector('#btn-smart-google') as HTMLElement;
+            const b2 = existingPanel.querySelector('#btn-smart-perplexity') as HTMLElement;
+
+            if (preview && qText !== preview.innerHTML) preview.innerHTML = qText;
+
+            // Update clicks with new question
+            if (b1) b1.onclick = () => window.open(googleUrl, 'GoogleSearch', 'width=500,height=800,menubar=0,toolbar=0,location=0,scrollbars=1,resizable=1');
+            if (b2) b2.onclick = () => window.open(perplexityUrl, 'PerplexitySearch', 'width=500,height=800,menubar=0,toolbar=0,location=0,scrollbars=1,resizable=1');
         }
     };
 

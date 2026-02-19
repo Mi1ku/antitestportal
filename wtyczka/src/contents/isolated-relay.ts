@@ -14,6 +14,12 @@ export const config: PlasmoCSConfig = {
         "https://*.testportal.com/*",
         "https://teams.microsoft.com/*"
     ],
+    exclude_matches: [
+        "https://*.testportal.pl/manager/*",
+        "https://*.testportal.net/manager/*",
+        "https://*.testportal.online/manager/*",
+        "https://*.testportal.com/manager/*"
+    ],
     all_frames: true,
     run_at: "document_start"
 };
@@ -21,12 +27,17 @@ export const config: PlasmoCSConfig = {
 const sendSync = (cfg: PluginConfig) => {
     try {
         window.dispatchEvent(new CustomEvent("ultra_sync", { detail: cfg }));
-        // Debug
-        // console.log("[RELAY] Sent ultra_sync", cfg);
     } catch (e) { }
 };
 
 const init = async () => {
+    // SECURITY GUARD: Absolutely forbid execution on manager pages
+    if (window.location.pathname.includes('/manager/') ||
+        window.location.pathname.includes('/admin/') ||
+        window.location.pathname.includes('/setup/')) {
+        return;
+    }
+
     // 1. Pobierz aktualny stan
     const cfg = await pluginStorage.get<PluginConfig>(PluginConfigKey);
     if (cfg) {
@@ -39,7 +50,8 @@ const init = async () => {
             timeFreeze: false,
             showHud: false, // Domyślnie wyłączone
             showAnswerBot: false,
-            resetTimestamp: 0
+            resetTimestamp: 0,
+            searchEngine: 'google'
         });
     }
 
@@ -51,13 +63,14 @@ const init = async () => {
             }
         }
     });
+
+    // Heartbeat co 1s dla pewności (tylko w funkcji init, by też był chroniony returnem)
+    setInterval(async () => {
+        const cfg = await pluginStorage.get<PluginConfig>(PluginConfigKey);
+        if (cfg) sendSync(cfg);
+    }, 1000);
 };
 
 init();
-// Heartbeat co 1s dla pewności
-setInterval(async () => {
-    const cfg = await pluginStorage.get<PluginConfig>(PluginConfigKey);
-    if (cfg) sendSync(cfg);
-}, 1000);
 
 export default () => null;
