@@ -427,26 +427,41 @@ function IndexPopup() {
 
                                     <div style={{ marginBottom: 12 }}>
                                         <div style={{ fontSize: 11, fontWeight: 800 }}>🛡️ Ghost Shield EX</div>
-                                        <div style={{ fontSize: 9, opacity: 0.6 }}>Główna ochrona. Ukrywa wtyczkę przed systemem Testportal. Włącz TO PIERWSZE przed wejściem na test. Jeśli wyłączysz w trakcie - odśwież stronę (F5).</div>
+                                        <div style={{ fontSize: 9, opacity: 0.6 }}>Ochrona przed detekcją. Włącz przed wejściem na test. Odśwież (F5) w razie problemów.</div>
                                     </div>
 
                                     <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 11, fontWeight: 800 }}>⏳ Nielimitowany Czas</div>
-                                        <div style={{ fontSize: 9, opacity: 0.6 }}>Zamraża zegar egzaminu. Status "99:99" oznacza działanie. <br /><span style={{ color: 'orange' }}>UWAGA:</span> Nie trzymaj włączone non-stop przez godzinę, bo logi serwera mogą wyglądać dziwnie. Używaj z umiarem.</div>
+                                        <div style={{ fontSize: 11, fontWeight: 800 }}>⏳ Time Freeze</div>
+                                        <div style={{ fontSize: 9, opacity: 0.6 }}>Zamraża licznik czasu (wizualnie 99:99). Używaj ostrożnie.</div>
                                     </div>
 
                                     <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 11, fontWeight: 800 }}>🤖 Auto-Answer Genius</div>
-                                        <div style={{ fontSize: 9, opacity: 0.6 }}>Wyszukuje treść pytania w Google lub Perplexity.</div>
-                                        <ul style={{ fontSize: 9, opacity: 0.6, paddingLeft: 15, marginTop: 4 }}>
-                                            <li>Możesz wybrać silnik w zakładce SYSTEM.</li>
-                                            <li>Skrót <b>CTRL + Z</b>: Google Search</li>
-                                            <li>Skrót <b>CTRL + SHIFT + Z</b>: AI Search</li>
-                                        </ul>
+                                        <div style={{ fontSize: 11, fontWeight: 800 }}>🔎 Side Dock (AI Assistant)</div>
+                                        <div style={{ fontSize: 9, opacity: 0.6 }}>Panel boczny z Google/Perplexity. Sterowanie przyciskami w HUD lub skrótami.</div>
                                     </div>
 
-                                    <div style={{ fontSize: 9, color: 'var(--red-glow)', border: '1px solid var(--red-glow)', padding: 8, borderRadius: 6 }}>
-                                        <b>WAŻNE:</b> Jeśli zmieniasz ustawienia w trakcie testu i coś nie działa, spróbuj odświeżyć stronę (F5). Wtyczka jest zsynchronizowana, ale niektóre blokady wymagają przeładowania.
+                                    <div style={{ marginBottom: 12, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 12 }}>
+                                        <div style={{ fontSize: 11, fontWeight: 800, marginBottom: 6 }}>⌨️ SKRÓTY KLAWISZOWE</div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '4px 10px', fontSize: 9, opacity: 0.8 }}>
+                                            <div style={{ color: 'var(--green-glow)', fontWeight: 900 }}>CTRL+SFT+Z</div>
+                                            <div>Panic Mode (Ukryj HUD & Dock)</div>
+
+                                            <div style={{ color: 'var(--green-glow)', fontWeight: 900 }}>CTRL+SFT+X</div>
+                                            <div>Pokaż/Ukryj Side Dock</div>
+
+                                            <div style={{ color: 'var(--green-glow)', fontWeight: 900 }}>CTRL+SFT+F</div>
+                                            <div>Włącz/Wyłącz Time Freeze</div>
+
+                                            <div style={{ color: '#aaa', fontWeight: 900 }}>CTRL+Z</div>
+                                            <div>Quick Google (Nowa Karta)</div>
+
+                                            <div style={{ color: '#aaa', fontWeight: 900 }}>CTRL+SFT+S</div>
+                                            <div>Quick Perplexity (Nowa Karta)</div>
+                                        </div>
+                                    </div>
+
+                                    <div style={{ fontSize: 9, color: 'var(--red-glow)', border: '1px solid var(--red-glow)', padding: 8, borderRadius: 6, marginTop: 10 }}>
+                                        <b>PORADA:</b> Jeśli coś nie działa po zmianie ustawień ➜ odśwież stronę (F5).
                                     </div>
                                 </div>
                             </div>
