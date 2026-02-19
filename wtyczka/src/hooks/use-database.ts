@@ -1,5 +1,5 @@
 import { Storage } from "@plasmohq/storage"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, set, get, update, child } from "firebase/database";
 
@@ -57,6 +57,7 @@ export default function useDatabase() {
     const [db, setDb] = useState<DatabaseSchema | null>(null);
     const [hwid, setHwid] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
+    const didLoadRef = useRef(false);
 
     useEffect(() => {
         const dbRef = ref(fdb, 'supreme_v1');
@@ -66,29 +67,13 @@ export default function useDatabase() {
             console.log("[Supreme DB] HWID Ready:", hw);
         });
 
-        const unsubscribe = onValue(dbRef, (snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                setDb(data);
-                setIsLoading(false);
-                console.log("[Supreme DB] Data Sync Success.");
-            } else {
-                console.log("[Supreme DB] Database empty or null.");
-                setDb({ keys: [], version: "1.0.0", bannedHwids: [] });
-                setIsLoading(false);
-            }
-        }, (err) => {
-            console.error("[Supreme DB] Firebase Error:", err);
-            setIsLoading(false);
-        });
-
         const timer = setTimeout(() => {
-            if (isLoading && !db) {
+            if (!didLoadRef.current) {
                 console.warn("[Supreme DB] Connection timed out. Falling back to local state.");
                 setDb({
                     keys: [{
                         id: "admin",
-                        key: "admin", // Added to satisfy TS
+                        key: "admin",
                         ownerName: "mi1ku",
                         role: "admin",
                         points: 9999,
@@ -103,6 +88,26 @@ export default function useDatabase() {
                 setIsLoading(false);
             }
         }, 6000);
+
+        const unsubscribe = onValue(dbRef, (snapshot) => {
+            clearTimeout(timer); // Cancel fallback on response
+            didLoadRef.current = true;
+
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                setDb(data);
+                setIsLoading(false);
+                console.log("[Supreme DB] Data Sync Success.");
+            } else {
+                console.log("[Supreme DB] Database empty or null.");
+                setDb({ keys: [], version: "1.0.0", bannedHwids: [] });
+                setIsLoading(false);
+            }
+        }, (err) => {
+            clearTimeout(timer);
+            console.error("[Supreme DB] Firebase Error:", err);
+            setIsLoading(false);
+        });
 
         return () => {
             unsubscribe();
