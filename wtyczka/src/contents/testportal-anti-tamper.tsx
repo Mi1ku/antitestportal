@@ -26,9 +26,10 @@ export const config: PlasmoCSConfig = {
 
     console.log("%c" + BANNER, "color: #00ffcc; font-weight: bold;");
 
-    let isGhostShieldEnabled = true;
+    let isGhostShieldEnabled = false; // Domyślnie wyłączone
     let isTimeFreezeEnabled = false;
-    let isHudEnabled = true;
+    let isHudEnabled = false; // Domyślnie wyłączone
+    let isAnswerBotEnabled = false;
 
     // --- SEKCJA SEARCH (GOOGLE / AI) ---
     const searchQuestion = (engine: 'google' | 'perplexity') => {
@@ -162,8 +163,6 @@ export const config: PlasmoCSConfig = {
         }
         if (txt) txt.innerText = isTimeFreezeEnabled ? 'TIME FROZEN' : 'SHIELD ACTIVE';
     };
-
-    let isAnswerBotEnabled = false;
 
     window.addEventListener("ultra_sync", (e: any) => {
         const cfg = e.detail;

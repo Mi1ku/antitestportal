@@ -77,14 +77,14 @@ function IndexPopup() {
 
     useEffect(() => {
         if (db && inputKey) {
-            const k = db.keys.find(x => x.key === inputKey.trim());
+            const k = db.keys?.find(x => x.key === inputKey.trim());
             setIsKeyAlreadyBound(!!(k && k.boundHwids && k.boundHwids.length > 0));
         }
     }, [inputKey, db]);
 
     useEffect(() => {
         if (currentUser && db) {
-            const found = db.keys.find(k => k.id === currentUser.id);
+            const found = db.keys?.find(k => k.id === currentUser.id);
             if (found) setCurrentUser(found);
         }
     }, [db, currentUser?.id]);
@@ -375,7 +375,7 @@ function IndexPopup() {
                                     <button className="btn-primary" style={{ width: 40, padding: 0 }} onClick={() => { if (newKeyName) { addKey(newKeyName, 'user', 30, "SYSTEM"); setNewKeyName(""); } }}>+</button>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                    {db?.keys.map(k => {
+                                    {db?.keys?.map(k => {
                                         const isBanned = k.boundHwids?.some(h => db.bannedHwids?.includes(h));
                                         return (
                                             <div key={k.id} className="admin-item" style={{ background: isBanned ? 'rgba(255,59,58,0.05)' : 'rgba(255,255,255,0.02)', border: `1px solid ${isBanned ? 'rgba(255,59,58,0.3)' : 'var(--border)'}`, borderRadius: 12, padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: isBanned ? 0.7 : 1 }} onClick={() => openEditModal(k)}>

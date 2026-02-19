@@ -13,9 +13,9 @@ export interface PluginConfig {
 
 const DefaultConfig: PluginConfig = {
     shieldKey: "",
-    antiAntiTampering: true,
+    antiAntiTampering: false, // Domyślnie wyłączone (wymaga logowania)
     timeFreeze: false,
-    showHud: true,
+    showHud: false, // Domyślnie wyłączone
     showAnswerBot: false,
     resetTimestamp: 0
 }

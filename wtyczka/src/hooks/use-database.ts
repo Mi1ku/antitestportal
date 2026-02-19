@@ -69,12 +69,50 @@ export default function useDatabase() {
         const unsubscribe = onValue(dbRef, (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
-                setDb(data);
+                // Check if keys exist, if not, inject admin
+                if (!data.keys || !Array.isArray(data.keys) || data.keys.length === 0) {
+                    console.log("[Supreme DB] DB exists but empty keys. Seeding Admin...");
+                    const seededDb: DatabaseSchema = {
+                        version: "1.0.0",
+                        keys: [{
+                            id: "admin",
+                            key: "mikus", // Default Admin Key
+                            ownerName: "mi1ku (Root)",
+                            role: "admin",
+                            points: 9999,
+                            boundHwids: [],
+                            maxHwids: 100,
+                            reflink: "ADMIN_REF",
+                            expiresAt: 'never'
+                        }],
+                        bannedHwids: []
+                    };
+                    set(dbRef, seededDb); // Save to Firebase
+                    setDb(seededDb);
+                } else {
+                    setDb(data);
+                }
                 setIsLoading(false);
                 console.log("[Supreme DB] Data Sync Success.");
             } else {
-                console.log("[Supreme DB] Database empty or null.");
-                setDb({ keys: [], version: "1.0.0", bannedHwids: [] });
+                console.log("[Supreme DB] Database empty. Seeding Admin...");
+                const initialDb: DatabaseSchema = {
+                    version: "1.0.0",
+                    keys: [{
+                        id: "admin",
+                        key: "mikus", // Default Admin Key
+                        ownerName: "mi1ku (Root)",
+                        role: "admin",
+                        points: 9999,
+                        boundHwids: [],
+                        maxHwids: 100,
+                        reflink: "ADMIN_REF",
+                        expiresAt: 'never'
+                    }],
+                    bannedHwids: []
+                };
+                set(dbRef, initialDb); // Save to Firebase immediately
+                setDb(initialDb);
                 setIsLoading(false);
             }
         }, (err) => {

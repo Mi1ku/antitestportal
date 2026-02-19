@@ -35,9 +35,10 @@ const init = async () => {
         // Fallback default
         sendSync({
             shieldKey: "",
-            antiAntiTampering: true,
-            timeFreeze: false, // Domyślnie FALSE, żeby user włączył świadomie
-            showHud: true,
+            antiAntiTampering: false, // Domyślnie wyłączone (zabezpieczenie)
+            timeFreeze: false,
+            showHud: false, // Domyślnie wyłączone
+            showAnswerBot: false,
             resetTimestamp: 0
         });
     }
