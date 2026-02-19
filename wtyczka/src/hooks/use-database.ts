@@ -1,17 +1,31 @@
 import { Storage } from "@plasmohq/storage"
 import { useState, useEffect } from "react"
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, onValue, set, get, update, child } from "firebase/database";
 
 const storage = new Storage();
 
 // --- SUPREME ENCRYPTION LAYER ---
 const SECRET_SALT = "mi1ku_supreme_76_ultra_safety_999";
 
+const firebaseConfig = {
+    apiKey: "AIzaSyDSnKsbPNCCmEKAO1r_PvvVldViGWQ1Sw",
+    authDomain: "antitestportaldb.firebaseapp.com",
+    projectId: "antitestportaldb",
+    storageBucket: "antitestportaldb.firebasestorage.app",
+    messagingSenderId: "99856592412",
+    appId: "1:99856592412:web:b73e994dceb8d3561e4e3d9",
+    measurementId: "G-PDM2VNPEZ9"
+};
+
+const app = initializeApp(firebaseConfig);
+const fdb = getDatabase(app);
+
 const encodeData = (data: any): string => {
     const json = JSON.stringify(data);
     const encoder = new TextEncoder();
     const bytes = encoder.encode(json);
     const saltBytes = encoder.encode(SECRET_SALT);
-
     let result = "";
     for (let i = 0; i < bytes.length; i++) {
         const xored = bytes[i] ^ saltBytes[i % saltBytes.length];
@@ -25,36 +39,21 @@ const decodeData = (encoded: string): any => {
         const decoded = atob(encoded);
         const saltBytes = new TextEncoder().encode(SECRET_SALT);
         const bytes = new Uint8Array(decoded.length);
-
         for (let i = 0; i < decoded.length; i++) {
             bytes[i] = decoded.charCodeAt(i) ^ saltBytes[i % saltBytes.length];
         }
-
-        const decoder = new TextDecoder();
-        return JSON.parse(decoder.decode(bytes));
-    } catch (e) {
-        console.error("Database Decryption Failed!", e);
-        return null;
-    }
+        return JSON.parse(new TextDecoder().decode(bytes));
+    } catch (e) { return null; }
 };
 
-// --- HWID GENERATOR ---
 const getOrCreateHWID = async (): Promise<string> => {
     let hwid = await storage.get("supreme_hwid_v1");
-    const fingerprint = [
-        navigator.userAgent.replace(/\d+/g, ''),
-        screen.height,
-        screen.width,
-        navigator.language,
-        navigator.hardwareConcurrency || 4
-    ].join('|');
-
     if (!hwid) {
+        const fingerprint = [navigator.userAgent.replace(/\d+/g, ''), screen.height, screen.width, navigator.language].join('|');
         let hash = 0;
         for (let i = 0; i < fingerprint.length; i++) {
-            const char = fingerprint.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
+            hash = ((hash << 5) - hash) + fingerprint.charCodeAt(i);
+            hash |= 0;
         }
         hwid = `SUPREME-${Math.abs(hash).toString(16).toUpperCase()}`;
         await storage.set("supreme_hwid_v1", hwid);
@@ -70,22 +69,16 @@ export interface DbKey {
     points: number;
     ownerName?: string;
     reflink: string;
-    boundHwids?: string[]; // Multiple HWIDs support
-    referredBy?: string;
+    boundHwids?: string[];
 }
 
 export interface DatabaseSchema {
     keys: DbKey[];
-    referrals: any[];
     version: string;
 }
 
-const DB_KEY = "supreme_secure_db_v4";
-
 const INITIAL_KEYS: DbKey[] = [
-    { id: "1", key: "mikus", role: "admin", expiresAt: "never", points: 9999, ownerName: "Mikuś", reflink: "MIKUS76", boundHwids: [] },
-    { id: "dev", key: "SUPREME_DEVELOPER_MODE", role: "admin", expiresAt: "never", points: 0, ownerName: "Dev", reflink: "DEV76", boundHwids: [] },
-    { id: "admin_secret", key: "SUPREME_ADMIN_76", role: "admin", expiresAt: "never", points: 0, ownerName: "System", reflink: "SUP76", boundHwids: [] }
+    { id: "1", key: "mikus", role: "admin", expiresAt: "never", points: 9999, ownerName: "Mikuś", reflink: "MIKUS76", boundHwids: [] }
 ];
 
 export default function useDatabase() {
@@ -94,75 +87,29 @@ export default function useDatabase() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const init = async () => {
-            const myHwid = await getOrCreateHWID();
-            setHwid(myHwid);
+        const dbRef = ref(fdb, 'supreme_v1');
 
-            let rawData = await storage.get(DB_KEY);
-            let data: DatabaseSchema;
+        getOrCreateHWID().then(setHwid);
 
-            if (!rawData) {
-                // Migration from v2 if exists
-                const oldRaw = await storage.get("supreme_secure_db_v2");
-                if (oldRaw) {
-                    const oldData = decodeData(oldRaw as string);
-                    data = {
-                        ...oldData,
-                        keys: oldData.keys.map((k: any) => ({
-                            ...k,
-                            boundHwids: k.boundHwid ? [k.boundHwid] : []
-                        })),
-                        version: "1.3.0"
-                    };
-                } else {
-                    data = {
-                        keys: INITIAL_KEYS,
-                        referrals: [],
-                        version: "1.3.0"
-                    };
-                }
-                await storage.set(DB_KEY, encodeData(data));
+        const unsubscribe = onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                setDb(data);
             } else {
-                data = decodeData(rawData as string);
-                if (!data) {
-                    data = { keys: INITIAL_KEYS, referrals: [], version: "1.3.0" };
-                }
+                // Initialize cloud DB if empty
+                set(dbRef, { keys: INITIAL_KEYS, version: "1.5.0" });
             }
-            setDb(data);
             setIsLoading(false);
-        };
+        });
 
-        const interval = setInterval(async () => {
-            let rawData = await storage.get(DB_KEY);
-            if (rawData) {
-                const data = decodeData(rawData as string);
-                if (data) setDb(data);
-            }
-        }, 2000);
-
-        init();
-        return () => clearInterval(interval);
+        return () => unsubscribe();
     }, []);
 
     const updateDb = async (newDb: DatabaseSchema) => {
-        const encoded = encodeData(newDb);
-        await storage.set(DB_KEY, encoded);
-        setDb(newDb);
+        await set(ref(fdb, 'supreme_v1'), newDb);
     };
 
-    const checkForUpdates = async () => {
-        try {
-            return {
-                hasUpdate: false,
-                version: "1.3.0",
-                url: "https://github.com/mikus/antitestportal/releases/latest"
-            };
-        } catch (e) {
-            return { hasUpdate: false };
-        }
-    };
-
-    const addKey = async (key: string, role: 'user' | 'admin', days: number | 'never', owner: string = "") => {
+    const addKey = async (key: string, role: 'user' | 'admin' = 'user', days: number | 'never' = 30, ownerName: string = "") => {
         if (!db) return;
         const newKey: DbKey = {
             id: Math.random().toString(36).substr(2, 9),
@@ -170,26 +117,27 @@ export default function useDatabase() {
             role,
             expiresAt: days === 'never' ? 'never' : Date.now() + days * 24 * 60 * 60 * 1000,
             points: 0,
-            ownerName: owner,
+            ownerName,
             reflink: key.substring(0, 4).toUpperCase() + Math.floor(Math.random() * 999),
             boundHwids: []
         };
-        const nextDb = { ...db, keys: [...db.keys, newKey] };
-        await updateDb(nextDb);
+        await updateDb({ ...db, keys: [...db.keys, newKey] });
     };
 
     const updateKey = async (id: string, updates: Partial<DbKey>) => {
         if (!db) return;
-        const nextDb = {
-            ...db,
-            keys: db.keys.map(k => k.id === id ? { ...k, ...updates } : k)
-        };
-        await updateDb(nextDb);
+        const nextKeys = db.keys.map(k => k.id === id ? { ...k, ...updates } : k);
+        await updateDb({ ...db, keys: nextKeys });
+    };
+
+    const deleteKey = async (id: string) => {
+        if (!db) return;
+        const nextKeys = db.keys.filter(k => k.id !== id);
+        await updateDb({ ...db, keys: nextKeys });
     };
 
     const validateKey = async (key: string, referralCode?: string): Promise<{ success: boolean; user?: DbKey; error?: string }> => {
         if (!db) return { success: false, error: "DB NOT READY" };
-
         const found = db.keys.find(k => k.key === key);
         if (!found) return { success: false, error: "BŁĘDNY KLUCZ" };
 
@@ -197,109 +145,53 @@ export default function useDatabase() {
             return { success: false, error: "KLUCZ WYGASŁ" };
         }
 
-        const currentHwid = await getOrCreateHWID();
-        const hasHwid = found.boundHwids && found.boundHwids.includes(currentHwid);
+        const myHwid = await getOrCreateHWID();
+        const isBound = found.boundHwids?.includes(myHwid);
         const canBind = !found.boundHwids || found.boundHwids.length === 0;
 
-        if (!hasHwid && !canBind) {
-            return { success: false, error: "LICENCJA PRZYPISANA DO INNEGO PC" };
-        }
+        if (!isBound && !canBind) return { success: false, error: "LICENCJA PRZYPISANA DO INNEGO PC" };
 
-        let nextKeys = [...db.keys];
-        let userWasUpdated = false;
-
-        // Auto-binding and Referral logic on FIRST activation
         if (canBind) {
-            userWasUpdated = true;
-            let updatedPoints = found.points || 0;
-
+            let pts = found.points || 0;
+            let nextKeys = [...db.keys];
             if (referralCode) {
-                const referrer = nextKeys.find(k => k.reflink.toLowerCase() === referralCode.toLowerCase().trim());
-                if (referrer && referrer.id !== found.id) {
-                    updatedPoints += 25;
-                    nextKeys = nextKeys.map(k => {
-                        if (k.id === referrer.id) return { ...k, points: (k.points || 0) + 50 };
-                        return k;
-                    });
+                const refIdx = nextKeys.findIndex(k => k.reflink.toLowerCase() === referralCode.toLowerCase().trim());
+                if (refIdx !== -1 && nextKeys[refIdx].id !== found.id) {
+                    pts += 25;
+                    nextKeys[refIdx].points += 50;
                 }
             }
-
-            nextKeys = nextKeys.map(k => {
-                if (k.id === found.id) return { ...k, boundHwids: [currentHwid], points: updatedPoints };
-                return k;
-            });
+            const updatedUser = { ...found, boundHwids: [myHwid], points: pts };
+            const finalKeys = nextKeys.map(k => k.id === found.id ? updatedUser : k);
+            await updateDb({ ...db, keys: finalKeys });
+            return { success: true, user: updatedUser };
         }
 
-        if (userWasUpdated) {
-            await updateDb({ ...db, keys: nextKeys });
-        }
-
-        const updatedUser = userWasUpdated ? nextKeys.find(k => k.id === found.id) : found;
-        return { success: true, user: updatedUser };
-    };
-
-    const deleteKey = async (id: string) => {
-        if (!db) return;
-        const nextDb = { ...db, keys: db.keys.filter(k => k.id !== id) };
-        await updateDb(nextDb);
+        return { success: true, user: found };
     };
 
     const addPoints = async (id: string, amount: number) => {
         if (!db) return;
-        const nextDb = {
-            ...db,
-            keys: db.keys.map(k => k.id === id ? { ...k, points: (k.points || 0) + amount } : k)
-        };
-        await updateDb(nextDb);
+        const nextKeys = db.keys.map(k => k.id === id ? { ...k, points: (k.points || 0) + amount } : k);
+        await updateDb({ ...db, keys: nextKeys });
     };
 
-    const getRemainingTime = (expiresAt: string): string => {
-        if (expiresAt === "never") return "NIESKOŃCZONOŚĆ";
-        const now = new Date();
-        const exp = new Date(expiresAt);
-        const diff = exp.getTime() - now.getTime();
-
+    const getRemainingTime = (exp: number | 'never'): string => {
+        if (exp === 'never') return "NIESKOŃCZONOŚĆ";
+        const diff = exp - Date.now();
         if (diff <= 0) return "WYGASŁO";
-
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-
-        if (days > 0) return `${days}d ${hours}h`;
-        return `${hours}h`;
+        const d = Math.floor(diff / 86400000);
+        const h = Math.floor((diff % 86400000) / 3600000);
+        return d > 0 ? `${d}d ${h}h` : `${h}h`;
     };
 
     const clearSession = async () => {
-        return new Promise((resolve) => {
-            if (typeof chrome !== 'undefined' && chrome.browsingData) {
-                chrome.browsingData.remove({
-                    origins: [
-                        "https://www.testportal.pl",
-                        "https://www.testportal.net",
-                        "https://www.testportal.online"
-                    ]
-                }, {
-                    "cookies": true,
-                    "localStorage": true,
-                    "cache": true
-                }, () => resolve(true));
-            } else {
-                resolve(false);
-            }
-        });
+        if (typeof chrome !== 'undefined' && chrome.browsingData) {
+            await chrome.browsingData.remove({
+                origins: ["https://www.testportal.pl", "https://www.testportal.net", "https://www.testportal.online"]
+            }, { "cookies": true, "localStorage": true, "cache": true });
+        }
     };
 
-    return {
-        db,
-        hwid,
-        isLoading,
-        addKey,
-        updateKey,
-        deleteKey,
-        addPoints,
-        validateKey,
-        updateDb,
-        checkForUpdates,
-        getRemainingTime,
-        clearSession
-    };
+    return { db, hwid, isLoading, addKey, updateKey, deleteKey, addPoints, validateKey, getRemainingTime, clearSession };
 }
