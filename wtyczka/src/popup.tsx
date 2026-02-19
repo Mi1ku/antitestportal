@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import usePluginConfig from "~hooks/use-plugin-config";
 import useDatabase, { type DbKey } from "~hooks/use-database";
 
-type Tab = "home" | "games" | "terminal";
+type Tab = "home" | "games" | "terminal" | "guide";
 
 function IndexPopup() {
     const { pluginConfig } = usePluginConfig();
@@ -201,7 +201,7 @@ function IndexPopup() {
             {editingUser && (
                 <div className="modal-overlay">
                     <div className="modal-content">
-                        <div className="modal-header">EDYTUJ SUPREME USERA</div>
+                        <div className="modal-header">EDYTUJ UŻYTKOWNIKA</div>
                         <div className="modal-input-group">
                             <label>NAZWA UŻYTKOWNIKA</label>
                             <input value={editName} onChange={e => setEditName(e.target.value)} />
@@ -233,7 +233,7 @@ function IndexPopup() {
                             <label>RANGI SYSTEMOWEJ</label>
                             <select value={editRole} onChange={e => setEditRole(e.target.value as any)}>
                                 <option value="user">USER (Standardowy)</option>
-                                <option value="admin">ADMIN (Supreme)</option>
+                                <option value="admin">ADMIN (Root)</option>
                             </select>
                         </div>
                         <div style={{ marginTop: 15, padding: 10, background: 'rgba(255,59,58,0.05)', borderRadius: 10, border: '1px solid rgba(255,59,58,0.2)', display: 'flex', flexDirection: 'column', gap: 5 }}>
@@ -268,7 +268,7 @@ function IndexPopup() {
                 <div className="content">
                     <div style={{ textAlign: 'center', marginBottom: 15, marginTop: 10 }}>
                         <div style={{ fontSize: 18, fontWeight: 950, color: '#fff' }}>SYSTEM LOGIN</div>
-                        <div style={{ fontSize: 8, opacity: 0.4 }}>ZALOGUJ SIĘ DO PANELU SUPREME</div>
+                        <div style={{ fontSize: 8, opacity: 0.4 }}>ZALOGUJ SIĘ DO PANELU</div>
                     </div>
                     <div className="card" style={{ padding: 15 }}>
                         <div style={{ marginBottom: 10 }}>
@@ -321,11 +321,12 @@ function IndexPopup() {
                                 </div>
                                 <div className="card">
                                     <div className="switch-box" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ fontSize: 13, fontWeight: 800 }}>Zatrzymaj Czas</div>
+                                        <div style={{ fontSize: 13, fontWeight: 800 }}>Nielimitowany Czas</div>
                                         <div className={`toggle-io ${pluginConfig.timeFreeze ? 'active' : ''}`} onClick={() => pluginConfig.setTimeFreeze(!pluginConfig.timeFreeze)}>
                                             <div className="circle"></div>
                                         </div>
                                     </div>
+                                    <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>Zatrzymuje czas po stronie klienta.</div>
                                     <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
                                         <button className="btn-primary" style={{ padding: 8, fontSize: 10, background: 'rgba(255,255,255,0.05)', color: '#fff' }} onClick={() => pluginConfig.triggerReset()}>SYNC</button>
                                         <button className="btn-primary" style={{ padding: 8, fontSize: 10, background: 'rgba(255,69,58,0.1)', color: 'var(--red-glow)' }} onClick={handleClear}>RESET SESJI</button>
@@ -338,7 +339,28 @@ function IndexPopup() {
                                             <div className="circle"></div>
                                         </div>
                                     </div>
-                                    <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>Wyświetlaj podpowiedź Google w treści pytania</div>
+                                    <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>Wyświetlaj podpowiedzi w treści pytania</div>
+
+                                    <div style={{ display: 'flex', gap: 5, marginTop: 8 }}>
+                                        <button
+                                            onClick={() => pluginConfig.setSearchEngine('google')}
+                                            style={{
+                                                flex: 1, padding: 6, borderRadius: 6, border: '1px solid var(--border)',
+                                                background: pluginConfig.searchEngine === 'google' ? 'var(--green-glow)' : 'transparent',
+                                                color: pluginConfig.searchEngine === 'google' ? '#000' : '#fff',
+                                                fontSize: 9, fontWeight: 800, cursor: 'pointer'
+                                            }}
+                                        >GOOGLE</button>
+                                        <button
+                                            onClick={() => pluginConfig.setSearchEngine('perplexity')}
+                                            style={{
+                                                flex: 1, padding: 6, borderRadius: 6, border: '1px solid var(--border)',
+                                                background: pluginConfig.searchEngine === 'perplexity' ? 'var(--green-glow)' : 'transparent',
+                                                color: pluginConfig.searchEngine === 'perplexity' ? '#000' : '#fff',
+                                                fontSize: 9, fontWeight: 800, cursor: 'pointer'
+                                            }}
+                                        >PERPLEXITY AI</button>
+                                    </div>
                                 </div>
                                 <div className="card" style={{ padding: 10 }}>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
@@ -398,6 +420,38 @@ function IndexPopup() {
                             </div>
                         )}
 
+                        {activeTab === 'guide' && (
+                            <div className="fade-in">
+                                <div className="card" style={{ padding: 15 }}>
+                                    <div style={{ fontSize: 14, fontWeight: 900, marginBottom: 10, color: 'var(--green-glow)' }}>PORADNIK UŻYTKOWNIKA</div>
+
+                                    <div style={{ marginBottom: 12 }}>
+                                        <div style={{ fontSize: 11, fontWeight: 800 }}>🛡️ Ghost Shield EX</div>
+                                        <div style={{ fontSize: 9, opacity: 0.6 }}>Główna ochrona. Ukrywa wtyczkę przed systemem Testportal. Włącz TO PIERWSZE przed wejściem na test. Jeśli wyłączysz w trakcie - odśwież stronę (F5).</div>
+                                    </div>
+
+                                    <div style={{ marginBottom: 12 }}>
+                                        <div style={{ fontSize: 11, fontWeight: 800 }}>⏳ Nielimitowany Czas</div>
+                                        <div style={{ fontSize: 9, opacity: 0.6 }}>Zamraża zegar egzaminu. Status "99:99" oznacza działanie. <br /><span style={{ color: 'orange' }}>UWAGA:</span> Nie trzymaj włączone non-stop przez godzinę, bo logi serwera mogą wyglądać dziwnie. Używaj z umiarem.</div>
+                                    </div>
+
+                                    <div style={{ marginBottom: 12 }}>
+                                        <div style={{ fontSize: 11, fontWeight: 800 }}>🤖 Auto-Answer Genius</div>
+                                        <div style={{ fontSize: 9, opacity: 0.6 }}>Wyszukuje treść pytania w Google lub Perplexity.</div>
+                                        <ul style={{ fontSize: 9, opacity: 0.6, paddingLeft: 15, marginTop: 4 }}>
+                                            <li>Możesz wybrać silnik w zakładce SYSTEM.</li>
+                                            <li>Skrót <b>CTRL + Z</b>: Google Search</li>
+                                            <li>Skrót <b>CTRL + SHIFT + Z</b>: AI Search</li>
+                                        </ul>
+                                    </div>
+
+                                    <div style={{ fontSize: 9, color: 'var(--red-glow)', border: '1px solid var(--red-glow)', padding: 8, borderRadius: 6 }}>
+                                        <b>WAŻNE:</b> Jeśli zmieniasz ustawienia w trakcie testu i coś nie działa, spróbuj odświeżyć stronę (F5). Wtyczka jest zsynchronizowana, ale niektóre blokady wymagają przeładowania.
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {activeTab === 'terminal' && (
                             <div className="fade-in">
                                 <div className="card" style={{ padding: 10, display: 'flex', gap: 6, marginBottom: 8 }}>
@@ -436,6 +490,10 @@ function IndexPopup() {
                         <div className={`tab-item ${activeTab === 'games' ? 'active' : ''}`} onClick={() => setActiveTab('games')}>
                             <svg style={{ width: 18 }} viewBox="0 0 24 24" fill="currentColor"><path d="M21 16.5c0 .38-.21.71-.53.88l-7.97 4.13c-.31.11-.64.11-.95 0l-7.97-4.13c-.32-.17-.53-.5-.53-.88V7.5c0-.38.21-.71.53-.88l7.97-4.13c.31-.11.64-.11.95 0l7.97 4.13c.32.17.53.5.53.88v9zM12 4.15L5.34 7.5 12 10.85l6.66-3.35L12 4.15z" /></svg>
                             <span>GRY</span>
+                        </div>
+                        <div className={`tab-item ${activeTab === 'guide' ? 'active' : ''}`} onClick={() => setActiveTab('guide')}>
+                            <svg style={{ width: 18 }} viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" /></svg>
+                            <span>HELP</span>
                         </div>
                         {currentUser?.role === 'admin' && (
                             <div className={`tab-item ${activeTab === 'terminal' ? 'active' : ''}`} onClick={() => setActiveTab('terminal')}>

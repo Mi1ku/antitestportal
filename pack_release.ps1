@@ -8,9 +8,9 @@ $zipPath = "$root\$projectName.zip"
 Write-Host "--- 💎 mi1ku RELEASE PACKAGER v2.0 💎 ---" -ForegroundColor Cyan
 
 # 1. Cleaning old artifacts
-if (Test-Path $zipPath) {
-    Remove-Item $zipPath -Force
-    Write-Host "[1/4] Removed old release zip." -ForegroundColor Yellow
+if (Test-Path "$root\AntiTestportal-*.zip") {
+    Remove-Item "$root\AntiTestportal-*.zip" -Force
+    Write-Host "[1/4] Removed old release zip(s)." -ForegroundColor Yellow
 }
 else {
     Write-Host "[1/4] No old release zip found. Skipping cleanup."

@@ -1,10 +1,10 @@
-# 💎 AntiTestportal v1.0 💎
+# 💎 AntiTestportal v1.1 💎
 
 ![Status](https://img.shields.io/badge/STATUS-UNDETECTED-brightgreen?style=for-the-badge&logo=shield)
-![Version](https://img.shields.io/badge/version-1.0-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.1-blue?style=for-the-badge)
 ![Security](https://img.shields.io/badge/security-Firebase--Cloud-red?style=for-the-badge&logo=firebase)
 
-**AntiTestportal** to nowoczesne i skuteczne narzędzie do omijania zabezpieczeń platformy Testportal. Wersja 1.0 została zaprojektowana z myślą o prostocie użycia i maksymalnym bezpieczeństwie.
+**AntiTestportal** to nowoczesne i skuteczne narzędzie do omijania zabezpieczeń platformy Testportal. Wersja 1.1 została zaprojektowana z myślą o prostocie użycia i maksymalnym bezpieczeństwie.
 
 ---
 
@@ -32,16 +32,20 @@ Wtyczka automatycznie blokuje próby wykrycia Twojej aktywności przez Testporta
 - Nie wykrywa utraty focusu.
 - Działa w tle od razu po zalogowaniu.
 
-### ❄️ Time Freeze (Zatrzymanie Czasu)
-Zatrzymaj licznik czasu podczas testu, aby zyskać chwilę na oddech.
-- W panelu wtyczki kliknij przełącznik **"Zatrzymaj Czas"**.
-- Licznik na stronie testu zatrzyma się wizualnie (np. na `--:--`).
-- **Pamiętaj:** Używaj z głową!
+### ❄️ Nielimitowany Czas (Nuclear Timer)
+Gdy czas się kończy, włącz ten tryb, aby zyskać nieskończoność.
+- W panelu wtyczki kliknij **"Nielimitowany Czas"**.
+- Zegar systemowy zostanie nadpisany, a licznik pokaże **99 godz. 99 min. 99 sek.**
+- **Pamiętaj:** Używaj z głową! Nie trzymaj włączonego przez godzinę.
 
-### 🤖 Auto-Answer Genius (Podpowiedzi)
-Wtyczka potrafi dyskretnie wyświetlać podpowiedzi z Google bezpośrednio pod pytaniem.
-- Włącz funkcję w panelu ("Auto-Answer Genius").
-- Pod pytaniem pojawi się ramka z wynikami wyszukiwania.
+### 📚 Wbudowany Poradnik
+Masz wątpliwości? Wtyczka posiada teraz wbudowaną zakładkę **HELP**, gdzie znajdziesz szybkie instrukcje obsługi bezpośrednio w panelu.
+
+### 🤖 Auto-Answer Genius (AI & Google)
+Wtyczka potrafi dyskretnie wyświetlać podpowiedzi bezpośrednio pod pytaniem.
+- **Wybór Silnika:** W zakładce SYSTEM możesz wybrać **Google** lub **Perplexity AI**.
+- Skrót **CTRL + Z**: Wyszukaj w Google.
+- Skrót **CTRL + SHIFT + Z**: Zapytaj sztuczną inteligencję (Perplexity).
 
 ---
 

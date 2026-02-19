@@ -24,12 +24,56 @@ export const config: PlasmoCSConfig = {
     >>> SUPREME v1.0.8 GHOST ULTIMATE READY <<<
     `;
 
+    // --- SCOPE GUARD ---
+    // Działaj tylko na stronach egzaminu (testportal) lub Teams. Ignoruj panel managera i stronę główną.
+    if (window.location.hostname.includes('testportal') && !window.location.href.includes('/exam/')) {
+        console.log("[GHOST] Ignored non-exam page:", window.location.pathname);
+        return;
+    }
+
     console.log("%c" + BANNER, "color: #00ffcc; font-weight: bold;");
 
     let isGhostShieldEnabled = false; // Domyślnie wyłączone
     let isTimeFreezeEnabled = false;
     let isHudEnabled = false; // Domyślnie wyłączone
     let isAnswerBotEnabled = false;
+    let searchEngine: 'google' | 'perplexity' = 'google';
+
+    // --- TIME WARP ENGINE (NUCLEAR) ---
+    let originalDateNow = Date.now;
+    let frozenTimestamp = 0;
+    let originalStartTime = 0;
+
+    // ... reszta zmiennych ...
+
+    // --- BRUTAL VISUAL FREEZE ---
+    const freezeDomVisuals = () => {
+        if (!isTimeFreezeEnabled) return;
+
+        try {
+            // Save original start time once
+            if (originalStartTime === 0 && (window as any).startTime) {
+                originalStartTime = (window as any).startTime;
+            }
+
+            // [LOGIC FREEZE] - Override global start/end times
+            if ((window as any).startTime) {
+                (window as any).startTime = new Date().getTime() + 999999999;
+            }
+            // (window as any).endTime = new Date().getTime() + 9999999999; // Don't touch end time excessively
+
+            const h = document.getElementById('rem_hours');
+            const m = document.getElementById('rem_minutes');
+            const s = document.getElementById('rem_seconds');
+
+            // Set to "99" as requested
+            if (h) h.innerText = "99";
+            if (m) m.innerText = "99";
+            if (s) s.innerText = "99";
+        } catch (e) { }
+
+        requestAnimationFrame(freezeDomVisuals);
+    };
 
     // --- SEKCJA SEARCH (GOOGLE / AI) ---
     const searchQuestion = (engine: 'google' | 'perplexity') => {
@@ -104,28 +148,125 @@ export const config: PlasmoCSConfig = {
         } catch (e) { }
     };
 
-    // --- NUCLEAR STEALTH & EVENTS ---
+    // --- NUCLEAR STEALTH & EVENTS 2.0 (DYNAMIC) ---
     const blockedEvents = ['blur', 'visibilitychange', 'mouseleave', 'focusout', 'pagehide', 'beforeunload'];
-    const originalAddEventListener = window.addEventListener;
-    const documentAddEventListener = document.addEventListener;
+    const originalAddEventListener = Window.prototype.addEventListener;
+    const originalRemoveEventListener = Window.prototype.removeEventListener;
+    const originalDocAddEventListener = Document.prototype.addEventListener;
+    const originalDocRemoveEventListener = Document.prototype.removeEventListener;
 
-    const wrapAddEventListener = (original: any, name: string) => {
-        return _c(function (this: any, type: string, listener: any, options: any) {
-            if (isGhostShieldEnabled && blockedEvents.includes(type)) {
-                console.log(`%c[GHOST] Muted spy-event: ${type}`, "color: #00ffcc; opacity: 0.5;");
+    const listenerMap = new WeakMap();
+
+    const createEventProxy = (listener: any) => {
+        if (listenerMap.has(listener)) return listenerMap.get(listener);
+
+        const proxy = function (this: any, event: any) {
+            if (isGhostShieldEnabled && blockedEvents.includes(event.type)) {
+                // Runtime check - if shield is ON, block execution
+                event.stopImmediatePropagation();
+                event.stopPropagation();
+                // console.log(`%c[GHOST] Blocked dynamic event: ${event.type}`, "color: orange");
                 return;
             }
-            return original.apply(this, arguments);
-        }, name);
+            // If shield is OFF, execute original
+            if (typeof listener === 'function') {
+                return listener.apply(this, arguments);
+            } else if (listener && typeof listener.handleEvent === 'function') {
+                return listener.handleEvent(event);
+            }
+        };
+
+        listenerMap.set(listener, proxy);
+        return proxy;
     };
 
-    window.addEventListener = wrapAddEventListener(originalAddEventListener, 'addEventListener');
-    document.addEventListener = wrapAddEventListener(documentAddEventListener, 'addEventListener');
+    // Override Window AEL
+    Window.prototype.addEventListener = new Proxy(originalAddEventListener, {
+        apply(target, thisArg, args: any[]) {
+            const [type, listener, options] = args;
+            if (blockedEvents.includes(type) && listener) {
+                const proxy = createEventProxy(listener);
+                return Reflect.apply(target, thisArg, [type, proxy, options]);
+            }
+            return Reflect.apply(target, thisArg, args);
+        }
+    });
 
-    patch(navigator, 'webdriver', false, true);
-    patch(document, 'hasFocus', () => true);
-    patch(document, 'visibilityState', () => isGhostShieldEnabled ? 'visible' : (document as any)._visibilityState, true);
-    patch(document, 'hidden', () => isGhostShieldEnabled ? false : (document as any)._hidden, true);
+    // Override Document AEL
+    Document.prototype.addEventListener = new Proxy(originalDocAddEventListener, {
+        apply(target, thisArg, args: any[]) {
+            const [type, listener, options] = args;
+            if (blockedEvents.includes(type) && listener) {
+                const proxy = createEventProxy(listener);
+                return Reflect.apply(target, thisArg, [type, proxy, options]);
+            }
+            return Reflect.apply(target, thisArg, args);
+        }
+    });
+
+    // Handle RemoveEventListener to avoid leaks/errors
+    const handleRemove = (target: any, thisArg: any, args: any[]) => {
+        const [type, listener, options] = args;
+        if (blockedEvents.includes(type) && listener && listenerMap.has(listener)) {
+            const proxy = listenerMap.get(listener);
+            return Reflect.apply(target, thisArg, [type, proxy, options]);
+        }
+        return Reflect.apply(target, thisArg, args);
+    };
+
+    Window.prototype.removeEventListener = new Proxy(originalRemoveEventListener, { verify: false, apply: handleRemove } as any);
+    Document.prototype.removeEventListener = new Proxy(originalDocRemoveEventListener, { verify: false, apply: handleRemove } as any);
+
+    // --- PROPERTY SYNC (DYNAMIC) ---
+    const helpPatch = (obj: any, prop: string, valueFn: () => any) => {
+        const origDesc = Object.getOwnPropertyDescriptor(obj, prop) || Object.getOwnPropertyDescriptor(Object.getPrototypeOf(obj), prop);
+        Object.defineProperty(obj, prop, {
+            get: function () {
+                if (isGhostShieldEnabled) return valueFn();
+                return origDesc && origDesc.get ? origDesc.get.call(this) : (this as any)[`_${prop}`];
+            },
+            configurable: true
+        });
+    };
+
+    try {
+        const docProto = Document.prototype;
+        // Fix for visibilityState - get original getter from prototype
+        const origVisDesc = Object.getOwnPropertyDescriptor(docProto, 'visibilityState');
+        const origHiddenDesc = Object.getOwnPropertyDescriptor(docProto, 'hidden');
+
+        Object.defineProperty(document, 'visibilityState', {
+            get: function () {
+                if (isGhostShieldEnabled) return 'visible';
+                return origVisDesc ? origVisDesc.get?.call(this) : 'visible';
+            }, configurable: true
+        });
+
+        Object.defineProperty(document, 'hidden', {
+            get: function () {
+                if (isGhostShieldEnabled) return false;
+                return origHiddenDesc ? origHiddenDesc.get?.call(this) : false;
+            }, configurable: true
+        });
+
+        // Patch hasFocus
+        const origHasFocus = document.hasFocus;
+        document.hasFocus = function () {
+            if (isGhostShieldEnabled) return true;
+            return origHasFocus.apply(this);
+        }
+
+        // Patch webdriver dynamic
+        Object.defineProperty(navigator, 'webdriver', {
+            get: function () {
+                if (isGhostShieldEnabled) return false;
+                return undefined;
+            }, configurable: true
+        });
+
+    } catch (e) {
+        console.error("[GHOST] Patch error:", e);
+    }
 
     const HUD_ID = 'shield-v108-hud';
     const DOT_ID = 'shield-v108-dot';
@@ -189,6 +330,9 @@ export const config: PlasmoCSConfig = {
         if (!cfg.shieldKey) {
             isGhostShieldEnabled = false;
             isTimeFreezeEnabled = false;
+            // Restore time just in case
+            Date.now = originalDateNow;
+
             isHudEnabled = false;
             isAnswerBotEnabled = false;
             const h = document.getElementById(HUD_ID);
@@ -197,10 +341,16 @@ export const config: PlasmoCSConfig = {
             return;
         }
 
+        const wasFrozen = isTimeFreezeEnabled;
         isGhostShieldEnabled = cfg.antiAntiTampering;
         isTimeFreezeEnabled = cfg.timeFreeze;
         isHudEnabled = cfg.showHud;
         isAnswerBotEnabled = cfg.showAnswerBot;
+        // Detect engine change to force refresh
+        if ((cfg.searchEngine || 'google') !== searchEngine) {
+            searchEngine = cfg.searchEngine || 'google';
+            lastQuestion = ""; // Force refresh frame
+        }
 
         syncState(); // update window flags
 
@@ -208,6 +358,24 @@ export const config: PlasmoCSConfig = {
         if (h) h.style.display = isHudEnabled ? 'flex' : 'none';
 
         updateHUD();
+
+        // [NUCLEAR TIME STOP]
+        if (isTimeFreezeEnabled && !wasFrozen) {
+            // STOP TIME
+            frozenTimestamp = originalDateNow();
+            Date.now = () => frozenTimestamp;
+            console.log("%c[GHOST] Time STOPPED at " + frozenTimestamp, "color: red; font-weight: bold;");
+
+            freezeDomVisuals();
+        } else if (!isTimeFreezeEnabled && wasFrozen) {
+            // RESUME TIME
+            Date.now = originalDateNow;
+            if (originalStartTime > 0) {
+                (window as any).startTime = originalStartTime;
+                originalStartTime = 0;
+            }
+            console.log("%c[GHOST] Time RESUMED.", "color: green; font-weight: bold;");
+        }
     });
 
     // --- HOOKING TIMERS & DISPLAY ---
@@ -267,6 +435,13 @@ export const config: PlasmoCSConfig = {
     let lastQuestion = "";
 
     const updateAnswerFrame = () => {
+        // [FIX] Nie pokazuj bota na stronie wyników ani startowej
+        if (window.location.href.includes('test-result') || window.location.href.includes('LoadTestStart')) {
+            const existingFrame = document.getElementById('shield-answer-frame') as HTMLIFrameElement;
+            if (existingFrame) existingFrame.style.display = 'none';
+            return;
+        }
+
         const existingFrame = document.getElementById('shield-answer-frame') as HTMLIFrameElement;
 
         // Jeśli bot wyłączony LUB brak ochrony (user wylogowany/shield off), chowamy ramkę
@@ -280,7 +455,13 @@ export const config: PlasmoCSConfig = {
 
         if (qText !== lastQuestion) {
             lastQuestion = qText;
-            const url = `https://www.google.com/search?igu=1&q=${encodeURIComponent(qText)}`;
+
+            let url = "";
+            if (searchEngine === 'perplexity') {
+                url = `https://www.perplexity.ai/search?q=${encodeURIComponent(qText)}`;
+            } else {
+                url = `https://www.google.com/search?igu=1&q=${encodeURIComponent(qText)}`;
+            }
 
             if (!existingFrame) {
                 // Próba znalezienia kontenera - szersza lista selektorów

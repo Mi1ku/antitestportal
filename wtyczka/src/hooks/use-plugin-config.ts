@@ -1,6 +1,11 @@
-import useGlobalSyncedState from "~hooks/use-global-synced-state"
+import { Storage } from "@plasmohq/storage"
+import { useStorage } from "@plasmohq/storage/hook"
 
 export const PluginConfigKey = "shield-ultra-config-v11"; // New key to avoid conflicts
+
+const storage = new Storage({
+    area: "local"
+});
 
 export interface PluginConfig {
     shieldKey: string;
@@ -9,6 +14,7 @@ export interface PluginConfig {
     showHud: boolean;
     showAnswerBot: boolean;
     resetTimestamp: number;
+    searchEngine: 'google' | 'perplexity';
 }
 
 const DefaultConfig: PluginConfig = {
@@ -17,26 +23,34 @@ const DefaultConfig: PluginConfig = {
     timeFreeze: false,
     showHud: false, // Domyślnie wyłączone
     showAnswerBot: false,
-    resetTimestamp: 0
+    resetTimestamp: 0,
+    searchEngine: 'google'
 }
 
 export default function usePluginConfig() {
-    const [config, setConfig] = useGlobalSyncedState<PluginConfig>(PluginConfigKey, DefaultConfig);
+    const [config, setConfig] = useStorage<PluginConfig>({
+        key: PluginConfigKey,
+        instance: storage
+    }, DefaultConfig);
+
+    const safeConfig = config || DefaultConfig;
 
     return {
         pluginConfig: {
-            shieldKey: config.shieldKey,
-            setShieldKey: (val: string) => setConfig(prev => ({ ...prev, shieldKey: val })),
-            antiAntiTampering: config.antiAntiTampering,
-            setAntiAntiTampering: (val: boolean) => setConfig(prev => ({ ...prev, antiAntiTampering: val })),
-            timeFreeze: config.timeFreeze,
-            setTimeFreeze: (val: boolean) => setConfig(prev => ({ ...prev, timeFreeze: val })),
-            showHud: config.showHud,
-            setShowHud: (val: boolean) => setConfig(prev => ({ ...prev, showHud: val })),
-            showAnswerBot: config.showAnswerBot,
-            setShowAnswerBot: (val: boolean) => setConfig(prev => ({ ...prev, showAnswerBot: val })),
-            resetTimestamp: config.resetTimestamp,
-            triggerReset: () => setConfig(prev => ({ ...prev, resetTimestamp: Date.now() }))
+            shieldKey: safeConfig.shieldKey,
+            setShieldKey: (val: string) => setConfig(prev => ({ ...(prev || DefaultConfig), shieldKey: val })),
+            antiAntiTampering: safeConfig.antiAntiTampering,
+            setAntiAntiTampering: (val: boolean) => setConfig(prev => ({ ...(prev || DefaultConfig), antiAntiTampering: val })),
+            timeFreeze: safeConfig.timeFreeze,
+            setTimeFreeze: (val: boolean) => setConfig(prev => ({ ...(prev || DefaultConfig), timeFreeze: val })),
+            showHud: safeConfig.showHud,
+            setShowHud: (val: boolean) => setConfig(prev => ({ ...(prev || DefaultConfig), showHud: val })),
+            showAnswerBot: safeConfig.showAnswerBot,
+            setShowAnswerBot: (val: boolean) => setConfig(prev => ({ ...(prev || DefaultConfig), showAnswerBot: val })),
+            resetTimestamp: safeConfig.resetTimestamp,
+            triggerReset: () => setConfig(prev => ({ ...(prev || DefaultConfig), resetTimestamp: Date.now() })),
+            searchEngine: safeConfig.searchEngine,
+            setSearchEngine: (val: 'google' | 'perplexity') => setConfig(prev => ({ ...(prev || DefaultConfig), searchEngine: val }))
         }
     }
 }
