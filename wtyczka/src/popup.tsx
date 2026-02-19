@@ -28,6 +28,7 @@ function IndexPopup() {
     const [editHwid, setEditHwid] = useState("");
     const [editRole, setEditRole] = useState<'user' | 'admin'>('user');
     const [editMaxHwids, setEditMaxHwids] = useState(3);
+    const [editReflink, setEditReflink] = useState("");
 
     // Aviator Logic
     const [mult, setMult] = useState(1.00);
@@ -162,6 +163,7 @@ function IndexPopup() {
         setEditHwid(user.boundHwids?.join(", ") || "");
         setEditRole(user.role);
         setEditMaxHwids(user.maxHwids || 3);
+        setEditReflink(user.reflink || "");
     };
 
     const saveUserChanges = async () => {
@@ -172,7 +174,8 @@ function IndexPopup() {
             points: editPoints,
             boundHwids: hwids,
             role: editRole,
-            maxHwids: editMaxHwids
+            maxHwids: editMaxHwids,
+            reflink: editReflink
         });
         setEditingUser(null);
         showToast("ZAPISANO ZMIANY");
@@ -222,6 +225,10 @@ function IndexPopup() {
                             />
                         </div>
 
+                        <div className="modal-input-group">
+                            <label>REFLINK UŻYTKOWNIKA</label>
+                            <input value={editReflink} onChange={e => setEditReflink(e.target.value)} />
+                        </div>
                         <div className="modal-input-group">
                             <label>RANGI SYSTEMOWEJ</label>
                             <select value={editRole} onChange={e => setEditRole(e.target.value as any)}>
@@ -304,6 +311,13 @@ function IndexPopup() {
                                         </div>
                                     </div>
                                     <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>Maskuj obecność wtyczki 1:1</div>
+
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 10 }}>
+                                        <div style={{ fontSize: 13, fontWeight: 800 }}>HUD Widoczny</div>
+                                        <div className={`toggle-io ${pluginConfig.showHud ? 'active' : ''}`} onClick={() => pluginConfig.setShowHud(!pluginConfig.showHud)}>
+                                            <div className="circle"></div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="card">
                                     <div className="switch-box" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -398,7 +412,7 @@ function IndexPopup() {
                                                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                                     <span style={{ fontWeight: 800, color: isBanned ? 'var(--red-glow)' : 'var(--green-glow)', fontSize: 11 }}>{k.ownerName || k.key} {isBanned && "(BANNED)"}</span>
                                                     <span style={{ fontSize: 7, opacity: 0.3 }}>{k.key}</span>
-                                                    <span style={{ fontSize: 7, color: 'var(--ios-blue)' }}>{k.boundHwids?.length || 0}/3 URZĄDZEŃ</span>
+                                                    <span style={{ fontSize: 7, color: 'var(--ios-blue)' }}>{k.boundHwids?.length || 0}/{k.maxHwids || 3} URZĄDZEŃ</span>
                                                 </div>
                                                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                                     <span style={{ fontSize: 9, fontWeight: 900 }}>💎 {k.points}</span>
