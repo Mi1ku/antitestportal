@@ -1,8 +1,8 @@
 {
-  "name": "antitestportal-supreme-core",
-  "displayName": "AntiTestportal Supreme Core ULTRA",
-  "version": "1.3.0",
-  "description": "Premium AntiTestportal Suite with Crash Game, Time Warp and Ghost Mode.",
+  "name": "antitestportal-plus",
+  "displayName": "AntiTestportal+ Supreme Edition",
+  "version": "1.5.0",
+  "description": "Premium AntiTestportal+ Suite with Aviator Casino, Time Freeze and Ghost Shield EX.",
   "author": "76mikus",
   "scripts": {
     "dev": "plasmo dev",

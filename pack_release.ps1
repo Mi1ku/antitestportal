@@ -1,5 +1,5 @@
 $ErrorActionPreference = "Stop"
-$projectName = "AntiTestportal-Ultra-Supreme-v1.1.0"
+$projectName = "AntiTestportal-Plus-v1.5.0"
 $root = $PSScriptRoot
 $wtyczkaPath = "$root\wtyczka"
 $buildPath = "$wtyczkaPath\build\chrome-mv3-prod"
@@ -11,7 +11,8 @@ Write-Host "--- 💎 mi1ku RELEASE PACKAGER v2.0 💎 ---" -ForegroundColor Cyan
 if (Test-Path $zipPath) {
     Remove-Item $zipPath -Force
     Write-Host "[1/4] Removed old release zip." -ForegroundColor Yellow
-} else {
+}
+else {
     Write-Host "[1/4] No old release zip found. Skipping cleanup."
 }
 
@@ -21,12 +22,14 @@ if (-not (Test-Path $buildPath)) {
     Set-Location $wtyczkaPath
     if (Test-Path "node_modules") {
         npm run build
-    } else {
+    }
+    else {
         Write-Host "ERROR: node_modules missing. Please run 'npm install' in 'wtyczka' folder." -ForegroundColor Red
         exit 1
     }
     Set-Location $root
-} else {
+}
+else {
     Write-Host "[2/4] Found existing build folder. Ready to pack." -ForegroundColor Green
 }
 
@@ -43,7 +46,8 @@ if (Test-Path $zipPath) {
     Write-Host "`n✅ SUCCESS! Release ready at: $zipPath" -ForegroundColor Green
     $size = (Get-Item $zipPath).Length / 1KB
     Write-Host "Final Size: $([math]::Round($size, 2)) KB"
-} else {
+}
+else {
     Write-Host "`n❌ FAILED to create zip file." -ForegroundColor Red
     exit 1
 }

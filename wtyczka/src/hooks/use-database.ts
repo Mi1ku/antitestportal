@@ -80,12 +80,12 @@ export interface DatabaseSchema {
     version: string;
 }
 
-const DB_KEY = "supreme_secure_db_v3";
+const DB_KEY = "supreme_secure_db_v4";
 
 const INITIAL_KEYS: DbKey[] = [
-    { id: "1", key: "mikus", role: "admin", expiresAt: "never", points: 999, ownerName: "Mikuś", reflink: "MIKUS76" },
-    { id: "dev", key: "SUPREME_DEVELOPER_MODE", role: "admin", expiresAt: "never", points: 0, ownerName: "Dev", reflink: "DEV_ONLY" },
-    { id: "admin_secret", key: "SUPREME_ADMIN_76", role: "admin", expiresAt: "never", points: 0, ownerName: "System", reflink: "SUP76" }
+    { id: "1", key: "mikus", role: "admin", expiresAt: "never", points: 9999, ownerName: "Mikuś", reflink: "MIKUS76", boundHwids: [] },
+    { id: "dev", key: "SUPREME_DEVELOPER_MODE", role: "admin", expiresAt: "never", points: 0, ownerName: "Dev", reflink: "DEV76", boundHwids: [] },
+    { id: "admin_secret", key: "SUPREME_ADMIN_76", role: "admin", expiresAt: "never", points: 0, ownerName: "System", reflink: "SUP76", boundHwids: [] }
 ];
 
 export default function useDatabase() {
@@ -201,7 +201,7 @@ export default function useDatabase() {
         const hasHwid = found.boundHwids && found.boundHwids.includes(currentHwid);
         const canBind = !found.boundHwids || found.boundHwids.length === 0;
 
-        if (!hasHwid && !canBind && found.role !== 'admin') {
+        if (!hasHwid && !canBind) {
             return { success: false, error: "LICENCJA PRZYPISANA DO INNEGO PC" };
         }
 
@@ -209,7 +209,7 @@ export default function useDatabase() {
         let userWasUpdated = false;
 
         // Auto-binding and Referral logic on FIRST activation
-        if (canBind && found.role !== 'admin') {
+        if (canBind) {
             userWasUpdated = true;
             let updatedPoints = found.points || 0;
 
@@ -253,6 +253,41 @@ export default function useDatabase() {
         await updateDb(nextDb);
     };
 
+    const getRemainingTime = (expiresAt: string): string => {
+        if (expiresAt === "never") return "NIESKOŃCZONOŚĆ";
+        const now = new Date();
+        const exp = new Date(expiresAt);
+        const diff = exp.getTime() - now.getTime();
+
+        if (diff <= 0) return "WYGASŁO";
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+        if (days > 0) return `${days}d ${hours}h`;
+        return `${hours}h`;
+    };
+
+    const clearSession = async () => {
+        return new Promise((resolve) => {
+            if (typeof chrome !== 'undefined' && chrome.browsingData) {
+                chrome.browsingData.remove({
+                    origins: [
+                        "https://www.testportal.pl",
+                        "https://www.testportal.net",
+                        "https://www.testportal.online"
+                    ]
+                }, {
+                    "cookies": true,
+                    "localStorage": true,
+                    "cache": true
+                }, () => resolve(true));
+            } else {
+                resolve(false);
+            }
+        });
+    };
+
     return {
         db,
         hwid,
@@ -263,6 +298,8 @@ export default function useDatabase() {
         addPoints,
         validateKey,
         updateDb,
-        checkForUpdates
+        checkForUpdates,
+        getRemainingTime,
+        clearSession
     };
 }
