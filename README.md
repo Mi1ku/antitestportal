@@ -39,9 +39,18 @@ Zamraża licznik czasu na stronie egzaminu.
 
 ### 🔎 Asystent Boczny (Side Dock)
 Inteligentne okno pomocy, które dokuje się po prawej stronie ekranu.
-- **Google & Perplexity:** Oba silniki ładują się bezpośrednio wewnątrz panelu (dzięki ominięciu blokad).
-- **Zarządzanie Widocznością:** Panel możesz w każdej chwili zamknąć ("X"). Aby go przywrócić, kliknij przycisk **"👁️ DOCK"** w głównym pasku HUD na dole ekranu.
-- **Panic Mode:** Całkowite ukrycie HUD (w panelu wtyczki) automatycznie chowa również asystenta.
+- **Google & Perplexity:** Oba silniki ładują się bezpośrednio wewnątrz panelu. Wybierz silnik przyciskami w HUD.
+- **Zarządzanie Widocznością:** Panel możesz w każdej chwili zamknąć ("X") lub wywołać skrótem `Ctrl+Shift+X`.
+- **Panic Mode:** Całkowite ukrycie HUD (`Ctrl+Shift+Z`) automatycznie chowa również asystenta.
+
+### ⌨️ Skróty Klawiszowe (Sterowanie)
+| Skrót | Funkcja | Opis |
+| :--- | :--- | :--- |
+| **`Ctrl + Shift + Z`** | **Panic Mode** | Natychmiastowe ukrycie/pokazanie całego HUD i Docka |
+| **`Ctrl + Shift + X`** | **Toggle Dock** | Pokazuje lub chowa boczny panel asystenta |
+| **`Ctrl + Shift + F`** | **Freeze Time** | Włącza/wyłącza zatrzymanie czasu |
+| `Ctrl + Z` | Quick Google | Otwiera wyszukiwanie Google w nowej karcie (Legacy) |
+| `Ctrl + Shift + S` | Quick Perplexity | Otwiera Perplexity w nowej karcie (Legacy) |
 
 ---
 
@@ -110,10 +119,16 @@ A: To celowe. Wtyczka działa tylko na stronach egzaminu (`/exam/`), aby nie pow
 
 ---
 
-## ⚠️ Disclaimer
+## ⚖️ Nota Prawna & Prawa Autorskie
 
-Oprogramowanie służy wyłącznie do celów edukacyjnych i testowania zabezpieczeń własnych systemów. Autor nie ponosi odpowiedzialności za użycie niezgodne z regulaminem placówek edukacyjnych.
+**Właścicielem praw autorskich do projektu jest: Mikuś (mi1ku).**
+
+Niniejsze oprogramowanie ("AntiTestportal+") zostało stworzone **wyłącznie w celach edukacyjnych** oraz do nauki i analizy zagadnień z zakresu cyberbezpieczeństwa i testowania penetracyjnego aplikacji webowych. Projekt ma na celu demonstrację luk w zabezpieczeniach systemów egzaminowania online.
+
+1.  **Odpowiedzialność:** Autor projektu nie ponosi żadnej odpowiedzialności za jakiekolwiek szkody wyrządzone przez użytkowników oprogramowania ani za wykorzystanie go w sposób niezgodny z prawem lub regulaminem placówek edukacyjnych/egzaminacyjnych. Użytkownik korzysta z oprogramowania na własne ryzyko.
+2.  **Prawa Autorskie:** Zgodnie z ustawą z dnia 4 lutego 1994 r. o prawie autorskim i prawach pokrewnych (Dz.U. 1994 nr 24 poz. 83 z późn. zm.), kopiowanie, modyfikowanie, rozpowszechnianie lub wykorzystywanie kodu źródłowego (w całości lub części) bez wyraźnej, pisemnej zgody autora jest zabronione i podlega karze.
+3.  **Licencja:** Użytek dozwolony wyłącznie do celów prywatnych, niezwiązanych z osiąganiem korzyści majątkowych, chyba że uzyskano inną licencję od autora.
 
 ---
 
-**Created by mi1ku Systems 2026.**
+**© 2026 Mikuś (mi1ku Systems). Wszelkie prawa zastrzeżone.**

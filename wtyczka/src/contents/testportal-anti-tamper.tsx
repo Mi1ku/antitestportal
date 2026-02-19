@@ -114,7 +114,13 @@ export const config: PlasmoCSConfig = {
     }
 
     // --- SEARCH & HOTKEYS ---
-    const searchQuestion = (engine: 'google' | 'perplexity') => {
+    const triggerSideDock = (engine: 'google' | 'perplexity') => {
+        searchEngine = engine;
+        isDockVisible = true;
+        updateAnswerFrame();
+    };
+
+    const searchNewTab = (engine: 'google' | 'perplexity') => {
         const selectors = [
             '.question-container', '.question-content', '.question-text', 'h3',
             '[class*="question"]', '.test-content__query'
@@ -134,16 +140,52 @@ export const config: PlasmoCSConfig = {
         if (engine === 'google') url = `https://www.google.com/search?q=${encodeURIComponent(questionText)}`;
         else url = `https://www.perplexity.ai/search?q=${encodeURIComponent(questionText)}`;
         window.open(url, '_blank');
-    };
+    }
 
     window.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        // [PANIC MODE] Toggle HUD: Ctrl + Shift + Z
+        if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ') {
             e.preventDefault();
-            searchQuestion('google');
+            isHudEnabled = !isHudEnabled;
+            const h = document.getElementById(HUD_ID);
+            if (h) h.style.display = isHudEnabled ? 'flex' : 'none';
+            // Also toggle dock if hud disabled
+            if (!isHudEnabled) {
+                isDockVisible = false;
+                updateAnswerFrame();
+            }
+            console.log(`[GHOST] HUD Toggled: ${isHudEnabled}`);
+            return;
         }
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'z') {
+
+        // [SIDE DOCK] Toggle Dock: Ctrl + Shift + X
+        if (e.ctrlKey && e.shiftKey && e.code === 'KeyX') {
             e.preventDefault();
-            searchQuestion('perplexity');
+            isDockVisible = !isDockVisible;
+            updateAnswerFrame();
+            console.log(`[GHOST] Dock Toggled: ${isDockVisible}`);
+            return;
+        }
+
+        // [TIME FREEZE] Toggle Freeze: Ctrl + Shift + F
+        if (e.ctrlKey && e.shiftKey && e.code === 'KeyF') {
+            e.preventDefault();
+            isTimeFreezeEnabled = !isTimeFreezeEnabled;
+            updateHUD();
+            console.log(`[GHOST] Time Freeze Toggled: ${isTimeFreezeEnabled}`);
+            return;
+        }
+
+        // Legacy Shortcuts (New Tab)
+        // Ctrl + Z -> Google
+        if (e.ctrlKey && !e.shiftKey && e.code === 'KeyZ') {
+            // e.preventDefault(); // Optional, might conflict with Undo
+            searchNewTab('google');
+        }
+        // Ctrl + Shift + S -> Perplexity
+        if (e.ctrlKey && e.shiftKey && e.code === 'KeyS') {
+            e.preventDefault();
+            searchNewTab('perplexity');
         }
     }, true);
 
@@ -174,8 +216,8 @@ export const config: PlasmoCSConfig = {
         const ba = h.querySelector('#btn-ai');
         const bd = h.querySelector('#btn-toggle-dock');
 
-        if (bg) (bg as HTMLElement).onclick = () => searchQuestion('google');
-        if (ba) (ba as HTMLElement).onclick = () => searchQuestion('perplexity');
+        if (bg) (bg as HTMLElement).onclick = () => triggerSideDock('google');
+        if (ba) (ba as HTMLElement).onclick = () => triggerSideDock('perplexity');
         if (bd) (bd as HTMLElement).onclick = () => {
             isDockVisible = !isDockVisible;
             updateAnswerFrame();
