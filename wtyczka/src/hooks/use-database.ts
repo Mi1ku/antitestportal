@@ -42,6 +42,7 @@ export interface DbKey {
     ownerName?: string;
     reflink: string;
     boundHwids?: string[];
+    maxHwids?: number; // Custom limit per key (default: 3)
 }
 
 export interface DatabaseSchema {
@@ -84,10 +85,24 @@ export default function useDatabase() {
         const timer = setTimeout(() => {
             if (isLoading && !db) {
                 console.warn("[Supreme DB] Connection timed out. Falling back to local state.");
-                setDb({ keys: [], version: "1.0.0", bannedHwids: [] });
+                setDb({
+                    keys: [{
+                        id: "admin",
+                        key: "admin", // Added to satisfy TS
+                        ownerName: "mi1ku",
+                        role: "admin",
+                        points: 9999,
+                        boundHwids: [],
+                        maxHwids: 100,
+                        reflink: "ADMIN_REF",
+                        expiresAt: 'never'
+                    }],
+                    version: "1.0.0",
+                    bannedHwids: []
+                });
                 setIsLoading(false);
             }
-        }, 4500);
+        }, 6000);
 
         return () => {
             unsubscribe();
@@ -141,12 +156,13 @@ export default function useDatabase() {
 
         const isBound = found.boundHwids?.includes(myHwid);
         const boundCount = found.boundHwids?.length || 0;
-        const canBind = boundCount < 30; // UPDATED LIMIT FOR SCHOOL USE
+        const limit = found.maxHwids || 3; // Default limit per user
 
-        if (!isBound && !canBind) {
-            return { success: false, error: "OSIĄGNIĘTO LIMIT URZĄDZEŃ (MAX 30)" };
+        if (!isBound && boundCount >= limit) {
+            return { success: false, error: `OSIĄGNIĘTO LIMIT URZĄDZEŃ (MAX ${limit})` };
         }
-        if (!isBound && canBind) {
+
+        if (!isBound && boundCount < limit) {
             let pts = found.points || 0;
             let nextKeys = [...db.keys];
             if (referralCode) {

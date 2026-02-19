@@ -27,6 +27,7 @@ function IndexPopup() {
     const [editPoints, setEditPoints] = useState(0);
     const [editHwid, setEditHwid] = useState("");
     const [editRole, setEditRole] = useState<'user' | 'admin'>('user');
+    const [editMaxHwids, setEditMaxHwids] = useState(3);
 
     // Aviator Logic
     const [mult, setMult] = useState(1.00);
@@ -156,6 +157,7 @@ function IndexPopup() {
         setEditPoints(user.points);
         setEditHwid(user.boundHwids?.join(", ") || "");
         setEditRole(user.role);
+        setEditMaxHwids(user.maxHwids || 3);
     };
 
     const saveUserChanges = async () => {
@@ -165,7 +167,8 @@ function IndexPopup() {
             ownerName: editName,
             points: editPoints,
             boundHwids: hwids,
-            role: editRole
+            role: editRole,
+            maxHwids: editMaxHwids
         });
         setEditingUser(null);
         showToast("ZAPISANO ZMIANY");
@@ -200,10 +203,21 @@ function IndexPopup() {
                             <label>DIAMENTY (💎)</label>
                             <input type="number" value={editPoints} onChange={e => setEditPoints(parseInt(e.target.value) || 0)} />
                         </div>
-                        <div className="modal-input-group">
-                            <label>PRZYPISANE HWID (ODDZIEL PRZECINKIEM)</label>
-                            <input value={editHwid} onChange={e => setEditHwid(e.target.value)} placeholder="Wklej HWIDy..." />
+                        <div className="input-group">
+                            <label style={{ fontSize: 9, opacity: 0.6 }}>HWIDs (po przecinku)</label>
+                            <textarea value={editHwid} onChange={(e) => setEditHwid(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: 4, color: '#fff', width: '100%', height: 50, fontSize: 10, padding: 5 }} />
                         </div>
+
+                        <div className="input-group">
+                            <label style={{ fontSize: 9, opacity: 0.6 }}>Max Urządzeń</label>
+                            <input
+                                type="number"
+                                value={editMaxHwids}
+                                onChange={(e) => setEditMaxHwids(Number(e.target.value))}
+                                style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: 4, color: '#fff', width: '100%', padding: 5, fontSize: 12 }}
+                            />
+                        </div>
+
                         <div className="modal-input-group">
                             <label>RANGI SYSTEMOWEJ</label>
                             <select value={editRole} onChange={e => setEditRole(e.target.value as any)}>
