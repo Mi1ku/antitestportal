@@ -5,46 +5,18 @@ import { getDatabase, ref, onValue, set, get, update, child } from "firebase/dat
 
 const storage = new Storage();
 
-// --- SUPREME ENCRYPTION LAYER ---
-const SECRET_SALT = "mi1ku_supreme_76_ultra_safety_999";
-
 const firebaseConfig = {
     apiKey: "AIzaSyDSnKsbPNCCmEKAO1r_PvvVldViGWQ1Sw",
     authDomain: "antitestportaldb.firebaseapp.com",
     projectId: "antitestportaldb",
     storageBucket: "antitestportaldb.firebasestorage.app",
     messagingSenderId: "99856592412",
-    appId: "1:99856592412:web:b73e994dceb8d3561e4e3d9",
+    appId: "1:99856592412:web:b73e994dcb8d3561e4e3d9",
     measurementId: "G-PDM2VNPEZ9"
 };
 
 const app = initializeApp(firebaseConfig);
-const fdb = getDatabase(app);
-
-const encodeData = (data: any): string => {
-    const json = JSON.stringify(data);
-    const encoder = new TextEncoder();
-    const bytes = encoder.encode(json);
-    const saltBytes = encoder.encode(SECRET_SALT);
-    let result = "";
-    for (let i = 0; i < bytes.length; i++) {
-        const xored = bytes[i] ^ saltBytes[i % saltBytes.length];
-        result += String.fromCharCode(xored);
-    }
-    return btoa(result);
-};
-
-const decodeData = (encoded: string): any => {
-    try {
-        const decoded = atob(encoded);
-        const saltBytes = new TextEncoder().encode(SECRET_SALT);
-        const bytes = new Uint8Array(decoded.length);
-        for (let i = 0; i < decoded.length; i++) {
-            bytes[i] = decoded.charCodeAt(i) ^ saltBytes[i % saltBytes.length];
-        }
-        return JSON.parse(new TextDecoder().decode(bytes));
-    } catch (e) { return null; }
-};
+const fdb = getDatabase(app, "https://antitestportaldb-default-rtdb.europe-west1.firebasedatabase.app");
 
 const getOrCreateHWID = async (): Promise<string> => {
     let hwid = await storage.get("supreme_hwid_v1");
@@ -74,12 +46,11 @@ export interface DbKey {
 
 export interface DatabaseSchema {
     keys: DbKey[];
+    bannedHwids?: string[];
     version: string;
 }
 
-const INITIAL_KEYS: DbKey[] = [
-    { id: "1", key: "mikus", role: "admin", expiresAt: "never", points: 9999, ownerName: "Mikuś", reflink: "MIKUS76", boundHwids: [] }
-];
+const INITIAL_KEYS: DbKey[] = [];
 
 export default function useDatabase() {
     const [db, setDb] = useState<DatabaseSchema | null>(null);
@@ -89,20 +60,39 @@ export default function useDatabase() {
     useEffect(() => {
         const dbRef = ref(fdb, 'supreme_v1');
 
-        getOrCreateHWID().then(setHwid);
+        getOrCreateHWID().then(hw => {
+            setHwid(hw);
+            console.log("[Supreme DB] HWID Ready:", hw);
+        });
 
         const unsubscribe = onValue(dbRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
                 setDb(data);
+                setIsLoading(false);
+                console.log("[Supreme DB] Data Sync Success.");
             } else {
-                // Initialize cloud DB if empty
-                set(dbRef, { keys: INITIAL_KEYS, version: "1.5.0" });
+                console.log("[Supreme DB] Database empty or null.");
+                setDb({ keys: [], version: "1.0.0", bannedHwids: [] });
+                setIsLoading(false);
             }
+        }, (err) => {
+            console.error("[Supreme DB] Firebase Error:", err);
             setIsLoading(false);
         });
 
-        return () => unsubscribe();
+        const timer = setTimeout(() => {
+            if (isLoading && !db) {
+                console.warn("[Supreme DB] Connection timed out. Falling back to local state.");
+                setDb({ keys: [], version: "1.0.0", bannedHwids: [] });
+                setIsLoading(false);
+            }
+        }, 4500);
+
+        return () => {
+            unsubscribe();
+            clearTimeout(timer);
+        };
     }, []);
 
     const updateDb = async (newDb: DatabaseSchema) => {
@@ -138,6 +128,10 @@ export default function useDatabase() {
 
     const validateKey = async (key: string, referralCode?: string): Promise<{ success: boolean; user?: DbKey; error?: string }> => {
         if (!db) return { success: false, error: "DB NOT READY" };
+
+        const myHwid = await getOrCreateHWID();
+        if (db.bannedHwids?.includes(myHwid)) return { success: false, error: "TWÓJ SPRZĘT ZOSTAŁ ZBANOWANY" };
+
         const found = db.keys.find(k => k.key === key);
         if (!found) return { success: false, error: "BŁĘDNY KLUCZ" };
 
@@ -145,13 +139,13 @@ export default function useDatabase() {
             return { success: false, error: "KLUCZ WYGASŁ" };
         }
 
-        const myHwid = await getOrCreateHWID();
         const isBound = found.boundHwids?.includes(myHwid);
-        const canBind = !found.boundHwids || found.boundHwids.length === 0;
+        const boundCount = found.boundHwids?.length || 0;
+        const canBind = boundCount < 3; // Max 3 HWIDs per license
 
-        if (!isBound && !canBind) return { success: false, error: "LICENCJA PRZYPISANA DO INNEGO PC" };
+        if (!isBound && !canBind) return { success: false, error: "OSIĄGNIĘTO LIMIT URZĄDZEŃ (MAX 3)" };
 
-        if (canBind) {
+        if (!isBound && canBind) {
             let pts = found.points || 0;
             let nextKeys = [...db.keys];
             if (referralCode) {
@@ -161,7 +155,7 @@ export default function useDatabase() {
                     nextKeys[refIdx].points += 50;
                 }
             }
-            const updatedUser = { ...found, boundHwids: [myHwid], points: pts };
+            const updatedUser = { ...found, boundHwids: [...(found.boundHwids || []), myHwid], points: pts };
             const finalKeys = nextKeys.map(k => k.id === found.id ? updatedUser : k);
             await updateDb({ ...db, keys: finalKeys });
             return { success: true, user: updatedUser };
@@ -188,10 +182,26 @@ export default function useDatabase() {
     const clearSession = async () => {
         if (typeof chrome !== 'undefined' && chrome.browsingData) {
             await chrome.browsingData.remove({
-                origins: ["https://www.testportal.pl", "https://www.testportal.net", "https://www.testportal.online"]
+                origins: ["https://www.testportal.pl", "https://www.testportal.net", "https://www.testportal.online", "https://www.testportal.com"]
             }, { "cookies": true, "localStorage": true, "cache": true });
+
+            // Automatyczne odświeżenie wszystkich kart Testportal po czyszczeniu
+            if (chrome.tabs) {
+                const tabs = await chrome.tabs.query({ url: "*://*.testportal.*/*" });
+                for (const tab of tabs) {
+                    if (tab.id) chrome.tabs.reload(tab.id);
+                }
+            }
         }
     };
 
-    return { db, hwid, isLoading, addKey, updateKey, deleteKey, addPoints, validateKey, getRemainingTime, clearSession };
+    const toggleBan = async (hwidToBan: string) => {
+        if (!db) return;
+        const currentBans = db.bannedHwids || [];
+        const isBanned = currentBans.includes(hwidToBan);
+        const nextBans = isBanned ? currentBans.filter(h => h !== hwidToBan) : [...currentBans, hwidToBan];
+        await updateDb({ ...db, bannedHwids: nextBans });
+    };
+
+    return { db, hwid, isLoading, addKey, updateKey, deleteKey, addPoints, validateKey, getRemainingTime, clearSession, toggleBan };
 }

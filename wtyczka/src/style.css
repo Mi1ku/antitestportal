@@ -471,6 +471,14 @@ body {
     color: #fff;
     font-size: 12px;
     outline: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.modal-input-group select option {
+    background: #0a0a0a;
+    color: #fff;
+    padding: 10px;
 }
 
 .modal-input-group input:focus {

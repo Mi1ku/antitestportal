@@ -11,8 +11,11 @@ const RULES = [
             type: "modifyHeaders",
             responseHeaders: [
                 { header: "content-security-policy", operation: "remove" },
-                { header: "x-content-security-policy", operation: "remove" }
+                { header: "x-content-security-policy", operation: "remove" },
+                { header: "x-webkit-csp", operation: "remove" },
+                { header: "content-security-policy-report-only", operation: "remove" }
             ]
+
         },
         condition: {
             urlFilter: "testportal",

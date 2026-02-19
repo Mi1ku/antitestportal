@@ -7,7 +7,7 @@ type Tab = "home" | "games" | "terminal";
 
 function IndexPopup() {
     const { pluginConfig } = usePluginConfig();
-    const { db, hwid, addKey, updateKey, deleteKey, validateKey, addPoints, isLoading, getRemainingTime, clearSession } = useDatabase();
+    const { db, hwid, addKey, updateKey, deleteKey, validateKey, addPoints, isLoading, getRemainingTime, clearSession, toggleBan } = useDatabase();
 
     const [isActivated, setIsActivated] = useState(false);
     const [currentUser, setCurrentUser] = useState<DbKey | null>(null);
@@ -46,18 +46,33 @@ function IndexPopup() {
 
     useEffect(() => {
         const check = async () => {
-            if (pluginConfig.shieldKey && !isLoading && db) {
+            if (isLoading || !db) return;
+
+            // 1. Spróbuj zalogować zapisany klucz
+            if (pluginConfig.shieldKey) {
                 const res = await validateKey(pluginConfig.shieldKey);
                 if (res.success) {
                     setIsActivated(true);
                     setCurrentUser(res.user || null);
+                    console.log("[Supreme] Auto-login with saved key success.");
+                    return;
                 } else {
                     pluginConfig.setShieldKey("");
                 }
             }
+
+            // 2. Jeśli brak klucza lub błędny, spróbuj AUTO-LOGIN po HWID
+            const userByHwid = db.keys.find(k => k.boundHwids?.includes(hwid));
+            if (userByHwid) {
+                console.log("[Supreme] Auto-login by HWID success.");
+                setIsActivated(true);
+                setCurrentUser(userByHwid);
+                // Zapisujemy klucz tego użytkownika dla spójności
+                pluginConfig.setShieldKey(userByHwid.key);
+            }
         };
         check();
-    }, [pluginConfig.shieldKey, isLoading, !!db]);
+    }, [isLoading, !!db, hwid]);
 
     useEffect(() => {
         if (db && inputKey) {
@@ -139,16 +154,17 @@ function IndexPopup() {
         setEditingUser(user);
         setEditName(user.ownerName || "");
         setEditPoints(user.points);
-        setEditHwid(user.boundHwids?.[0] || "");
+        setEditHwid(user.boundHwids?.join(", ") || "");
         setEditRole(user.role);
     };
 
     const saveUserChanges = async () => {
         if (!editingUser) return;
+        const hwids = editHwid.split(",").map(h => h.trim()).filter(h => h.length > 0);
         await updateKey(editingUser.id, {
             ownerName: editName,
             points: editPoints,
-            boundHwids: editHwid ? [editHwid] : [],
+            boundHwids: hwids,
             role: editRole
         });
         setEditingUser(null);
@@ -185,8 +201,8 @@ function IndexPopup() {
                             <input type="number" value={editPoints} onChange={e => setEditPoints(parseInt(e.target.value) || 0)} />
                         </div>
                         <div className="modal-input-group">
-                            <label>PRZYPISANY HWID</label>
-                            <input value={editHwid} onChange={e => setEditHwid(e.target.value)} placeholder="Brak przypisania" />
+                            <label>PRZYPISANE HWID (ODDZIEL PRZECINKIEM)</label>
+                            <input value={editHwid} onChange={e => setEditHwid(e.target.value)} placeholder="Wklej HWIDy..." />
                         </div>
                         <div className="modal-input-group">
                             <label>RANGI SYSTEMOWEJ</label>
@@ -195,6 +211,16 @@ function IndexPopup() {
                                 <option value="admin">ADMIN (Supreme)</option>
                             </select>
                         </div>
+                        <div style={{ marginTop: 15, padding: 10, background: 'rgba(255,59,58,0.05)', borderRadius: 10, border: '1px solid rgba(255,59,58,0.2)' }}>
+                            <div style={{ fontSize: 7, fontWeight: 900, color: 'var(--red-glow)', marginBottom: 5 }}>NARZĘDZIA KONTROLI</div>
+                            <button className="btn-secondary" style={{ width: '100%', borderColor: 'var(--red-glow)', color: 'var(--red-glow)', fontSize: 9 }} onClick={async () => {
+                                const hwids = editingUser.boundHwids || [];
+                                for (const h of hwids) await toggleBan(h);
+                                showToast("ZMIENIONO STATUS BANA");
+                            }}>
+                                {db?.bannedHwids?.includes(editingUser.boundHwids?.[0] || "") ? "ODBANUJ URZĄDZENIA" : "ZBANUJ WSZYSTKIE HWID"}
+                            </button>
+                        </div>
                         <div className="modal-actions">
                             <button className="btn-secondary" onClick={() => setEditingUser(null)}>ANULUJ</button>
                             <button className="btn-primary" style={{ padding: 10, fontSize: 11 }} onClick={saveUserChanges}>ZAPISZ</button>
@@ -202,6 +228,7 @@ function IndexPopup() {
                     </div>
                 </div>
             )}
+
 
             {!isActivated ? (
                 <div className="content">
@@ -325,20 +352,24 @@ function IndexPopup() {
                                     <button className="btn-primary" style={{ width: 40, padding: 0 }} onClick={() => { if (newKeyName) { addKey(newKeyName, 'user', 30, "SYSTEM"); setNewKeyName(""); } }}>+</button>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                    {db?.keys.map(k => (
-                                        <div key={k.id} className="admin-item" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: 12, padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onClick={() => openEditModal(k)}>
-                                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                                <span style={{ fontWeight: 800, color: 'var(--green-glow)', fontSize: 11 }}>{k.ownerName || k.key}</span>
-                                                <span style={{ fontSize: 7, opacity: 0.3 }}>{k.key}</span>
-                                                <span style={{ fontSize: 7, color: 'var(--ios-blue)' }}>{k.boundHwids?.length ? 'POŁĄCZONO' : 'CZYSTY'}</span>
+                                    {db?.keys.map(k => {
+                                        const isBanned = k.boundHwids?.some(h => db.bannedHwids?.includes(h));
+                                        return (
+                                            <div key={k.id} className="admin-item" style={{ background: isBanned ? 'rgba(255,59,58,0.05)' : 'rgba(255,255,255,0.02)', border: `1px solid ${isBanned ? 'rgba(255,59,58,0.3)' : 'var(--border)'}`, borderRadius: 12, padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: isBanned ? 0.7 : 1 }} onClick={() => openEditModal(k)}>
+                                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                                    <span style={{ fontWeight: 800, color: isBanned ? 'var(--red-glow)' : 'var(--green-glow)', fontSize: 11 }}>{k.ownerName || k.key} {isBanned && "(BANNED)"}</span>
+                                                    <span style={{ fontSize: 7, opacity: 0.3 }}>{k.key}</span>
+                                                    <span style={{ fontSize: 7, color: 'var(--ios-blue)' }}>{k.boundHwids?.length || 0}/3 URZĄDZEŃ</span>
+                                                </div>
+                                                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                                    <span style={{ fontSize: 9, fontWeight: 900 }}>💎 {k.points}</span>
+                                                    <span style={{ fontSize: 10 }}>{k.role === 'admin' ? '👑' : '👤'}</span>
+                                                    <button onClick={(e) => { e.stopPropagation(); deleteKey(k.id); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 10 }}>🗑️</button>
+                                                </div>
                                             </div>
-                                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                                <span style={{ fontSize: 9, fontWeight: 900 }}>💎 {k.points}</span>
-                                                <span style={{ fontSize: 10 }}>{k.role === 'admin' ? '👑' : '👤'}</span>
-                                                <button onClick={(e) => { e.stopPropagation(); deleteKey(k.id); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 10 }}>🗑️</button>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
+
                                 </div>
                             </div>
                         )}
