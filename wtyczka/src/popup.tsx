@@ -93,6 +93,10 @@ function IndexPopup() {
         const res = await validateKey(inputKey.trim(), referralInput.trim());
         if (res.success) {
             pluginConfig.setShieldKey(inputKey.trim());
+            // Auto-aktywacja po zalogowaniu
+            pluginConfig.setShowHud(true);
+            pluginConfig.setAntiAntiTampering(true);
+
             setIsActivated(true);
             setCurrentUser(res.user || null);
         } else {
@@ -225,14 +229,23 @@ function IndexPopup() {
                                 <option value="admin">ADMIN (Supreme)</option>
                             </select>
                         </div>
-                        <div style={{ marginTop: 15, padding: 10, background: 'rgba(255,59,58,0.05)', borderRadius: 10, border: '1px solid rgba(255,59,58,0.2)' }}>
-                            <div style={{ fontSize: 7, fontWeight: 900, color: 'var(--red-glow)', marginBottom: 5 }}>NARZĘDZIA KONTROLI</div>
+                        <div style={{ marginTop: 15, padding: 10, background: 'rgba(255,59,58,0.05)', borderRadius: 10, border: '1px solid rgba(255,59,58,0.2)', display: 'flex', flexDirection: 'column', gap: 5 }}>
+                            <div style={{ fontSize: 7, fontWeight: 900, color: 'var(--red-glow)', marginBottom: 2 }}>NARZĘDZIA KONTROLI</div>
                             <button className="btn-secondary" style={{ width: '100%', borderColor: 'var(--red-glow)', color: 'var(--red-glow)', fontSize: 9 }} onClick={async () => {
                                 const hwids = editingUser.boundHwids || [];
                                 for (const h of hwids) await toggleBan(h);
                                 showToast("ZMIENIONO STATUS BANA");
                             }}>
                                 {db?.bannedHwids?.includes(editingUser.boundHwids?.[0] || "") ? "ODBANUJ URZĄDZENIA" : "ZBANUJ WSZYSTKIE HWID"}
+                            </button>
+                            <button className="btn-secondary" style={{ width: '100%', borderColor: 'orange', color: 'orange', fontSize: 9 }} onClick={async () => {
+                                if (confirm("Czy na pewno wyczyścić wszystkie przypisane urządzenia?")) {
+                                    setEditHwid("");
+                                    await updateKey(editingUser.id, { boundHwids: [] });
+                                    showToast("WYCZYSZCZONO HWID");
+                                }
+                            }}>
+                                WYCZYŚĆ LISTĘ HWID (RESET)
                             </button>
                         </div>
                         <div className="modal-actions">

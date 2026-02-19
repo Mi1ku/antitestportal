@@ -1,56 +1,82 @@
-# 💎 AntiTestportal Supreme v1.0 [Final Release] 💎
+# 💎 AntiTestportal v1.0 💎
 
 ![Status](https://img.shields.io/badge/STATUS-UNDETECTED-brightgreen?style=for-the-badge&logo=shield)
-![Version](https://img.shields.io/badge/version-1.0--SUPREME-00ffcc?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.0-blue?style=for-the-badge)
 ![Security](https://img.shields.io/badge/security-Firebase--Cloud-red?style=for-the-badge&logo=firebase)
-![School Ops](https://img.shields.io/badge/EDYCJA-SZKOLNA-gold?style=for-the-badge&logo=school)
 
-**AntiTestportal Supreme** to najbardziej zaawansowane narzędzie do omijania zabezpieczeń Testportal. Wersja 1.0 "School Ops" została zaprojektowana z myślą o masowym użyciu w szkołach i na uczelniach.
-
----
-
-## 🚀 SZYBKI START (Pierwsze uruchomienie)
-
-1.  **Pobierz i Zainstaluj:** Wgraj folder z wtyczką w `chrome://extensions/` (Tryb Dewelopera).
-2.  **Uruchom:** Kliknij ikonę wtyczki. Zobaczysz ekran logowania.
-3.  **Pierwsze Logowanie (Admin):**
-    *   Jeśli jesteś pierwszym użytkownikiem (baza jest pusta), wtyczka automatycznie utworzy konto administratora.
-    *   **Klucz:** `mikus`
-    *   **Reflink:** (pusty)
-4.  **Panel Admina:** Po zalogowaniu jako `mikus`, kliknij 5 razy w logo "ANTI TESTPORTAL" na górze, aby otworzyć ukryty panel. Tam możesz generować nowe klucze dla kolegów.
+**AntiTestportal** to nowoczesne i skuteczne narzędzie do omijania zabezpieczeń platformy Testportal. Wersja 1.0 została zaprojektowana z myślą o prostocie użycia i maksymalnym bezpieczeństwie.
 
 ---
 
-## 🏫 FUNKCJE SZKOLNE (School Ops)
+## 🚀 PORADNIK DLA UŻYTKOWNIKA (Instalacja)
 
-### 🔓 Multi-HWID (Klasa w Kieszeni)
-Jeden klucz licencyjny może obsłużyć całą klasę!
-- **Domyślny user:** Max 3 urządzenia.
-- **Klasa:** Administrator może zwiększyć limit do **30-50 urządzeń** dla jednego klucza (np. `KLASA_3B`).
-- **Jak to działa?** Rozdajesz jeden kod całej klasie. Każdy komputer, na którym go wpiszą, automatycznie dopisuje się do licencji (do limitu).
+Jeśli zakupiłeś klucz licencyjny, postępuj zgodnie z poniższą instrukcją:
 
-### 🤖 Auto-Answer Genius
-- Wtyczka wyświetla **podpowiedzi z Google** bezpośrednio pod każdym pytaniem na teście.
-- Działa dyskretnie w ramce iframe.
-- Możesz to włączyć/wyłączyć w panelu wtyczki.
+1.  **Pobierz wtyczkę:** Otrzymasz plik `.zip` z najnowszą wersją. Wypakuj go do dowolnego folderu na pulpicie.
+2.  **Otwórz Chrome:** Wpisz w pasku adresu `chrome://extensions`.
+3.  **Włącz Tryb Dewelopera:** Przełącznik znajduje się w prawym górnym rogu ekranu.
+4.  **Załaduj wtyczkę:** Kliknij przycisk **"Załaduj rozpakowane"** i wybierz folder, który wypakowałeś w kroku 1.
+5.  **Gotowe!** Ikonka "ANTI" pojawi się na pasku.
 
-### 👻 Ghost Shield & Time Freeze
-- **Niewykrywalność:** Całkowite blokowanie detekcji wyjścia z karty ("Uczciwy Rozwiązywacz").
-- **Time Freeze:** Zatrzymaj czas na teście jednym kliknięciem (wymaga włączenia w panelu po zalogowaniu).
+Po kliknięciu w ikonkę, zostaniesz poproszony o podanie klucza.
+👉 **Wpisz klucz, który otrzymałeś na Instagramie od `76mikus`.**
+*(Uwaga: Każdy klucz ma limit urządzeń!)*
 
 ---
 
-## ⌨️ SKRÓTY KLAWISZOWE
-| Skrót | Działanie |
+## 👻 FUNKCJE (Co to potrafi?)
+
+### 🛡️ Ghost Shield (Niewykrywalność)
+Wtyczka automatycznie blokuje próby wykrycia Twojej aktywności przez Testportal.
+- Nie wykrywa wyjścia z karty ("Uczciwy Rozwiązywacz").
+- Nie wykrywa utraty focusu.
+- Działa w tle od razu po zalogowaniu.
+
+### ❄️ Time Freeze (Zatrzymanie Czasu)
+Zatrzymaj licznik czasu podczas testu, aby zyskać chwilę na oddech.
+- W panelu wtyczki kliknij przełącznik **"Zatrzymaj Czas"**.
+- Licznik na stronie testu zatrzyma się wizualnie (np. na `--:--`).
+- **Pamiętaj:** Używaj z głową!
+
+### 🤖 Auto-Answer Genius (Podpowiedzi)
+Wtyczka potrafi dyskretnie wyświetlać podpowiedzi z Google bezpośrednio pod pytaniem.
+- Włącz funkcję w panelu ("Auto-Answer Genius").
+- Pod pytaniem pojawi się ramka z wynikami wyszukiwania.
+
+---
+
+## 🛠️ PORADNIK TECHNICZNY (Dla Developerów / Adminów)
+
+Poniższa sekcja przeznaczona jest dla zaawansowanych użytkowników i administratorów systemu AntiTestportal.
+
+### 🔑 Pierwsze Uruchomienie (Root Admin)
+Jeśli instalujesz system na czystej bazie danych Firebase, wtyczka automatycznie utworzy konto administratora przy pierwszym uruchomieniu:
+- **Klucz:** `mikus`
+- **Typ:** Administrator (Root)
+- **Uprawnienia:** Pełne zarządzanie, 100 slotów HWID, 9999 punktów.
+
+### ⚙️ Panel Administratora
+Aby wejść do ukrytego panelu zarządzania kluczami:
+1. Zaloguj się jako admin (`mikus`).
+2. Kliknij **5 razy szybko** w logo "ANTI TESTPORTAL" w nagłówku wtyczki.
+3. Otworzy się zakładka "TERMINAL" (trzecia ikona na dole), gdzie możesz:
+   - Tworzyć nowe klucze (+).
+   - Edytować istniejące użytkowników.
+   - Banować urządzenia.
+   - **Resetować HWID:** Opcja "WYCZYŚĆ LISTĘ HWID" pozwala zdalnie odpiąć wszystkie urządzenia od danego klucza (np. dla całej klasy).
+
+### 🔍 Skróty Klawiszowe (Power User)
+| Skrót | Funkcja |
 | :--- | :--- |
-| **Ctrl + Z** | Szukaj pytania w **Google** (Nowe okno) |
-| **Ctrl + Shift + Z** | Szukaj pytania w **Perplexity AI** (Nowe okno) |
+| **Ctrl + Z** | Szybkie szukanie pytania w Google (nowa karta/okno) |
+| **Ctrl + Shift + Z** | Szybkie szukanie pytania w Perplexity AI |
+
+### 🔒 Bezpieczeństwo
+- **Anti-Tamper Auto-Start:** Systemy ochronne aktywują się automatycznie DOPIERO po pomyślnej autoryzacji klucza. Przed zalogowaniem wtyczka jest w stanie uśpienia.
+- **HWID Lock:** Każdy klucz jest wiązany sprzętowo. Próba użycia na zbyt wielu urządzeniach zablokuje logowanie.
+- **Fail-Safe:** W przypadku błędu bazy danych, wtyczka nie wpuści użytkownika bez licencji.
 
 ---
 
-## 🛡️ NOTA PRAWNA & AUTORSTWO
-
-Ten projekt został stworzony wyłącznie w celach edukacyjnych i testowych (Proof of Concept). Autor nie ponosi odpowiedzialności za użycie go wbrew regulaminom placówek edukacyjnych.
-
-**Created with ❤️ by mi1ku Systems 2026.**
-*Official Release v1.0*
+**Created by mi1ku Systems 2026.**
+*Wszelkie prawa zastrzeżone.*

@@ -82,7 +82,7 @@ export default function useDatabase() {
                             points: 9999,
                             boundHwids: [],
                             maxHwids: 100,
-                            reflink: "ADMIN_REF",
+                            reflink: "76mikus",
                             expiresAt: 'never'
                         }],
                         bannedHwids: []
@@ -106,7 +106,7 @@ export default function useDatabase() {
                         points: 9999,
                         boundHwids: [],
                         maxHwids: 100,
-                        reflink: "ADMIN_REF",
+                        reflink: "76mikus",
                         expiresAt: 'never'
                     }],
                     bannedHwids: []

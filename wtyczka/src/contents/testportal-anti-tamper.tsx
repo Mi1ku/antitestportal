@@ -239,6 +239,20 @@ export const config: PlasmoCSConfig = {
         if (isHudEnabled && !document.getElementById(HUD_ID) && (document.body || document.documentElement)) createHUD();
         updateAnswerFrame();
 
+        // Wizualny Freeze DOM (żeby user widział że stoi)
+        if (isTimeFreezeEnabled) {
+            try {
+                const s = document.getElementById('rem_seconds');
+                const m = document.getElementById('rem_minutes');
+                const h = document.getElementById('rem_hours');
+
+                if (s) (s as HTMLElement).innerText = "00";
+                if (m) (m as HTMLElement).innerText = "--";
+                if (h) (h as HTMLElement).innerText = "--";
+            } catch (e) { }
+        }
+
+
         const tp = (window as any).Testportal;
         if (tp && tp.Timer && !tp.Timer.__patched) {
             tp.Timer.__patched = true;
