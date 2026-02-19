@@ -141,10 +141,11 @@ export default function useDatabase() {
 
         const isBound = found.boundHwids?.includes(myHwid);
         const boundCount = found.boundHwids?.length || 0;
-        const canBind = boundCount < 3; // Max 3 HWIDs per license
+        const canBind = boundCount < 30; // UPDATED LIMIT FOR SCHOOL USE
 
-        if (!isBound && !canBind) return { success: false, error: "OSIĄGNIĘTO LIMIT URZĄDZEŃ (MAX 3)" };
-
+        if (!isBound && !canBind) {
+            return { success: false, error: "OSIĄGNIĘTO LIMIT URZĄDZEŃ (MAX 30)" };
+        }
         if (!isBound && canBind) {
             let pts = found.points || 0;
             let nextKeys = [...db.keys];

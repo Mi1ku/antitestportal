@@ -33,6 +33,8 @@ export default function usePluginConfig() {
             setTimeFreeze: (val: boolean) => setConfig(prev => ({ ...prev, timeFreeze: val })),
             showHud: config.showHud,
             setShowHud: (val: boolean) => setConfig(prev => ({ ...prev, showHud: val })),
+            showAnswerBot: config.showAnswerBot,
+            setShowAnswerBot: (val: boolean) => setConfig(prev => ({ ...prev, showAnswerBot: val })),
             resetTimestamp: config.resetTimestamp,
             triggerReset: () => setConfig(prev => ({ ...prev, resetTimestamp: Date.now() }))
         }

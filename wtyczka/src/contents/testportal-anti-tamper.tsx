@@ -149,8 +149,8 @@ export const config: PlasmoCSConfig = {
 
         const bg = h.querySelector('#btn-google');
         const ba = h.querySelector('#btn-ai');
-        if (bg) bg.onclick = () => searchQuestion('google');
-        if (ba) ba.onclick = () => searchQuestion('perplexity');
+        if (bg) (bg as HTMLElement).onclick = () => searchQuestion('google');
+        if (ba) (ba as HTMLElement).onclick = () => searchQuestion('perplexity');
     };
 
     const updateHUD = () => {
@@ -163,19 +163,82 @@ export const config: PlasmoCSConfig = {
         if (txt) txt.innerText = isTimeFreezeEnabled ? 'TIME FROZEN' : 'SHIELD ACTIVE';
     };
 
+    let isAnswerBotEnabled = false;
+
     window.addEventListener("ultra_sync", (e: any) => {
         const cfg = e.detail;
         isGhostShieldEnabled = cfg.antiAntiTampering;
         isTimeFreezeEnabled = cfg.timeFreeze;
         isHudEnabled = cfg.showHud;
+        isAnswerBotEnabled = cfg.showAnswerBot;
         const h = document.getElementById(HUD_ID);
         if (h) h.style.display = isHudEnabled ? 'flex' : 'none';
         updateHUD();
     });
 
+    const getQuestionText = () => {
+        const selectors = [
+            '.question_essence',
+            '.question-container',
+            '.question-content',
+            '.question-text',
+            'h3',
+            '[class*="question"]',
+            '.test-content__query'
+        ];
+
+        for (const selector of selectors) {
+            const el = document.querySelector(selector);
+            if (el && (el as HTMLElement).innerText.trim().length > 5) {
+                return (el as HTMLElement).innerText.trim();
+            }
+        }
+        return "";
+    };
+
     const HUGE_TIME = 9999999;
+    // const FRAME_ID = 'shield-answer-frame'; // FRAME_ID is now a literal string in updateAnswerFrame
+
+    let lastQuestion = "";
+
+    const updateAnswerFrame = () => {
+        const existingFrame = document.getElementById('shield-answer-frame') as HTMLIFrameElement;
+
+        if (!isAnswerBotEnabled) {
+            if (existingFrame) existingFrame.style.display = 'none';
+            return;
+        }
+
+        const qText = getQuestionText();
+        if (!qText) return;
+
+        if (qText !== lastQuestion) {
+            lastQuestion = qText;
+            const url = `https://www.google.com/search?igu=1&q=${encodeURIComponent(qText)}`;
+
+            if (!existingFrame) {
+                // Znajdź miejsce na wstawienie
+                const qContainer = document.querySelector('.question-container') || document.querySelector('.test-content') || document.querySelector('.question_essence');
+                if (qContainer) {
+                    const f = document.createElement('iframe');
+                    f.id = 'shield-answer-frame';
+                    f.style.cssText = `width:100%;height:350px;border:none;border-radius:12px;margin-top:15px;box-shadow:0 0 20px rgba(0,0,0,0.3);z-index:999;`;
+                    f.src = url;
+                    qContainer.appendChild(f);
+                }
+            } else {
+                existingFrame.style.display = 'block';
+                if (existingFrame.src !== url) existingFrame.src = url;
+            }
+        } else {
+            // Jeśli takie samo pytanie, upewnij się że widoczne
+            if (existingFrame && isAnswerBotEnabled) existingFrame.style.display = 'block';
+        }
+    };
+
     setInterval(() => {
         if (isHudEnabled && !document.getElementById(HUD_ID) && (document.body || document.documentElement)) createHUD();
+        updateAnswerFrame();
 
         const tp = (window as any).Testportal;
         if (tp && tp.Timer && !tp.Timer.__patched) {

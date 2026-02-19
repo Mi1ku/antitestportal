@@ -287,6 +287,15 @@ function IndexPopup() {
                                         <button className="btn-primary" style={{ padding: 8, fontSize: 10, background: 'rgba(255,69,58,0.1)', color: 'var(--red-glow)' }} onClick={handleClear}>RESET SESJI</button>
                                     </div>
                                 </div>
+                                <div className="card">
+                                    <div className="switch-box" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div style={{ fontSize: 13, fontWeight: 800 }}>Auto-Answer Genius</div>
+                                        <div className={`toggle-io ${pluginConfig.showAnswerBot ? 'active' : ''}`} onClick={() => pluginConfig.setShowAnswerBot(!pluginConfig.showAnswerBot)}>
+                                            <div className="circle"></div>
+                                        </div>
+                                    </div>
+                                    <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>Wyświetlaj podpowiedź Google w treści pytania</div>
+                                </div>
                                 <div className="card" style={{ padding: 10 }}>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                                         <div style={{ background: '#000', padding: 12, borderRadius: 12, textAlign: 'center' }}>
