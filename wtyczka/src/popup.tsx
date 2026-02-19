@@ -279,6 +279,9 @@ function IndexPopup() {
                             </div>
                         )}
                         <button className="btn-primary" onClick={handleLogin}>ZALOGUJ DO SYSTEMU</button>
+                        <div style={{ marginTop: 15, textAlign: 'center', fontSize: 10, opacity: 0.7, cursor: 'pointer' }} onClick={() => window.open("https://www.instagram.com/76mikus/", "_blank")}>
+                            Nie masz klucza? <span style={{ fontWeight: 900, textDecoration: 'underline', color: 'var(--green-glow)' }}>Napisz na IG: @76mikus</span>
+                        </div>
                     </div>
                 </div>
             ) : (

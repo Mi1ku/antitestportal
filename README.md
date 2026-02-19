@@ -19,7 +19,7 @@ Jeśli zakupiłeś klucz licencyjny, postępuj zgodnie z poniższą instrukcją:
 5.  **Gotowe!** Ikonka "ANTI" pojawi się na pasku.
 
 Po kliknięciu w ikonkę, zostaniesz poproszony o podanie klucza.
-👉 **Wpisz klucz, który otrzymałeś na Instagramie od `76mikus`.**
+👉 **Wpisz klucz, który otrzymałeś na Instagramie od [`76mikus`](https://www.instagram.com/76mikus/).**
 *(Uwaga: Każdy klucz ma limit urządzeń!)*
 
 ---
@@ -45,36 +45,54 @@ Wtyczka potrafi dyskretnie wyświetlać podpowiedzi z Google bezpośrednio pod p
 
 ---
 
-## 🛠️ PORADNIK TECHNICZNY (Dla Developerów / Adminów)
+## 💻 DOKUMENTACJA TECHNICZNA (Dla Developerów)
 
-Poniższa sekcja przeznaczona jest dla zaawansowanych użytkowników i administratorów systemu AntiTestportal.
+Sekcja przeznaczona dla osób chcących rozwijać projekt lub skompilować go samodzielnie ze źródeł.
 
-### 🔑 Pierwsze Uruchomienie (Root Admin)
-Jeśli instalujesz system na czystej bazie danych Firebase, wtyczka automatycznie utworzy konto administratora przy pierwszym uruchomieniu:
-- **Klucz:** `mikus`
-- **Typ:** Administrator (Root)
-- **Uprawnienia:** Pełne zarządzanie, 100 slotów HWID, 9999 punktów.
+### ⚙️ Wymagania
+- **Node.js**: v16 lub nowszy
+- **NPM / PNPM / Yarn**: Menedżer pakietów
+- **PowerShell**: Do skryptów budujących (Windows)
 
-### ⚙️ Panel Administratora
-Aby wejść do ukrytego panelu zarządzania kluczami:
-1. Zaloguj się jako admin (`mikus`).
-2. Kliknij **5 razy szybko** w logo "ANTI TESTPORTAL" w nagłówku wtyczki.
-3. Otworzy się zakładka "TERMINAL" (trzecia ikona na dole), gdzie możesz:
-   - Tworzyć nowe klucze (+).
-   - Edytować istniejące użytkowników.
-   - Banować urządzenia.
-   - **Resetować HWID:** Opcja "WYCZYŚĆ LISTĘ HWID" pozwala zdalnie odpiąć wszystkie urządzenia od danego klucza (np. dla całej klasy).
+### 📥 Instalacja Środowiska
+1. Sklonuj repozytorium:
+   ```bash
+   git clone https://github.com/twoj-repo/antitestportal.git
+   cd antitestportal/wtyczka
+   ```
+2. Zainstaluj zależności:
+   ```bash
+   npm install
+   ```
+
+### 🔧 Konfiguracja Firebase
+Projekt wymaga własnej bazy danych Firebase Realtime Database.
+1. Utwórz projekt w konsoli Firebase.
+2. Skopiuj dane konfiguracyjne (API Key, Project ID itp.).
+3. Podmień konfigurację w pliku: `src/hooks/use-database.ts`.
+
+### 🔨 Budowanie i Rozwój
+- **Tryb Development (Hot Reload):**
+  Uruchamia serwer developerski z nasłuchiwaniem zmian.
+  ```bash
+  npm run dev
+  ```
+- **Budowanie Produkcyjne:**
+  Kompiluje wtyczkę do folderu `build/chrome-mv3-prod`.
+  ```bash
+  npm run build
+  ```
+- **Pakowanie Release (.zip):**
+  Automatyczny skrypt tworzący gotową paczkę dla użytkownika (`AntiTestportal-v1.0.zip`).
+  ```powershell
+  ..\pack_release.ps1
+  ```
 
 ### 🔍 Skróty Klawiszowe (Power User)
 | Skrót | Funkcja |
 | :--- | :--- |
 | **Ctrl + Z** | Szybkie szukanie pytania w Google (nowa karta/okno) |
 | **Ctrl + Shift + Z** | Szybkie szukanie pytania w Perplexity AI |
-
-### 🔒 Bezpieczeństwo
-- **Anti-Tamper Auto-Start:** Systemy ochronne aktywują się automatycznie DOPIERO po pomyślnej autoryzacji klucza. Przed zalogowaniem wtyczka jest w stanie uśpienia.
-- **HWID Lock:** Każdy klucz jest wiązany sprzętowo. Próba użycia na zbyt wielu urządzeniach zablokuje logowanie.
-- **Fail-Safe:** W przypadku błędu bazy danych, wtyczka nie wpuści użytkownika bez licencji.
 
 ---
 
