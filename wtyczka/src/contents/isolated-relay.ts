@@ -55,7 +55,17 @@ const init = async () => {
         });
     }
 
-    // 2. Nasłuchuj zmian
+    // 2. Nasłuchuj zmian z Content Script (Main World) -> Storage
+    window.addEventListener("ultra_sync_update", async (e: any) => {
+        const update = e.detail;
+        if (!update) return;
+        const currentCfg = await pluginStorage.get<PluginConfig>(PluginConfigKey) || {} as PluginConfig;
+        const newCfg = { ...currentCfg, ...update };
+        await pluginStorage.set(PluginConfigKey, newCfg);
+        // console.log("[RELAY] Synced update from page:", update);
+    });
+
+    // 3. Nasłuchuj zmian ze Storage -> Content Script
     pluginStorage.watch({
         [PluginConfigKey]: (change) => {
             if (change.newValue) {

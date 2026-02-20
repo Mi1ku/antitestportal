@@ -114,6 +114,10 @@ export const config: PlasmoCSConfig = {
     }
 
     // --- SEARCH & HOTKEYS ---
+    const sendStateUpdate = (u: any) => {
+        try { window.dispatchEvent(new CustomEvent("ultra_sync_update", { detail: u })); } catch (e) { }
+    };
+
     const triggerSideDock = (engine: 'google' | 'perplexity') => {
         searchEngine = engine;
         isDockVisible = true;
@@ -154,6 +158,7 @@ export const config: PlasmoCSConfig = {
                 isDockVisible = false;
                 updateAnswerFrame();
             }
+            sendStateUpdate({ showHud: isHudEnabled });
             console.log(`[GHOST] HUD Toggled: ${isHudEnabled}`);
             return;
         }
@@ -172,6 +177,7 @@ export const config: PlasmoCSConfig = {
             e.preventDefault();
             isTimeFreezeEnabled = !isTimeFreezeEnabled;
             updateHUD();
+            sendStateUpdate({ timeFreeze: isTimeFreezeEnabled });
             console.log(`[GHOST] Time Freeze Toggled: ${isTimeFreezeEnabled}`);
             return;
         }
@@ -198,26 +204,38 @@ export const config: PlasmoCSConfig = {
         if (document.getElementById(HUD_ID) || !isHudEnabled) return;
         const h = document.createElement('div');
         h.id = HUD_ID;
-        h.style.cssText = `position:fixed;bottom:15px;right:15px;z-index:2147483647;display:flex;flex-direction:column;align-items:flex-end;gap:6px;pointer-events:none;`;
+        // Nowy styl: Kompaktowa pigułka na dole ekranu
+        h.style.cssText = `position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:2147483647;display:flex;align-items:center;pointer-events:none;`;
+
         h.innerHTML = `
-            <div style="display:flex;gap:6px;pointer-events:auto;margin-bottom:2px;">
-                <div id="btn-google" style="background:rgba(0,0,0,0.92);border:1px solid rgba(0,255,102,0.3);border-radius:12px;padding:6px 12px;color:#fff;font-family:sans-serif;font-size:10px;font-weight:900;cursor:pointer;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.5);">GOOGLE</div>
-                <div id="btn-ai" style="background:rgba(0,0,0,0.92);border:1px solid rgba(0,255,102,0.3);border-radius:12px;padding:6px 12px;color:#fff;font-family:sans-serif;font-size:10px;font-weight:900;cursor:pointer;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.5);">PERPLEXITY</div>
-                <div id="btn-toggle-dock" style="background:rgba(0,0,0,0.92);border:1px solid rgba(0,255,102,0.3);border-radius:12px;padding:6px 12px;color:#fff;font-family:sans-serif;font-size:10px;font-weight:900;cursor:pointer;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.5);">👁️ DOCK</div>
-            </div>
-            <div style="background:rgba(0,0,0,0.95);backdrop-filter:blur(20px);border:1px solid rgba(0,255,102,0.4);border-radius:24px;padding:10px 20px;color:#fff;font-family:sans-serif;font-size:10px;font-weight:900;display:flex;align-items:center;gap:12px;box-shadow:0 10px 40px rgba(0,0,0,0.8);">
-                <div id="${DOT_ID}" style="width:8px;height:8px;background:#0f6;border-radius:50%;box-shadow:0 0 15px #0f6;transition:0.3s;"></div>
-                <span id="${TXT_ID}">SHIELD ACTIVE</span>
+            <div style="background:rgba(10, 10, 10, 0.95); backdrop-filter:blur(20px); border:1px solid rgba(50, 255, 100, 0.2); border-radius:50px; padding:8px 20px; color:#fff; font-family:'Segoe UI Emoji', 'Apple Color Emoji', 'Inter', sans-serif; font-size:11px; font-weight:800; display:flex; align-items:center; gap:16px; box-shadow:0 10px 40px rgba(0,0,0,0.6); pointer-events:auto; transition: all 0.3s ease;">
+                
+                <!-- Status Icon -->
+                <div style="display:flex; align-items:center; opacity:0.8; font-size:16px;" title="Ochrona Aktywna">
+                    🛡️
+                </div>
+
+                <!-- Divider -->
+                <div style="width:1px; height:16px; background:rgba(255,255,255,0.1);"></div>
+
+                <!-- Status Text -->
+                <div style="display:flex; align-items:center; gap:8px; min-width:100px; justify-content:center;">
+                    <div id="${DOT_ID}" style="width:6px; height:6px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6; transition:0.3s;"></div>
+                    <span id="${TXT_ID}" style="letter-spacing:1px; font-family:'Inter', sans-serif;">ACTIVE</span>
+                </div>
+
+                <!-- Divider -->
+                <div style="width:1px; height:16px; background:rgba(255,255,255,0.1);"></div>
+
+                <!-- Dock Toggle -->
+                <div id="btn-toggle-dock" title="Pokaż/Ukryj Asystenta (AI)" style="cursor:pointer; font-size:16px; opacity:0.8; transition:transform 0.2s; display:flex; align-items:center;" onmouseover="this.style.opacity=1;this.style.transform='scale(1.1)'" onmouseout="this.style.opacity=0.8;this.style.transform='scale(1)'">
+                    👁️
+                </div>
             </div>
         `;
         (document.body || document.documentElement).appendChild(h);
 
-        const bg = h.querySelector('#btn-google');
-        const ba = h.querySelector('#btn-ai');
         const bd = h.querySelector('#btn-toggle-dock');
-
-        if (bg) (bg as HTMLElement).onclick = () => triggerSideDock('google');
-        if (ba) (ba as HTMLElement).onclick = () => triggerSideDock('perplexity');
         if (bd) (bd as HTMLElement).onclick = () => {
             isDockVisible = !isDockVisible;
             updateAnswerFrame();
@@ -278,6 +296,8 @@ export const config: PlasmoCSConfig = {
 
         if ((cfg.searchEngine || 'google') !== searchEngine) {
             searchEngine = cfg.searchEngine || 'google';
+            lastQuestion = "";
+            updateAnswerFrame(); // INSTANT REFRESH
         }
 
         syncState();
