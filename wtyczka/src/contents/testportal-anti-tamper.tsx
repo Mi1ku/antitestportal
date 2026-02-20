@@ -208,28 +208,33 @@ export const config: PlasmoCSConfig = {
         h.style.cssText = `position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:2147483647;display:flex;align-items:center;pointer-events:none;`;
 
         h.innerHTML = `
-            <div style="background:rgba(10, 10, 10, 0.95); backdrop-filter:blur(20px); border:1px solid rgba(50, 255, 100, 0.2); border-radius:50px; padding:8px 20px; color:#fff; font-family:'Segoe UI Emoji', 'Apple Color Emoji', 'Inter', sans-serif; font-size:11px; font-weight:800; display:flex; align-items:center; gap:16px; box-shadow:0 10px 40px rgba(0,0,0,0.6); pointer-events:auto; transition: all 0.3s ease;">
+            <div style="background:rgba(10, 10, 10, 0.95); backdrop-filter:blur(20px); border:1px solid rgba(50, 255, 100, 0.2); border-radius:50px; padding:8px 20px; color:#fff; font-family:'Inter', sans-serif; font-size:11px; font-weight:800; display:flex; align-items:center; gap:16px; box-shadow:0 10px 40px rgba(0,0,0,0.6); pointer-events:auto; transition: all 0.3s ease;">
                 
-                <!-- Status Icon -->
-                <div style="display:flex; align-items:center; opacity:0.8; font-size:16px;" title="Ochrona Aktywna">
-                    🛡️
+                <!-- Status Icon (Shield SVG) -->
+                <div style="display:flex; align-items:center; opacity:0.9;" title="Ochrona Aktywna">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 12.17l6.59-6.59L18 7l-8 10z"/>
+                    </svg>
                 </div>
 
                 <!-- Divider -->
                 <div style="width:1px; height:16px; background:rgba(255,255,255,0.1);"></div>
 
                 <!-- Status Text -->
-                <div style="display:flex; align-items:center; gap:8px; min-width:100px; justify-content:center;">
+                <div style="display:flex; align-items:center; gap:8px; min-width:80px; justify-content:center;">
                     <div id="${DOT_ID}" style="width:6px; height:6px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6; transition:0.3s;"></div>
-                    <span id="${TXT_ID}" style="letter-spacing:1px; font-family:'Inter', sans-serif;">ACTIVE</span>
+                    <span id="${TXT_ID}" style="letter-spacing:1px;">ACTIVE</span>
                 </div>
 
                 <!-- Divider -->
                 <div style="width:1px; height:16px; background:rgba(255,255,255,0.1);"></div>
 
-                <!-- Dock Toggle -->
-                <div id="btn-toggle-dock" title="Pokaż/Ukryj Asystenta (AI)" style="cursor:pointer; font-size:16px; opacity:0.8; transition:transform 0.2s; display:flex; align-items:center;" onmouseover="this.style.opacity=1;this.style.transform='scale(1.1)'" onmouseout="this.style.opacity=0.8;this.style.transform='scale(1)'">
-                    👁️
+                <!-- Dock Toggle (Eye SVG) -->
+                <div id="btn-toggle-dock" title="Pokaż/Ukryj Asystenta (AI)" style="cursor:pointer; opacity:0.8; transition:transform 0.2s; display:flex; align-items:center;" onmouseover="this.style.opacity=1;this.style.transform='scale(1.1)'" onmouseout="this.style.opacity=0.8;this.style.transform='scale(1)'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
                 </div>
             </div>
         `;

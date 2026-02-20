@@ -1,23 +1,17 @@
-# 💎 AntiTestportal+ v1.2
+# 💎 AntiTestportal+ v1.0
 
 ![Status](https://img.shields.io/badge/STATUS-UNDETECTED-brightgreen?style=for-the-badge&logo=shield)
-![Version](https://img.shields.io/badge/version-1.2-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.0-blue?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
 
-**AntiTestportal+** to zaawansowane narzędzie edukacyjne, zaprojektowane do bezpiecznego wspomagania procesu rozwiązywania testów na platformie Testportal. Wersja **1.2** wprowadza zupełnie nowy interfejs HUD oraz inteligentnego asystenta bocznego z synchronizacją w czasie rzeczywistym.
-
-### 🆕 Nowości w wersji 1.2
-- **Compact HUD 2.0:** Nowy, dyskretny pasek statusu (Pill-Shape) zamiast dużych przycisków.
-- **Side Dock AI:** Zintegrowany panel boczny z obsługą Google i Perplexity (Instant Refresh).
-- **Instant Sync:** Dwukierunkowa synchronizacja ustawień między skrótami klawiszowymi a panelem sterowania.
-- **Enhanced Stealth:** Poprawione maskowanie obecności wtyczki.
+**AntiTestportal+** to zaawansowane narzędzie edukacyjne, zaprojektowane do bezpiecznego wspomagania procesu rozwiązywania testów na platformie Testportal. Wersja **1.0** skupia się na stabilności, niewykrywalności i prostocie obsługi.
 
 ---
 
 ## 📥 Przewodnik Użytkownika
 
 ### Instalacja
-1.  **Pobierz:** Otrzymasz plik `AntiTestportal-v1.2.zip`. Wypakuj go do folderu na pulpicie.
+1.  **Pobierz:** Otrzymasz plik `AntiTestportal-v1.0.zip`. Wypakuj go do folderu na pulpicie.
 2.  **Otwórz Chrome:** Przejdź do `chrome://extensions`.
 3.  **Tryb Dewelopera:** Włącz suwak **"Tryb dewelopera"** (prawy górny róg).
 4.  **Załaduj:** Kliknij **"Załaduj rozpakowane"** i wskaż wypakowany folder.
