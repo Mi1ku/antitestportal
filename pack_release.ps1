@@ -1,11 +1,18 @@
 $ErrorActionPreference = "Stop"
-$projectName = "AntiTestportal-v1.0"
+
+# Get project version automatically
+$packageJson = Get-Content "$PSScriptRoot\wtyczka\package.json" -Raw | ConvertFrom-Json
+$version = $packageJson.version
+$projectName = "AntiTestportal-v$version"
 $root = $PSScriptRoot
 $wtyczkaPath = "$root\wtyczka"
 $buildPath = "$wtyczkaPath\build\chrome-mv3-prod"
 $zipPath = "$root\$projectName.zip"
 
 Write-Host "--- 💎 mi1ku RELEASE PACKAGER v2.0 💎 ---" -ForegroundColor Cyan
+Write-Host "NOTE: You no longer need to run this manually!" -ForegroundColor Yellow
+Write-Host "Simply Push changes to GitHub and it will release automatically." -ForegroundColor Yellow
+Write-Host "--------------------------------------------`n" -ForegroundColor Cyan
 
 # 1. Cleaning old artifacts
 if (Test-Path "$root\AntiTestportal-*.zip") {
@@ -52,4 +59,4 @@ else {
     exit 1
 }
 
-Write-Host "`nRelease completed. Upload this file to GitHub Releases." -ForegroundColor Gray
+Write-Host "`nRelease completed. NOTE: Remember that GitHub Auto-Release handles this for you on push!" -ForegroundColor Gray
