@@ -2,12 +2,14 @@ import "./style.css";
 import { useState, useEffect, useRef } from "react";
 import usePluginConfig from "~hooks/use-plugin-config";
 import useDatabase, { type DbKey } from "~hooks/use-database";
+import { useGithubUpdate } from "~hooks/use-github-update";
 
 type Tab = "home" | "games" | "terminal" | "guide";
 
 function IndexPopup() {
     const { pluginConfig } = usePluginConfig();
     const { db, hwid, addKey, updateKey, deleteKey, validateKey, addPoints, isLoading, getRemainingTime, clearSession, toggleBan } = useDatabase();
+    const { updateAvailable, updateUrl } = useGithubUpdate();
 
     const [isActivated, setIsActivated] = useState(false);
     const [currentUser, setCurrentUser] = useState<DbKey | null>(null);
@@ -190,6 +192,22 @@ function IndexPopup() {
 
     return (
         <div className="app-container">
+            {updateAvailable && (
+                <div style={{
+                    backgroundColor: "rgba(255, 77, 79, 0.2)",
+                    borderBottom: "1px solid var(--red-glow)",
+                    padding: "8px 10px",
+                    textAlign: "center",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4
+                }}>
+                    <span style={{ color: 'var(--red-glow)', fontSize: 10, fontWeight: 900 }}>Nowa wersja dostępna: v{updateAvailable}</span>
+                    <a href={updateUrl || "https://github.com/76mikus/antitestportal"} target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontSize: 9, opacity: 0.8, textDecoration: "underline" }}>
+                        Kliknij tutaj, aby pobrać aktualizację
+                    </a>
+                </div>
+            )}
             <div className="header">
                 <span className="logo-anti">ANTI</span>
                 <span className="logo-testportal">TESTPORTAL</span>

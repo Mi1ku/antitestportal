@@ -43,6 +43,11 @@ Inteligentne okno pomocy, które dokuje się po prawej stronie ekranu.
 - **Zarządzanie Widocznością:** Panel możesz w każdej chwili zamknąć ("X") lub wywołać skrótem `Ctrl+Shift+X`.
 - **Panic Mode:** Całkowite ukrycie HUD (`Ctrl+Shift+Z`) automatycznie chowa również asystenta.
 
+### 🔄 Auto-Aktualizacje (CI/CD)
+Wtyczka posiada wbudowany system sprawdzania powiadomień połączony bezpośrednio z repozytorium GitHub.
+- **Powiadomienia in-app:** Jeśli wyjdzie nowa wersja, automatycznie zobaczysz czerwony pasek z linkiem w oknie wtyczki.
+- **Zero-touch Release (dla dev):** Gdy wyślesz nową wersję na GitHuba, system GitHub Actions sam zbuduje, spakuje w ZIP i opublikuje nową aplikację w zakładce Releases.
+
 ### ⌨️ Skróty Klawiszowe (Sterowanie)
 | Skrót | Funkcja | Opis |
 | :--- | :--- | :--- |
