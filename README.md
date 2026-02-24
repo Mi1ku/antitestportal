@@ -38,12 +38,11 @@ Zamraża licznik czasu na stronie egzaminu.
 - Zegar zatrzyma się wizualnie na **99:99**.
 - Po wyłączeniu, czas zostaje poprawnie zsynchronizowany, aby uniknąć błędów po stronie serwera.
 
-### 🧠 Asystent "Supreme AI Cortex" (Auto-Clicker & Side Dock)
-Zaawansowany panel boczny z wbudowaną siecią neuronową (Google Gemini 1.5 Flash), która samoczynnie odczytuje pytania.
-- **Dynamiczne Rozwiązywanie Pytania:** Jeśli funkcja 'Auto-Answer Genius' jest włączona, wtyczka skanuje polecenie na teście, analizuje opcje, łączy się z modelem językowym i w ułamku sekundy automatycznie klika prawidłową odpowiedź otaczając ją zieloną poświatą.
-- **Wbudowane Klucze API:** Proces uwierzytelniania sztucznej inteligencji jest wbudowany prosto w narzędzie podczas budowania rozszerzenia. Zwykły Użytkownik nie musi zakładać żadnych płatnych/bezpłatnych kont. 
-- **Google & Perplexity:** Dla starszych trybów "darmowych", oba silniki wyszukiwania ładują się do bocznej ramki z funkcjonalnym panelem i możliwością kopiowania jednym prostym kliknięciem.
-- **Zarządzanie Widocznością:** Panel możesz w każdej chwili całkowicie ukryć za pomocą HUD'a. Użyj skrótu `Shift + Q` by przejść w **Panic Mode** - nikt z pleców nie zobaczy, że korzystasz ze wsparcia.
+### 🧠 Asystent "Auto-Solver" (Groq AI & Side Dock)
+Zaawansowany system z wbudowaną potężną siecią neuronową (Llama 3.3 70B via Groq), która samoczynnie odczytuje pytania.
+- **Dynamiczne Rozwiązywanie Pytania:** Jeśli funkcja Asystenta AI jest włączona, wtyczka skanuje polecenie na teście, analizuje opcje, łączy się z Groq i w ułamku sekundy dodaje subtelny, pływający zielony znaczek (✔️) obok poprawnej odpowiedzi (lub wpisuje ghost-text dla pytań otwartych).
+- **Tryby Fallback (Dock):** Jeśli chcesz wyszukać coś ręcznie, jednym kliknięciem przełączasz silnik na Google lub Perplexity w oknie wtyczki. Klasyczny boczny panel wysuwa się wtedy z prawego brzegu i pozwala na ręczne korzystanie.
+- **Zarządzanie Widocznością:** Kiedy przełączysz na głównego Groqa, boczny panel znika całkowicie dla maksymalnej dyskrecji. Masz również skrót `Shift + Q` by przejść w **Panic Mode** - nikt z pleców nie zobaczy, że korzystasz ze wsparcia, a AI zawiesi wyrywające zgadywanie.
 
 ### 🧹 Narzędzia Przeglądarki
 - **Wyczyść Historię:** Szybkie usuwanie śladów i logów przeglądarki jednym kliknięciem z poziomu okna głównego wtyczki.

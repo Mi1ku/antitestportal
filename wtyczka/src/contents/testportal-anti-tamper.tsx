@@ -419,6 +419,7 @@ export const config: PlasmoCSConfig = {
 
         if (searchEngine === 'groq' && groqApiKey) {
             // --- PRAWDZIWY SUPREME AUTO-SOLVER ---
+            if (!isHudEnabled || !isAnswerBotEnabled) return; // Zabezpieczenie Panic Mode
             if (qText && qText.length > 5 && lastSolvedQuestion !== qText) {
                 lastSolvedQuestion = qText;
                 frameLastUrl = targetUrl; // prevent loops
@@ -461,8 +462,15 @@ export const config: PlasmoCSConfig = {
                                     const e = el as HTMLInputElement | HTMLTextAreaElement;
                                     if (e.type === 'hidden') return;
 
-                                    // Fizycznie wpisuje odpowiedź i triggeruje DOM events do zapisu
-                                    e.value = aiAnswer;
+                                    // Fizycznie wpisuje odpowiedź omijając wirtualne blokady frameworków JS (React/Angular)
+                                    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+                                        e instanceof HTMLTextAreaElement ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype, "value"
+                                    )?.set;
+                                    if (nativeInputValueSetter) {
+                                        nativeInputValueSetter.call(e, aiAnswer);
+                                    } else {
+                                        e.value = aiAnswer;
+                                    }
                                     e.dispatchEvent(new Event('input', { bubbles: true }));
                                     e.dispatchEvent(new Event('change', { bubbles: true }));
                                     clicked = true;
@@ -474,12 +482,15 @@ export const config: PlasmoCSConfig = {
                                         mark.innerHTML = '✔️';
                                         mark.style.cssText = 'color:#0f6; font-size:22px; position:absolute; right:-35px; top:50%; transform:translateY(-50%); pointer-events:none; z-index:9999;';
                                         e.parentElement.style.position = 'relative';
+                                        e.parentElement.style.overflow = 'visible'; // Force visible to avoid clip
+                                        let grandparent = e.parentElement.parentElement;
+                                        if (grandparent) grandparent.style.overflow = 'visible';
                                         e.parentElement.appendChild(mark);
                                     }
                                 });
                             }
                             // 2. Sprawdzanie wypracowań dłuższego tekstu (tinymce iframe open-text "notatnikowe")
-                            else if (richTextIframe && richTextIframe.contentWindow) {
+                            if (richTextIframe && richTextIframe.contentWindow) {
                                 const doc = richTextIframe.contentWindow.document;
                                 if (doc && doc.body) {
                                     // Ghost-text placeholder (Znika jak uczeń kliknie by pisać)
@@ -493,7 +504,7 @@ export const config: PlasmoCSConfig = {
                                 }
                             }
                             // 3. Sprawdzanie pytań zamkniętych (Radio wyboru Opcji - Ptaszek po lewej)
-                            else if (radioInputs && radioInputs.length > 0) {
+                            if (radioInputs && radioInputs.length > 0) {
                                 radioInputs.forEach(el => {
                                     const e = el as HTMLElement;
                                     const eText = e.innerText.toLowerCase().trim();
@@ -507,8 +518,11 @@ export const config: PlasmoCSConfig = {
                                             const mark = document.createElement('span');
                                             mark.className = 'ai-check-mark';
                                             mark.innerHTML = '✔️';
-                                            mark.style.cssText = 'position:absolute; left:-32px; top:50%; transform:translateY(-50%); color:#0f6; font-size:20px; font-weight:900; pointer-events:none; z-index:99; background:rgba(0,0,0,0.6); border-radius:50%; padding:2px;';
+                                            mark.style.cssText = 'position:absolute; left:-32px; top:50%; transform:translateY(-50%); color:#0f6; font-size:20px; font-weight:900; pointer-events:none; z-index:99; drop-shadow:0 0 5px rgba(0, 255, 100, 0.4);';
                                             e.style.position = 'relative';
+                                            e.style.overflow = 'visible'; // Force visible out of bounds
+                                            let p = e.parentElement;
+                                            if (p) p.style.overflow = 'visible';
                                             e.appendChild(mark);
                                         }
                                     }
@@ -546,34 +560,10 @@ export const config: PlasmoCSConfig = {
             }
 
         } else {
-            // --- TRYB DAROMWY (IFRAME CORTEX) ---
+            // --- TRYB WYSZUKIWARKOWY (IFRAME CORTEX) ---
             if (statBar && frameLastUrl !== targetUrl) {
                 if (qText && qText.length > 5) {
-                    statBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> AI analizuje dostępne powiązania i symuluje rozwiązanie...`;
-
-                    setTimeout(() => {
-                        const currentStatBar = document.getElementById('ai-status-bar');
-                        if (currentStatBar) {
-                            currentStatBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow:0 0 10px #ffea0f;"></div> Dopasowywanie wzorców i weryfikacja danych (WebSearch)...`;
-                        }
-                    }, 2000);
-
-                    setTimeout(() => {
-                        const currentStatBar = document.getElementById('ai-status-bar');
-                        if (currentStatBar) {
-                            currentStatBar.innerHTML = `<div style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> Zapytanie zrealizowane pomyślnie. Zaznacz widoczną podpowiedź!`;
-
-                            // Fake visual ping interaction for realism
-                            const inputs = document.querySelectorAll('.answer_container, .answer-label');
-                            inputs.forEach(el => {
-                                const e = el as HTMLElement;
-                                const origBg = e.style.backgroundColor;
-                                e.style.transition = 'background-color 0.5s';
-                                e.style.backgroundColor = 'rgba(0, 255, 170, 0.1)';
-                                setTimeout(() => { e.style.backgroundColor = origBg; }, 800);
-                            });
-                        }
-                    }, 4500);
+                    statBar.innerHTML = `<div style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> Live Search: Wyszukuję widoczne zapytanie...`;
                 } else {
                     statBar.innerHTML = `<div style="width:8px; height:8px; background:#888; border-radius:50%;"></div> Tryb darmowy: Oczekiwanie na zapytanie...`;
                 }

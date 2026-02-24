@@ -368,7 +368,7 @@ function IndexPopup() {
                                             <div className="circle"></div>
                                         </div>
                                     </div>
-                                    <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>Wyświetlaj Asystenta AI i Dock boczny</div>
+                                    <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>Moduł Asystenta AI / Auto-Solvera</div>
 
                                     <div style={{ display: 'flex', gap: 5, marginTop: 8 }}>
                                         <button
@@ -379,7 +379,7 @@ function IndexPopup() {
                                                 color: pluginConfig.searchEngine === 'groq' ? '#000' : '#fff',
                                                 fontSize: 9, fontWeight: 800, cursor: 'pointer'
                                             }}
-                                        >SUPREME (GROQ)</button>
+                                        >AUTO-SOLVER (GROQ)</button>
                                         <button
                                             onClick={() => pluginConfig.setSearchEngine('google')}
                                             style={{
@@ -397,7 +397,7 @@ function IndexPopup() {
                                                 color: pluginConfig.searchEngine === 'perplexity' ? '#000' : '#fff',
                                                 fontSize: 9, fontWeight: 800, cursor: 'pointer'
                                             }}
-                                        >PERPLEXITY</button>
+                                        >PERPLEXITY (DOCK)</button>
                                     </div>
                                 </div>
                                 <div className="card" style={{ padding: 10 }}>
