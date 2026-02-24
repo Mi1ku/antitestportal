@@ -28,7 +28,7 @@ export const config: PlasmoCSConfig = {
     const url = window.location.href.toLowerCase();
     if (window.location.hostname.includes('testportal')) {
         if (!url.includes('/exam/')) return;
-        if (url.includes('test-result.html') || url.includes('loadteststart.html')) {
+        if (url.includes('test-result.html') || url.includes('loadteststart.html') || url.includes('zamknij')) {
             console.log("[GHOST] Ignored lobby/results page:", window.location.pathname);
             return;
         }
@@ -398,11 +398,31 @@ export const config: PlasmoCSConfig = {
 
         if (statBar && frameLastUrl !== targetUrl) {
             if (qText && qText.length > 5) {
-                statBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> Inicjalizowanie AI i szukanie odpowiedzi...`;
+                statBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> AI analizuje dostępne powiązania i symuluje rozwiązanie...`;
+
                 setTimeout(() => {
                     const currentStatBar = document.getElementById('ai-status-bar');
-                    if (currentStatBar) currentStatBar.innerHTML = `<div style="width:8px; height:8px; background:#888; border-radius:50%;"></div> Zapytanie zrealizowane pomyślnie. Wymagane potwierdzenie wyboru.`;
-                }, 2500);
+                    if (currentStatBar) {
+                        currentStatBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow:0 0 10px #ffea0f;"></div> Dopasowywanie wzorców i weryfikacja danych (WebSearch)...`;
+                    }
+                }, 2000);
+
+                setTimeout(() => {
+                    const currentStatBar = document.getElementById('ai-status-bar');
+                    if (currentStatBar) {
+                        currentStatBar.innerHTML = `<div style="width:8px; height:8px; background:#0f6; border-radius:50%;"></div> Zapytanie zrealizowane pomyślnie. Zaznacz widoczną podpowiedź!`;
+
+                        // Fake visual ping interaction for realism
+                        const inputs = document.querySelectorAll('.answer_container, .answer-label');
+                        inputs.forEach(el => {
+                            const e = el as HTMLElement;
+                            const origBg = e.style.backgroundColor;
+                            e.style.transition = 'background-color 0.5s';
+                            e.style.backgroundColor = 'rgba(0, 255, 170, 0.1)';
+                            setTimeout(() => { e.style.backgroundColor = origBg; }, 800);
+                        });
+                    }
+                }, 4500);
             } else {
                 statBar.innerHTML = `<div style="width:8px; height:8px; background:#888; border-radius:50%;"></div> Oczekiwanie na zapytanie...`;
             }
