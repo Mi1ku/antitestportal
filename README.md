@@ -133,11 +133,15 @@ A: To celowe. Wtyczka działa tylko na stronach egzaminu (`/exam/`), aby nie pow
 
 **Właścicielem praw autorskich do projektu jest: Mikuś (mi1ku).**
 
+> 🛒 **ZAKUP / UZYSKANIE KLUCZA DO WTYCZKI:**
+> Aby uzyskać pełen dostęp jako użytkownik, zdobyć własny klucz licencyjny lub wypróbować wtyczkę - napisz do mnie na Instagramie:
+> 👉 **[instagram.com/76mikus](https://www.instagram.com/76mikus/)**
+
 Niniejsze oprogramowanie ("AntiTestportal+") zostało stworzone **wyłącznie w celach edukacyjnych** oraz do nauki i analizy zagadnień z zakresu cyberbezpieczeństwa i testowania penetracyjnego aplikacji webowych. Projekt ma na celu demonstrację luk w zabezpieczeniach systemów egzaminowania online.
 
 1.  **Odpowiedzialność:** Autor projektu nie ponosi żadnej odpowiedzialności za jakiekolwiek szkody wyrządzone przez użytkowników oprogramowania ani za wykorzystanie go w sposób niezgodny z prawem lub regulaminem placówek edukacyjnych/egzaminacyjnych. Użytkownik korzysta z oprogramowania na własne ryzyko.
 2.  **Prawa Autorskie:** Zgodnie z ustawą z dnia 4 lutego 1994 r. o prawie autorskim i prawach pokrewnych (Dz.U. 1994 nr 24 poz. 83 z późn. zm.), kopiowanie, modyfikowanie, rozpowszechnianie lub wykorzystywanie kodu źródłowego (w całości lub części) bez wyraźnej, pisemnej zgody autora jest zabronione i podlega karze.
-3.  **Licencja:** Użytek dozwolony wyłącznie do celów prywatnych, niezwiązanych z osiąganiem korzyści majątkowych, chyba że uzyskano inną licencję od autora.
+3.  **Licencja:** Użytek dozwolony wyłącznie do celów prywatnych, niezwiązanych z osiąganiem korzyści majątkowych, chyba że uzyskano inną licencję od autora. Odsprzedaż wtyczki pod inną nazwą jest surowo zabroniona.
 
 ---
 

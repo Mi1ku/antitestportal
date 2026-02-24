@@ -66,5 +66,11 @@ Experience the most beautiful UI ever built for an extension.
 
 ---
 
+## 🛒 Purchase & Access
+To gain user access or buy a license key to use the tool, contact me directly via Instagram:
+👉 **[@76mikus](https://www.instagram.com/76mikus/)**
+
+---
+
 > **Supreme Note:** No external heart or server needed. Everything is local and secure. 
 > Developed by **Mikuś** with ❤️ for **Bixyy**.
