@@ -51,7 +51,8 @@ const init = async () => {
             showHud: false, // Domyślnie wyłączone
             showAnswerBot: false,
             resetTimestamp: 0,
-            searchEngine: 'google'
+            searchEngine: 'google',
+            geminiApiKey: ""
         });
     }
 

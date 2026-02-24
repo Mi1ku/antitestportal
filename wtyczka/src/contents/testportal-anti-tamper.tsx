@@ -43,6 +43,7 @@ export const config: PlasmoCSConfig = {
     let isAnswerBotEnabled = false;
     let isDockVisible = true;
     let searchEngine: 'google' | 'perplexity' = 'google';
+    let geminiApiKey = "";
     const FRAME_ID = 'shield-v108-frame';
 
     // --- SYSTEM UTILS & STEALTH CORE ---
@@ -138,9 +139,9 @@ export const config: PlasmoCSConfig = {
         }
         if (!questionText) questionText = window.getSelection()?.toString().trim() || "";
 
-        const answers = Array.from(document.querySelectorAll('.answer_container, .answer-label')).map(el => (el as HTMLElement).innerText.trim()).filter(t => t.length > 0);
+        const answers = Array.from(document.querySelectorAll('.answer_container, .answer-label, .answer_body')).map(el => (el as HTMLElement).innerText.trim()).filter(t => t.length > 0);
         if (answers.length > 0) {
-            questionText += "\n\nOdpowiedzi:\n" + answers.map(a => "- " + a).join("\n");
+            questionText += "\n\nDostępne Opcje:\n" + answers.map(a => "- " + a).join("\n");
         }
         return questionText;
     };
@@ -282,6 +283,7 @@ export const config: PlasmoCSConfig = {
         isHudEnabled = cfg.showHud;
         isAnswerBotEnabled = cfg.showAnswerBot;
         searchEngine = cfg.searchEngine;
+        geminiApiKey = cfg.geminiApiKey || "";
 
         syncState();
 
@@ -340,7 +342,11 @@ export const config: PlasmoCSConfig = {
 
     // --- SIDE DOCK UI ---
     let frameLastUrl = "";
+    let lastSolvedQuestion = "";
+    let isSolving = false;
     const DOCK_ID = 'shield-v108-dock';
+
+
     const updateAnswerFrame = () => {
         if (!isGhostShieldEnabled) return;
         const tpBody = document.querySelector('.test-body') as HTMLElement | null;
@@ -396,42 +402,112 @@ export const config: PlasmoCSConfig = {
             targetUrl = searchEngine === 'google' ? 'https://www.google.com' : 'https://www.perplexity.ai';
         }
 
-        if (statBar && frameLastUrl !== targetUrl) {
-            if (qText && qText.length > 5) {
-                statBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> AI analizuje dostępne powiązania i symuluje rozwiązanie...`;
+        if (geminiApiKey) {
+            // --- PRAWDZIWY SUPREME AUTO-SOLVER ---
+            if (qText && qText.length > 5 && lastSolvedQuestion !== qText) {
+                lastSolvedQuestion = qText;
+                frameLastUrl = targetUrl; // prevent loops
 
-                setTimeout(() => {
-                    const currentStatBar = document.getElementById('ai-status-bar');
-                    if (currentStatBar) {
-                        currentStatBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow:0 0 10px #ffea0f;"></div> Dopasowywanie wzorców i weryfikacja danych (WebSearch)...`;
-                    }
-                }, 2000);
+                if (statBar && !isSolving) {
+                    isSolving = true;
+                    statBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> Gemini 1.5: Trwa dogłębna analiza pytania i czytanie opcji...`;
 
-                setTimeout(() => {
-                    const currentStatBar = document.getElementById('ai-status-bar');
-                    if (currentStatBar) {
-                        currentStatBar.innerHTML = `<div style="width:8px; height:8px; background:#0f6; border-radius:50%;"></div> Zapytanie zrealizowane pomyślnie. Zaznacz widoczną podpowiedź!`;
+                    fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [{
+                                    text: `Jesteś botem zdającym test wielokrotnego wyboru. Skup się! Podaj tylko i wyłącznie krótką treść opcji, w skrócie, słowo w słowo z zaznaczeniem poprawnej odpowiedzi. Żadnego Twojego gadania, wymysłów ani tłumaczenia, WYŁĄCZNIE tekst jednej poprawnej odpowiedzi aby skrypt javascript mógł ją dopasować po innerText. \n\n${qText}`
+                                }]
+                            }]
+                        })
+                    }).then(res => res.json()).then(data => {
+                        const aiRaw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim()?.toLowerCase() || "";
+                        // clean up ai answer from bullet points
+                        const aiAnswer = aiRaw.replace(/^- /, '').replace(/^\* /, '').trim();
 
-                        // Fake visual ping interaction for realism
-                        const inputs = document.querySelectorAll('.answer_container, .answer-label');
-                        inputs.forEach(el => {
-                            const e = el as HTMLElement;
-                            const origBg = e.style.backgroundColor;
-                            e.style.transition = 'background-color 0.5s';
-                            e.style.backgroundColor = 'rgba(0, 255, 170, 0.1)';
-                            setTimeout(() => { e.style.backgroundColor = origBg; }, 800);
-                        });
-                    }
-                }, 4500);
-            } else {
-                statBar.innerHTML = `<div style="width:8px; height:8px; background:#888; border-radius:50%;"></div> Oczekiwanie na zapytanie...`;
+                        if (aiAnswer) {
+                            let clicked = false;
+                            const inputs = document.querySelectorAll('.answer_container, .answer-label, .answer_body');
+                            inputs.forEach(el => {
+                                const e = el as HTMLElement;
+                                const eText = e.innerText.toLowerCase().trim();
+                                // Match if AI gives a significant part of the true answer
+                                if ((eText.length > 2 && aiAnswer.includes(eText)) || (aiAnswer.length > 2 && eText.includes(aiAnswer))) {
+                                    e.click();
+                                    clicked = true;
+                                    e.style.outline = '3px outset #0f6';
+                                    e.style.borderRadius = '6px';
+                                    e.style.boxShadow = '0 0 20px #0f6';
+                                }
+                            });
+
+                            if (statBar) {
+                                statBar.innerHTML = clicked
+                                    ? `<div style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow: 0 0 10px #0f6;"></div> SUPREME: Zaznaczono odpowiedz! Przejdz dalej.`
+                                    : `<div style="width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow: 0 0 10px #ffea0f;"></div> SUPREME: Brak pewnosci co kliknac!(Odp od AI: <b style="color:#0f6">${aiAnswer.substring(0, 35)}</b>)`;
+                            }
+                        } else {
+                            if (statBar) statBar.innerHTML = `<div style="width:8px; height:8px; background:#ff3b3b; border-radius:50%;"></div> SUPREME: Brak odpowiedzi z sieci neuronowej!`;
+                        }
+                    }).catch(err => {
+                        if (statBar) statBar.innerHTML = `<div style="width:8px; height:8px; background:#ff3b3b; border-radius:50%;"></div> Blad API Gemini.Moze nieaktywny klucz?`;
+                    }).finally(() => {
+                        setTimeout(() => { isSolving = false; }, 2000);
+                    });
+                }
+            } else if (!qText || qText.length <= 5) {
+                if (statBar) statBar.innerHTML = `< div style = "width:8px; height:8px; background:#888; border-radius:50%;" ></div > [SUPREME MODE] Oczekiwanie na zapytanie...`;
             }
-        }
 
-        if (frameLastUrl !== targetUrl && targetUrl) {
-            frameLastUrl = targetUrl;
-            const iframe = document.getElementById(FRAME_ID) as HTMLIFrameElement;
-            if (iframe) iframe.src = targetUrl;
+            // In supreme mode, don't update iframe src wildly to avoid distraction, 
+            // but we can load standard search if needed. We'll leave the iframe blank or load Google for manual searches.
+            if (frameLastUrl !== targetUrl && targetUrl) {
+                const iframe = document.getElementById(FRAME_ID) as HTMLIFrameElement;
+                if (iframe && iframe.src === "about:blank") iframe.src = searchEngine === 'google' ? 'https://www.google.com' : 'https://www.perplexity.ai';
+            }
+
+        } else {
+            // --- TRYB DAROMWY (IFRAME CORTEX) ---
+            if (statBar && frameLastUrl !== targetUrl) {
+                if (qText && qText.length > 5) {
+                    statBar.innerHTML = `< div class= "ai-pulse" style = "width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;" ></div > AI analizuje dostępne powiązania i symuluje rozwiązanie...`;
+
+                    setTimeout(() => {
+                        const currentStatBar = document.getElementById('ai-status-bar');
+                        if (currentStatBar) {
+                            currentStatBar.innerHTML = `< div class= "ai-pulse" style = "width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow:0 0 10px #ffea0f;" ></div > Dopasowywanie wzorców i weryfikacja danych(WebSearch)...`;
+                        }
+                    }, 2000);
+
+                    setTimeout(() => {
+                        const currentStatBar = document.getElementById('ai-status-bar');
+                        if (currentStatBar) {
+                            currentStatBar.innerHTML = `< div style = "width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;" ></div > Zapytanie zrealizowane pomyślnie.Zaznacz widoczną podpowiedź!`;
+
+                            // Fake visual ping interaction for realism
+                            const inputs = document.querySelectorAll('.answer_container, .answer-label');
+                            inputs.forEach(el => {
+                                const e = el as HTMLElement;
+                                const origBg = e.style.backgroundColor;
+                                e.style.transition = 'background-color 0.5s';
+                                e.style.backgroundColor = 'rgba(0, 255, 170, 0.1)';
+                                setTimeout(() => { e.style.backgroundColor = origBg; }, 800);
+                            });
+                        }
+                    }, 4500);
+                } else {
+                    statBar.innerHTML = `< div style = "width:8px; height:8px; background:#888; border-radius:50%;" ></div > Tryb darmowy: Oczekiwanie na zapytanie...`;
+                }
+            }
+
+            // Load iframe with selected search engine
+            if (frameLastUrl !== targetUrl && targetUrl) {
+                frameLastUrl = targetUrl;
+                const iframe = document.getElementById(FRAME_ID) as HTMLIFrameElement;
+                if (iframe) iframe.src = targetUrl;
+            }
         }
 
         dock.style.transform = 'translateX(0%)';

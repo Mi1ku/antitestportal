@@ -15,6 +15,7 @@ export interface PluginConfig {
     showAnswerBot: boolean;
     resetTimestamp: number;
     searchEngine: 'google' | 'perplexity';
+    geminiApiKey?: string;
 }
 
 const DefaultConfig: PluginConfig = {
@@ -24,7 +25,8 @@ const DefaultConfig: PluginConfig = {
     showHud: false, // Domyślnie wyłączone
     showAnswerBot: false,
     resetTimestamp: 0,
-    searchEngine: 'google'
+    searchEngine: 'google',
+    geminiApiKey: ""
 }
 
 export default function usePluginConfig() {
@@ -50,7 +52,9 @@ export default function usePluginConfig() {
             resetTimestamp: safeConfig.resetTimestamp,
             triggerReset: () => setConfig(prev => ({ ...(prev || DefaultConfig), resetTimestamp: Date.now() })),
             searchEngine: safeConfig.searchEngine,
-            setSearchEngine: (val: 'google' | 'perplexity') => setConfig(prev => ({ ...(prev || DefaultConfig), searchEngine: val }))
+            setSearchEngine: (val: 'google' | 'perplexity') => setConfig(prev => ({ ...(prev || DefaultConfig), searchEngine: val })),
+            geminiApiKey: safeConfig.geminiApiKey || "",
+            setGeminiApiKey: (val: string) => setConfig(prev => ({ ...(prev || DefaultConfig), geminiApiKey: val }))
         }
     }
 }

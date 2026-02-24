@@ -389,6 +389,17 @@ function IndexPopup() {
                                             }}
                                         >PERPLEXITY AI</button>
                                     </div>
+                                    <div style={{ marginTop: 12, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 10 }}>
+                                        <div style={{ fontSize: 10, fontWeight: 800, color: '#0f6', marginBottom: 4 }}>Darmowy Klucz API Gemini (Auto-Klikacz)</div>
+                                        <input
+                                            type="password"
+                                            placeholder="Wklej klucz z Google AI Studio..."
+                                            value={pluginConfig.geminiApiKey || ""}
+                                            onChange={e => pluginConfig.setGeminiApiKey(e.target.value)}
+                                            style={{ width: '100%', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--border)', borderRadius: 6, padding: 8, color: '#fff', fontSize: 11, outline: 'none' }}
+                                        />
+                                        <div style={{ fontSize: 8, opacity: 0.5, marginTop: 4 }}>Jeśli podasz klucz, wtyczka automatycznie rozwiąże i kliknie wynik zamiast używać Side Docka.</div>
+                                    </div>
                                 </div>
                                 <div className="card" style={{ padding: 10 }}>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
