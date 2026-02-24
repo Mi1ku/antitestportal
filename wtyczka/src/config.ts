@@ -33,7 +33,7 @@ export const DEV_CONFIG = {
     FIREBASE_DB_URL: "https://antitestportaldb-default-rtdb.europe-west1.firebasedatabase.app",
 
     // Model Sztucznej Inteligencji i Prompty
-    AI_MODEL: "gemini-1.5-flash-latest",
+    AI_MODEL: "gemini-1.5-flash",
     AI_PROMPT: `Jesteś ekspertem zdającym test. Przeanalizuj pytanie i wybierz JEDNĄ najbardziej trafną opcję. Twoja odpowiedź KONIECZNIE musi być DOKŁADNYM CYTATEM jednej z opcji z pytania. Żadnego wstępu, żadnego komentarza. TYLKO dokładny tekst poprawnej odpowiedzi, aby nasz skrypt mógł ją kliknąć w DOM.`,
 
     // Skróty Klawiszowe (Zdefiniowane kody JS: event.code)
