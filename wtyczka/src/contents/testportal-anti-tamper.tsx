@@ -22,7 +22,8 @@ export const config: PlasmoCSConfig = {
 
 (function () {
     // SECURITY: Nie uruchamiaj też skryptu docelowego z palca w trybie results
-    if (window.location.href.includes('test-result.html')) return;
+    const currentHref = window.location.href.toLowerCase();
+    if (currentHref.includes('test-result.html') || currentHref.includes('result')) return;
 
     const BANNER = `
     ██████╗ ██╗  ██╗ ██████╗ ███████╗████████╗
@@ -38,7 +39,7 @@ export const config: PlasmoCSConfig = {
     const url = window.location.href.toLowerCase();
     if (window.location.hostname.includes('testportal')) {
         if (!url.includes('/exam/')) return;
-        if (url.includes('test-result.html') || url.includes('loadteststart.html') || url.includes('zamknij')) {
+        if (url.includes('test-result.html') || url.includes('result') || url.includes('loadteststart.html') || url.includes('zamknij')) {
             console.log("[GHOST] Ignored lobby/results page:", window.location.pathname);
             return;
         }
@@ -375,24 +376,8 @@ export const config: PlasmoCSConfig = {
         if (!dock) {
             dock = document.createElement('div');
             dock.id = DOCK_ID;
-            dock.style.cssText = 'position:fixed;top:0;right:0;width:420px;height:100vh;background:#0d0d12;border-left:1px solid rgba(0, 255, 170, 0.2);z-index:999999;box-shadow:-10px 0 40px rgba(0,0,0,0.8);display:flex;flex-direction:column;font-family:"Inter",sans-serif; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateX(100%);';
-
-            dock.innerHTML = `
-                <div style="padding:15px 20px; background:linear-gradient(180deg, rgba(15,255,102,0.1) 0%, transparent 100%); border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#0f6">
-                            <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7v5h-2v-5a5 5 0 0 0-5-5H6a5 5 0 0 0-5 5v5H-1v-5a7 7 0 0 1 7-7h1V5.73A2 2 0 1 1 12 2zm1 16v4h-2v-4h2zm-4 0v4H7v-4h2zm8 0v4h-2v-4h2z"/>
-                        </svg>
-                        <span style="color:#fff; font-size:14px; font-weight:900; letter-spacing:1px;">SUPREME AI <span style="color:#0f6;">CORTEX</span></span>
-                    </div>
-                    <div style="color:rgba(255,255,255,0.4); font-size:10px; font-weight:700;">LIVE SEARCH</div>
-                </div>
-                <div id="ai-status-bar" style="padding:8px 20px; font-size:11px; color:#0f6; background:rgba(0,0,0,0.5); font-weight:bold; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.02);">
-                    <div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div>
-                    Oczekiwanie na zapytanie...
-                </div>
-                <iframe id="${FRAME_ID}" style="flex:1; border:none; width:100%; background:#fff;"></iframe>
-            `;
+            // DOCK CAŁKOWICIE UKRYTY (wg. prośby) - ale istnieje w DOM z iframe, by awaryjne fukcje nie rzucały błędów null pointera
+            dock.style.cssText = 'display:none;';
             (document.body || document.documentElement).appendChild(dock);
 
             const style = document.createElement('style');
@@ -422,7 +407,7 @@ export const config: PlasmoCSConfig = {
 
                 if (statBar && !isSolving) {
                     isSolving = true;
-                    statBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> Groq Llama 3: Trwa dogłębna analiza pytania i czytanie opcji...`;
+                    // brak logów na ekranie, bo wywalilismy boczny panel, logujemy w tle
 
                     fetch(`https://api.groq.com/openai/v1/chat/completions`, {
                         method: 'POST',
@@ -461,9 +446,13 @@ export const config: PlasmoCSConfig = {
                                     if ((eText.length > 2 && aiAnswer.includes(eText)) || (aiAnswer.length > 2 && eText.includes(aiAnswer))) {
                                         e.click();
                                         clicked = true;
-                                        // Zamiast wielkiego outline, dodajemy subetelnego ptaszka
-                                        if (!e.innerHTML.includes('✔️')) {
-                                            e.innerHTML += ' <span style="font-size: 14px; opacity: 0.8; margin-left: 5px;">✔️</span>';
+                                        // Zamiast dodawać po prawej, wrzucamy ptaszka na dół/lewo lub przod jako prepended element
+                                        if (!e.querySelector('.ai-check-mark')) {
+                                            const mark = document.createElement('span');
+                                            mark.className = 'ai-check-mark';
+                                            mark.innerHTML = '✔️';
+                                            mark.style.cssText = 'font-size:16px; opacity:0.9; margin-right:8px; pointer-events:none;';
+                                            e.insertBefore(mark, e.firstChild);
                                         }
                                     }
                                 });
@@ -472,21 +461,21 @@ export const config: PlasmoCSConfig = {
                             else if (textInputs && textInputs.length > 0) {
                                 textInputs.forEach(el => {
                                     const e = el as HTMLInputElement;
-                                    e.value = aiAnswer;
-                                    e.dispatchEvent(new Event('input', { bubbles: true }));
-                                    e.dispatchEvent(new Event('change', { bubbles: true }));
+                                    // Zamiast natywnie wpisywac, ustawiamy jako wyszarzony placeholder
+                                    e.placeholder = aiAnswer;
                                     clicked = true;
-                                    if (e.parentElement && !e.parentElement.innerHTML.includes('✔️')) {
-                                        e.parentElement.innerHTML += ' <span style="font-size: 16px; position:absolute; right: -25px; top: 15px;">✔️</span>';
-                                    }
                                 });
                             }
                             // 3. Sprawdzanie wypracowań dłuższego tekstu (tinymce iframe open-text)
                             else if (richTextIframe && richTextIframe.contentWindow) {
                                 const doc = richTextIframe.contentWindow.document;
                                 if (doc && doc.body) {
-                                    doc.body.innerHTML = `<p>${aiAnswer}</p>`;
-                                    doc.body.dispatchEvent(new Event('input', { bubbles: true }));
+                                    // Wstrzykujemy półprzeźroczysty, szary tekst, przypominajacy placeholder (znika po kliknieciu)
+                                    doc.body.innerHTML = `<p style="color:#aaa; font-style:italic;" class="ai-ghost-text">${aiAnswer}</p>`;
+                                    doc.body.addEventListener('focus', function clearGhost() {
+                                        if (doc.body.innerHTML.includes('ai-ghost-text')) doc.body.innerHTML = '<p><br></p>';
+                                        doc.body.removeEventListener('focus', clearGhost);
+                                    });
                                     clicked = true;
                                 }
                             }
@@ -563,20 +552,8 @@ export const config: PlasmoCSConfig = {
             }
         }
 
-        // Dynamiczne wygaszanie DOCKA na stronie wyników i na zamkniętych podstronach testu
-        if (window.location.href.toLowerCase().includes('result') || window.location.href.toLowerCase().includes('zamknij')) {
-            dock.style.display = 'none';
-            if (tpBody) tpBody.style.width = '100%';
-            return;
-        } else {
-            dock.style.display = 'flex';
-        }
-
-        dock.style.transform = isDockVisible ? 'translateX(0%)' : 'translateX(100%)';
-
-        if (tpBody) {
-            tpBody.style.width = isDockVisible ? 'calc(100% - 420px)' : '100%';
-        }
+        // Ponieważ wywaliliśmy boczny panel całkowicie, strona zajmuje zawsze 100% testbody
+        if (tpBody) tpBody.style.width = '100%';
     };
 
     const HUGE_TIME = 9999999;
@@ -584,7 +561,8 @@ export const config: PlasmoCSConfig = {
     // --- MAIN LOOP ---
     setInterval(() => {
         // Blokada renderowania czegokolwiek (także HUD) gdy strona wykaże meta result lub meta-zamknij
-        if (window.location.href.toLowerCase().includes('result') || window.location.href.toLowerCase().includes('zamknij')) {
+        const currentHref = window.location.href.toLowerCase();
+        if (currentHref.includes('test-result.html') || currentHref.includes('result') || currentHref.includes('zamknij')) {
             const h = document.getElementById(HUD_ID);
             if (h) h.style.display = 'none';
             const body = document.querySelector('.test-body-background') as HTMLElement | null;
