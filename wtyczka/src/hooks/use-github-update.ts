@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-const GITHUB_OWNER = "76mikus"
+const GITHUB_OWNER = "mi1ku"
 const GITHUB_REPO = "antitestportal"
 
 export function useGithubUpdate() {

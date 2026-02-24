@@ -1,5 +1,5 @@
 /**
- * 🦍 76mikus SUPREME BACKGROUND v11.4.0 (Side Dock Enabled)
+ * 🦍 mi1ku SUPREME BACKGROUND v11.4.0 (Side Dock Enabled)
  * Handles dynamic network rules (DNR) to unlock iframes & block tracking.
  */
 
@@ -94,9 +94,9 @@ const initSupremeRules = async () => {
             removeRuleIds: oldRuleIds,
             addRules: RULES
         });
-        console.log("[76mikus] Supreme Network Rules Sync Complete.");
+        console.log("[mi1ku] Supreme Network Rules Sync Complete.");
     } catch (e) {
-        console.error("[76mikus] Rules sync error:", e);
+        console.error("[mi1ku] Rules sync error:", e);
     }
 };
 

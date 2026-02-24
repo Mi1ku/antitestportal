@@ -36,6 +36,10 @@ export const config: PlasmoCSConfig = {
     let isGhostShieldEnabled = false;
     let isTimeFreezeEnabled = false;
     let isHudEnabled = false;
+    let isAnswerBotEnabled = false;
+    let isDockVisible = true;
+    let searchEngine: 'google' | 'perplexity' = 'google';
+    const FRAME_ID = 'shield-v108-frame';
 
     // --- SYSTEM UTILS & STEALTH CORE ---
     const fakedFunctions = new Map();
@@ -151,9 +155,18 @@ export const config: PlasmoCSConfig = {
         if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ') {
             e.preventDefault();
             isHudEnabled = !isHudEnabled;
+            isDockVisible = isHudEnabled; // Panic mode ukrywa również dock
             const h = document.getElementById(HUD_ID);
             if (h) h.style.display = isHudEnabled ? 'flex' : 'none';
             sendStateUpdate({ showHud: isHudEnabled });
+            updateAnswerFrame();
+            return;
+        }
+
+        if (e.ctrlKey && e.shiftKey && e.code === 'KeyX') {
+            e.preventDefault();
+            isDockVisible = !isDockVisible;
+            updateAnswerFrame();
             return;
         }
 
@@ -165,16 +178,14 @@ export const config: PlasmoCSConfig = {
             return;
         }
 
-        if (e.altKey && e.code === 'KeyC') {
-            e.preventDefault();
-            const text = getEnhancedQuestionText();
-            if (text) navigator.clipboard.writeText(text);
-        }
-        if (e.altKey && e.code === 'KeyG') {
+        if (e.ctrlKey && !e.shiftKey && e.code === 'KeyZ') {
+            // Quick Google (Legacy nowa karta)
             e.preventDefault();
             searchNewTab('google');
         }
-        if (e.altKey && e.code === 'KeyP') {
+
+        if (e.ctrlKey && e.shiftKey && e.code === 'KeyS') {
+            // Quick Perplexity (Legacy nowa karta)
             e.preventDefault();
             searchNewTab('perplexity');
         }
@@ -265,6 +276,8 @@ export const config: PlasmoCSConfig = {
         isGhostShieldEnabled = cfg.antiAntiTampering;
         isTimeFreezeEnabled = cfg.timeFreeze;
         isHudEnabled = cfg.showHud;
+        isAnswerBotEnabled = cfg.showAnswerBot;
+        searchEngine = cfg.searchEngine;
 
         syncState();
 
@@ -321,73 +334,47 @@ export const config: PlasmoCSConfig = {
         configurable: true
     });
 
-    // --- ON-PAGE TOOLS INJECTOR ---
-    const injectTools = () => {
+    // --- SIDE DOCK UI ---
+    let frameLastUrl = "";
+    const updateAnswerFrame = () => {
         if (!isGhostShieldEnabled) return;
+        const tpBody = document.querySelector('.test-body') as HTMLElement | null;
 
-        // Toolbar
-        const qContainer = document.querySelector('.question-container') || document.querySelector('.question-view');
-        if (qContainer && !document.getElementById('shield-tools-bar')) {
-            const bar = document.createElement('div');
-            bar.id = 'shield-tools-bar';
-            bar.style.cssText = 'margin-top: 15px; padding: 10px; background: rgba(0, 0, 0, 0.05); border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px; display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap;';
-            bar.innerHTML = `
-                <button id="btn-t-copy" style="padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; color: #333;">📋 Kopiuj Test (Alt+C)</button>
-                <button id="btn-t-g" style="padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; color: #333;">🔍 Google (Alt+G)</button>
-                <button id="btn-t-p" style="padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; color: #333;">🧠 Perplexity (Alt+P)</button>
-            `;
-            qContainer.appendChild(bar);
-
-            bar.querySelector('#btn-t-copy')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                const text = getEnhancedQuestionText();
-                if (text) navigator.clipboard.writeText(text);
-                (e.target as HTMLElement).innerText = "✅ Skopiowano!";
-                setTimeout(() => { if (e.target) (e.target as HTMLElement).innerText = "📋 Kopiuj Test (Alt+C)"; }, 2000);
-            });
-            bar.querySelector('#btn-t-g')?.addEventListener('click', (e) => { e.preventDefault(); searchNewTab('google'); });
-            bar.querySelector('#btn-t-p')?.addEventListener('click', (e) => { e.preventDefault(); searchNewTab('perplexity'); });
+        if (!isAnswerBotEnabled || !isDockVisible) {
+            const f = document.getElementById(FRAME_ID);
+            if (f) f.style.display = 'none';
+            if (tpBody) tpBody.style.width = '100%';
+            return;
         }
 
-        // Otwartych Odpowiedzi Kopiowanie
-        const textareas = document.querySelectorAll('textarea');
-        textareas.forEach(ta => {
-            if (!ta.parentElement?.querySelector('.btn-copy-ans')) {
-                const btn = document.createElement('button');
-                btn.className = 'btn-copy-ans';
-                btn.innerText = '📋 Kopiuj Twoją Odpowiedź';
-                btn.style.cssText = 'display: block; margin-top: 5px; padding: 4px 8px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; font-size: 11px;';
-                btn.onclick = (e) => {
-                    e.preventDefault();
-                    navigator.clipboard.writeText(ta.value);
-                    btn.innerText = '✅ Skopiowano!';
-                    setTimeout(() => btn.innerText = '📋 Kopiuj Twoją Odpowiedź', 2000);
-                };
-                ta.parentElement?.insertBefore(btn, ta.nextSibling);
-            }
-        });
+        let frame = document.getElementById(FRAME_ID) as HTMLIFrameElement;
 
-        // Zamkniętych - Zaznaczanie
-        const labels = document.querySelectorAll('label.answer-label, .answer_container label');
-        labels.forEach(lbl => {
-            if (!lbl.parentElement?.querySelector('.btn-mark-ans')) {
-                const btn = document.createElement('button');
-                btn.className = 'btn-mark-ans';
-                btn.innerHTML = '🖍️ Zaznacz';
-                btn.style.cssText = 'margin-left: 10px; padding: 2px 6px; background: transparent; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-size: 10px; opacity: 0.6;';
-                btn.onmouseover = () => btn.style.opacity = '1';
-                btn.onmouseout = () => btn.style.opacity = '0.6';
-                btn.onclick = (e) => {
-                    e.preventDefault();
-                    const isMarked = (lbl as HTMLElement).style.textDecoration === 'underline';
-                    (lbl as HTMLElement).style.textDecoration = isMarked ? 'none' : 'underline';
-                    (lbl as HTMLElement).style.textDecorationColor = isMarked ? 'transparent' : '#0f6';
-                    (lbl as HTMLElement).style.textDecorationThickness = '2px';
-                    (lbl as HTMLElement).style.backgroundColor = isMarked ? '' : 'rgba(0, 255, 100, 0.1)';
-                };
-                lbl.parentElement?.appendChild(btn);
-            }
-        });
+        if (!frame) {
+            frame = document.createElement('iframe');
+            frame.id = FRAME_ID;
+            frame.style.cssText = 'position:fixed;top:0;right:0;width:400px;height:100vh;border:none;border-left:1px solid rgba(255,255,255,0.1);z-index:999999;box-shadow:-5px 0 30px rgba(0,0,0,0.5);display:flex;background:#000;';
+            (document.body || document.documentElement).appendChild(frame);
+        }
+
+        const qText = getEnhancedQuestionText();
+        let targetUrl = "";
+        if (qText && qText.length > 5) {
+            if (searchEngine === 'google') targetUrl = `https://www.google.com/search?q=${encodeURIComponent(qText)}`;
+            else targetUrl = `https://www.perplexity.ai/search?q=${encodeURIComponent(qText)}`;
+        } else {
+            targetUrl = searchEngine === 'google' ? 'https://www.google.com' : 'https://www.perplexity.ai';
+        }
+
+        if (frameLastUrl !== targetUrl && targetUrl) {
+            frameLastUrl = targetUrl;
+            frame.src = targetUrl;
+        }
+
+        frame.style.display = 'block';
+
+        if (tpBody) {
+            tpBody.style.width = 'calc(100% - 400px)';
+        }
     };
 
     const HUGE_TIME = 9999999;
@@ -395,7 +382,7 @@ export const config: PlasmoCSConfig = {
     // --- MAIN LOOP ---
     setInterval(() => {
         if (isHudEnabled && !document.getElementById(HUD_ID) && (document.body || document.documentElement)) createHUD();
-        injectTools();
+        updateAnswerFrame();
 
         const tp = (window as any).Testportal;
         if (tp && tp.Timer && !tp.Timer.__patched) {

@@ -20,11 +20,11 @@ Take control of the clock. Stop the countdown whenever you need more time to thi
 - **Sync Engine:** Allows for manual server-side time synchronization.
 - **Freeze Mode:** Holds the timer at its current state locally.
 
-### 🧠 On-Page Tools (AI & Search)
+### 🧠 Side Dock (AI & Search)
 Instant access to solutions without ever leaving the page.
-- **AI Solver & Google (Alt + G / Alt + P):** Quick buttons and shortcuts to search your exact test question in an external popup.
-- **Copy Test (Alt + C):** Powerful scraper that extracts the questions and all available answers into your clipboard.
-- **Mark Answers:** Injectable `🖍️ Zaznacz` buttons right inside the test to cross out or highlight options safely.
+- **AI Solver (Ctrl + Shift + S):** Direct integration with Perplexity AI for high-accuracy answers right in the side panel.
+- **Quick Search (Ctrl + Z):** Fast Google search for any question.
+- **Panic Mode:** Hide everything completely with `Ctrl + Shift + Z`.
 
 ### 🧹 Przeglądarka Tools
 - **Clear History:** Click a single button in the extension panel to erase local browser history.

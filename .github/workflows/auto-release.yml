@@ -20,18 +20,21 @@ jobs:
         with:
           node-version: 18
 
-      - name: Set Dynamic Version
+      - name: Get Version
         id: set_version
         shell: pwsh
         run: |
           $pkgPath = "wtyczka/package.json"
           $pkg = Get-Content $pkgPath -Raw | ConvertFrom-Json
-          $baseVersion = $pkg.version -replace '\.\d+$',''
-          if ($baseVersion -notmatch '\.') { $baseVersion = "$baseVersion.0" }
-          $newVersion = "$baseVersion.${{ github.run_number }}"
-          $pkg.version = $newVersion
-          $pkg | ConvertTo-Json -Depth 20 | Out-File $pkgPath -Encoding utf8
-          echo "VERSION=$newVersion" >> $env:GITHUB_ENV
+          $version = $pkg.version
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Delete Old Release and Tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete "v${{ env.VERSION }}" --yes || true
+          git push origin --delete "v${{ env.VERSION }}" || true
 
       - name: Install dependencies
         working-directory: wtyczka

@@ -213,7 +213,7 @@ function IndexPopup() {
                     gap: 4
                 }}>
                     <span style={{ color: 'var(--red-glow)', fontSize: 10, fontWeight: 900 }}>Nowa wersja dostępna: v{updateAvailable}</span>
-                    <a href={updateUrl || "https://github.com/76mikus/antitestportal"} target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontSize: 9, opacity: 0.8, textDecoration: "underline" }}>
+                    <a href={updateUrl || "https://github.com/mi1ku/antitestportal"} target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontSize: 9, opacity: 0.8, textDecoration: "underline" }}>
                         Kliknij tutaj, aby pobrać aktualizację
                     </a>
                 </div>
@@ -314,8 +314,8 @@ function IndexPopup() {
                             </div>
                         )}
                         <button className="btn-primary" onClick={handleLogin}>ZALOGUJ DO SYSTEMU</button>
-                        <div style={{ marginTop: 15, textAlign: 'center', fontSize: 10, opacity: 0.7, cursor: 'pointer' }} onClick={() => window.open("https://www.instagram.com/76mikus/", "_blank")}>
-                            Nie masz klucza? <span style={{ fontWeight: 900, textDecoration: 'underline', color: 'var(--green-glow)' }}>Napisz na IG: @76mikus</span>
+                        <div style={{ marginTop: 15, textAlign: 'center', fontSize: 10, opacity: 0.7, cursor: 'pointer' }} onClick={() => window.open("https://www.instagram.com/mi1ku/", "_blank")}>
+                            Nie masz klucza? <span style={{ fontWeight: 900, textDecoration: 'underline', color: 'var(--green-glow)' }}>Napisz na IG: @mi1ku</span>
                         </div>
                     </div>
                 </div>
@@ -361,11 +361,53 @@ function IndexPopup() {
                                     </div>
                                 </div>
                                 <div className="card">
+                                    <div className="switch-box" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div style={{ fontSize: 13, fontWeight: 800 }}>Auto-Answer Genius</div>
+                                        <div className={`toggle-io ${pluginConfig.showAnswerBot ? 'active' : ''}`} onClick={() => pluginConfig.setShowAnswerBot(!pluginConfig.showAnswerBot)}>
+                                            <div className="circle"></div>
+                                        </div>
+                                    </div>
+                                    <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>Wyświetlaj Asystenta AI i Dock boczny</div>
+
+                                    <div style={{ display: 'flex', gap: 5, marginTop: 8 }}>
+                                        <button
+                                            onClick={() => pluginConfig.setSearchEngine('google')}
+                                            style={{
+                                                flex: 1, padding: 6, borderRadius: 6, border: '1px solid var(--border)',
+                                                background: pluginConfig.searchEngine === 'google' ? 'var(--green-glow)' : 'transparent',
+                                                color: pluginConfig.searchEngine === 'google' ? '#000' : '#fff',
+                                                fontSize: 9, fontWeight: 800, cursor: 'pointer'
+                                            }}
+                                        >GOOGLE</button>
+                                        <button
+                                            onClick={() => pluginConfig.setSearchEngine('perplexity')}
+                                            style={{
+                                                flex: 1, padding: 6, borderRadius: 6, border: '1px solid var(--border)',
+                                                background: pluginConfig.searchEngine === 'perplexity' ? 'var(--green-glow)' : 'transparent',
+                                                color: pluginConfig.searchEngine === 'perplexity' ? '#000' : '#fff',
+                                                fontSize: 9, fontWeight: 800, cursor: 'pointer'
+                                            }}
+                                        >PERPLEXITY AI</button>
+                                    </div>
+                                </div>
+                                <div className="card" style={{ padding: 10 }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                                        <div style={{ background: '#000', padding: 12, borderRadius: 12, textAlign: 'center' }}>
+                                            <div style={{ fontSize: 7, opacity: 0.4, fontWeight: 900 }}>GOOGLE</div>
+                                            <div style={{ fontSize: 10, fontWeight: 950 }}>CTRL + Z</div>
+                                        </div>
+                                        <div style={{ background: '#000', padding: 12, borderRadius: 12, textAlign: 'center' }}>
+                                            <div style={{ fontSize: 7, opacity: 0.4, fontWeight: 900 }}>PERPLEXITY</div>
+                                            <div style={{ fontSize: 10, fontWeight: 950 }}>CTRL+SFT+Z</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="card">
                                     <div style={{ fontSize: 13, fontWeight: 800 }}>Narzędzia Przeglądarki</div>
                                     <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2, marginBottom: 8 }}>Szybkie akcje i usuwanie śladów</div>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                                         <button className="btn-primary" style={{ padding: 8, fontSize: 10, background: 'rgba(255,255,255,0.05)', color: '#fff' }} onClick={clearHistory}>WYCZYŚĆ HISTORIĘ</button>
-                                        <button className="btn-primary" style={{ padding: 8, fontSize: 10, background: 'rgba(15, 255, 102, 0.1)', color: 'var(--green-glow)' }} onClick={() => window.open(updateUrl || "https://github.com/76mikus/antitestportal/releases", "_blank")}>SPRAWDŹ UPDATE</button>
+                                        <button className="btn-primary" style={{ padding: 8, fontSize: 10, background: 'rgba(15, 255, 102, 0.1)', color: 'var(--green-glow)' }} onClick={() => window.open(updateUrl || "https://github.com/mi1ku/antitestportal/releases", "_blank")}>SPRAWDŹ UPDATE</button>
                                     </div>
                                 </div>
                             </div>

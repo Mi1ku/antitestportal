@@ -1,9 +1,9 @@
 {
   "name": "antitestportal-plus",
   "displayName": "AntiTestportal+",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Zaawansowane narzędzie edukacyjne do Testportal z funkcjami Time Freeze, Ghost Shield oraz Side Dock AI.",
-  "author": "76mikus",
+  "author": "mi1ku",
   "scripts": {
     "dev": "plasmo dev",
     "build": "plasmo build && npm run obfuscate",
