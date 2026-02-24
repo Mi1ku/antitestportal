@@ -2,21 +2,12 @@ import { Storage } from "@plasmohq/storage"
 import { useState, useEffect, useRef } from "react"
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, set, get, update, child } from "firebase/database";
+import { DEV_CONFIG } from "~config";
 
 const storage = new Storage();
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDSnKsbPNCCmEKAO1r_PvvVldViGWQ1Sw",
-    authDomain: "antitestportaldb.firebaseapp.com",
-    projectId: "antitestportaldb",
-    storageBucket: "antitestportaldb.firebasestorage.app",
-    messagingSenderId: "99856592412",
-    appId: "1:99856592412:web:b73e994dcb8d3561e4e3d9",
-    measurementId: "G-PDM2VNPEZ9"
-};
-
-const app = initializeApp(firebaseConfig);
-const fdb = getDatabase(app, "https://antitestportaldb-default-rtdb.europe-west1.firebasedatabase.app");
+const app = initializeApp(DEV_CONFIG.FIREBASE_CONFIG);
+const fdb = getDatabase(app, DEV_CONFIG.FIREBASE_DB_URL);
 
 const getOrCreateHWID = async (): Promise<string> => {
     let hwid = await storage.get("supreme_hwid_v1");

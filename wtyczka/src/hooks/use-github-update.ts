@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 
-const GITHUB_OWNER = "mi1ku"
-const GITHUB_REPO = "antitestportal"
+import { DEV_CONFIG } from "~config"
 
 export function useGithubUpdate() {
     const [updateAvailable, setUpdateAvailable] = useState<string | null>(null)
@@ -11,7 +10,7 @@ export function useGithubUpdate() {
         const checkUpdate = async () => {
             try {
                 const response = await fetch(
-                    `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest`
+                    `https://api.github.com/repos/${DEV_CONFIG.GITHUB_OWNER}/${DEV_CONFIG.GITHUB_REPO}/releases/latest`
                 )
                 if (!response.ok) return
 

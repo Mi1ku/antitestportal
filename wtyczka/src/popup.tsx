@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import usePluginConfig from "~hooks/use-plugin-config";
 import useDatabase, { type DbKey } from "~hooks/use-database";
 import { useGithubUpdate } from "~hooks/use-github-update";
+import { DEV_CONFIG } from "~config"
 
 type Tab = "home" | "games" | "terminal" | "guide";
 
@@ -213,7 +214,7 @@ function IndexPopup() {
                     gap: 4
                 }}>
                     <span style={{ color: 'var(--red-glow)', fontSize: 10, fontWeight: 900 }}>Nowa wersja dostępna: v{updateAvailable}</span>
-                    <a href={updateUrl || "https://github.com/mi1ku/antitestportal"} target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontSize: 9, opacity: 0.8, textDecoration: "underline" }}>
+                    <a href={updateUrl || `https://github.com/${DEV_CONFIG.GITHUB_OWNER}/${DEV_CONFIG.GITHUB_REPO}`} target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontSize: 9, opacity: 0.8, textDecoration: "underline" }}>
                         Kliknij tutaj, aby pobrać aktualizację
                     </a>
                 </div>
@@ -314,8 +315,8 @@ function IndexPopup() {
                             </div>
                         )}
                         <button className="btn-primary" onClick={handleLogin}>ZALOGUJ DO SYSTEMU</button>
-                        <div style={{ marginTop: 15, textAlign: 'center', fontSize: 10, opacity: 0.7, cursor: 'pointer' }} onClick={() => window.open("https://www.instagram.com/mi1ku/", "_blank")}>
-                            Nie masz klucza? <span style={{ fontWeight: 900, textDecoration: 'underline', color: 'var(--green-glow)' }}>Napisz na IG: @mi1ku</span>
+                        <div style={{ marginTop: 15, textAlign: 'center', fontSize: 10, opacity: 0.7, cursor: 'pointer' }} onClick={() => window.open(DEV_CONFIG.SUPPORT_URL, "_blank")}>
+                            Nie masz klucza? <span style={{ fontWeight: 900, textDecoration: 'underline', color: 'var(--green-glow)' }}>Napisz na IG: @{DEV_CONFIG.GITHUB_OWNER}</span>
                         </div>
                     </div>
                 </div>
@@ -407,7 +408,7 @@ function IndexPopup() {
                                     <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2, marginBottom: 8 }}>Szybkie akcje i usuwanie śladów</div>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                                         <button className="btn-primary" style={{ padding: 8, fontSize: 10, background: 'rgba(255,255,255,0.05)', color: '#fff' }} onClick={clearHistory}>WYCZYŚĆ HISTORIĘ</button>
-                                        <button className="btn-primary" style={{ padding: 8, fontSize: 10, background: 'rgba(15, 255, 102, 0.1)', color: 'var(--green-glow)' }} onClick={() => window.open(updateUrl || "https://github.com/mi1ku/antitestportal/releases", "_blank")}>SPRAWDŹ UPDATE</button>
+                                        <button className="btn-primary" style={{ padding: 8, fontSize: 10, background: 'rgba(15, 255, 102, 0.1)', color: 'var(--green-glow)' }} onClick={() => window.open(updateUrl || `https://github.com/${DEV_CONFIG.GITHUB_OWNER}/${DEV_CONFIG.GITHUB_REPO}/releases`, "_blank")}>SPRAWDŹ UPDATE</button>
                                     </div>
                                 </div>
                             </div>
