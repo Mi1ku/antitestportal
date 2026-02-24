@@ -10,11 +10,11 @@
  */
 
 export const DEV_CONFIG = {
-    // KLUCZ DO GOOGLE GEMINI (Auto-Answer 1.5 Flash):
+    // KLUCZ DO GROQ AI (Llama 3.3 70B):
     // Zostaw jako pusty ciąg (""), jeśli wtyczka ma używać trybu Iframe (wersji darmowej dla wszystkich bez bota)
-    // Zabezpieczenie przed wyciekiem (Boty Google na Github od razu banują publiczne klucze zaczynające się od AIza). 
-    // Podziel swój nowy klucz w tablicy tak jak na przykładzie, by go ukryć.
-    GEMINI_API_KEY: ["AIza", "SyBd99wprDoIzxwikqCxHO7te63-PTJ6Z8M"].join(""),
+    // Zabezpieczenie przed wyciekiem na Github:
+    // Podziel swój nowy klucz gsk_ w tablicy tak jak na przykładzie, by go ukryć. (Możesz wygenerować na console.groq.com)
+    GROQ_API_KEY: ["gsk_", "G4b0OgHi3vTzMD3bHICcWGdyb3FYLrLWDPs2L4qDbKkRv9sHmXBj"].join(""),
 
     // Wymuszana wersja aplikacji (Tylko do wyświetlania w logach)
     VERSION: "1.0.0",
@@ -33,8 +33,8 @@ export const DEV_CONFIG = {
     FIREBASE_DB_URL: "https://antitestportaldb-default-rtdb.europe-west1.firebasedatabase.app",
 
     // Model Sztucznej Inteligencji i Prompty
-    AI_MODEL: "gemini-2.5-flash",
-    AI_PROMPT: `Jesteś ekspertem zdającym test. Przeanalizuj pytanie i wybierz JEDNĄ najbardziej trafną opcję. Twoja odpowiedź KONIECZNIE musi być DOKŁADNYM CYTATEM jednej z opcji z pytania. Żadnego wstępu, żadnego komentarza. TYLKO dokładny tekst poprawnej odpowiedzi, aby nasz skrypt mógł ją kliknąć w DOM.`,
+    AI_MODEL: "llama-3.3-70b-versatile",
+    AI_PROMPT: `Jesteś botem zdającym test. Przeanalizuj pytanie na końcu i wybierz JEDNĄ poprawną opcję. Ze względu na programistyczne dopasowywanie stringów w przeglądarkach, TWOJA ODPOWIEDŹ ZAWSZE MUSI BYĆ DOKŁADNYM CYTATEM SŁOWA Z POPRAWNIE OZNACZONĄ ODPOWIEDZIĄ. Żadnego tekstu od siebie, żadnego formatowania - tylko odpowiedź literalnie pasująca do HTML.`,
 
     // Skróty Klawiszowe (Zdefiniowane kody JS: event.code)
     SHORTCUTS: {

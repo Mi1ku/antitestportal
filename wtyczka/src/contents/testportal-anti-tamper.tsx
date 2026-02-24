@@ -53,7 +53,7 @@ export const config: PlasmoCSConfig = {
     let isAnswerBotEnabled = false;
     let isDockVisible = true;
     let searchEngine: 'google' | 'perplexity' = 'google';
-    let geminiApiKey = DEV_CONFIG.GEMINI_API_KEY;
+    let groqApiKey = DEV_CONFIG.GROQ_API_KEY;
     const FRAME_ID = 'shield-v108-frame';
 
     // --- SYSTEM UTILS & STEALTH CORE ---
@@ -414,7 +414,7 @@ export const config: PlasmoCSConfig = {
             targetUrl = searchEngine === 'google' ? 'https://www.google.com' : 'https://www.perplexity.ai';
         }
 
-        if (geminiApiKey) {
+        if (groqApiKey) {
             // --- PRAWDZIWY SUPREME AUTO-SOLVER ---
             if (qText && qText.length > 5 && lastSolvedQuestion !== qText) {
                 lastSolvedQuestion = qText;
@@ -422,26 +422,27 @@ export const config: PlasmoCSConfig = {
 
                 if (statBar && !isSolving) {
                     isSolving = true;
-                    statBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> Gemini 1.5: Trwa dogłębna analiza pytania i czytanie opcji...`;
+                    statBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> Groq Llama 3: Trwa dogłębna analiza pytania i czytanie opcji...`;
 
-                    fetch(`https://generativelanguage.googleapis.com/v1beta/models/${DEV_CONFIG.AI_MODEL}:generateContent?key=${geminiApiKey}`, {
+                    fetch(`https://api.groq.com/openai/v1/chat/completions`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${groqApiKey}`
+                        },
                         body: JSON.stringify({
-                            contents: [{
-                                parts: [{
-                                    text: `${DEV_CONFIG.AI_PROMPT}\n\n[PYTANIE]\n${qText}`
-                                }]
-                            }],
-                            generationConfig: {
-                                temperature: 0.1,
-                                topK: 1
-                            }
+                            model: DEV_CONFIG.AI_MODEL,
+                            messages: [
+                                { role: "system", content: DEV_CONFIG.AI_PROMPT },
+                                { role: "user", content: `[PYTANIE]\n${qText}` }
+                            ],
+                            temperature: 0.1,
+                            max_tokens: 150
                         })
                     }).then(res => res.json()).then(data => {
-                        if (data.error) throw new Error(data.error.message || "Błąd API Google");
+                        if (data.error) throw new Error(data.error.message || "Błąd API Groq");
 
-                        const aiRaw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim()?.toLowerCase() || "";
+                        const aiRaw = data.choices?.[0]?.message?.content?.trim()?.toLowerCase() || "";
                         // clean up ai answer from bullet points
                         const aiAnswer = aiRaw.replace(/^- /, '').replace(/^\* /, '').trim();
 
