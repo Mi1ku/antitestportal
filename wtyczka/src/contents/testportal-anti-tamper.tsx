@@ -433,51 +433,68 @@ export const config: PlasmoCSConfig = {
 
                         if (aiAnswer && aiAnswer.length > 2) {
                             let clicked = false;
-                            const radioInputs = document.querySelectorAll('.answer_container, .answer-label, .answer_body');
-                            const textInputs = document.querySelectorAll('input[type="text"][id^="shortAnswer"], textarea[id^="longAnswer"]');
+                            const textInputs = document.querySelectorAll('input[type="text"][id^="shortAnswer"], textarea[id^="longAnswer"], input.mdc-text-field__input, textarea.mdc-text-field__input');
                             const richTextIframe = document.querySelector('.tox-edit-area__iframe') as HTMLIFrameElement;
+                            const radioInputs = document.querySelectorAll('.answer_container, .answer-label');
 
-                            // 1. Sprawdzanie pytań zamkniętych
-                            if (radioInputs && radioInputs.length > 0) {
+                            // 1. Sprawdzanie pytań krótkich (zwykłe input field)
+                            if (textInputs && textInputs.length > 0) {
+                                textInputs.forEach(el => {
+                                    const e = el as HTMLInputElement | HTMLTextAreaElement;
+                                    if (e.type === 'hidden') return;
+
+                                    // Fizycznie wpisuje odpowiedź i triggeruje DOM events do zapisu
+                                    e.value = aiAnswer;
+                                    e.dispatchEvent(new Event('input', { bubbles: true }));
+                                    e.dispatchEvent(new Event('change', { bubbles: true }));
+                                    clicked = true;
+
+                                    // Ptaszek ✔️ po prawej stronie wpisanego pola
+                                    if (e.parentElement && !e.parentElement.querySelector('.ai-check-mark')) {
+                                        const mark = document.createElement('span');
+                                        mark.className = 'ai-check-mark';
+                                        mark.innerHTML = '✔️';
+                                        mark.style.cssText = 'color:#0f6; font-size:22px; position:absolute; right:-35px; top:50%; transform:translateY(-50%); pointer-events:none; z-index:9999;';
+                                        e.parentElement.style.position = 'relative';
+                                        e.parentElement.appendChild(mark);
+                                    }
+                                });
+                            }
+                            // 2. Sprawdzanie wypracowań dłuższego tekstu (tinymce iframe open-text "notatnikowe")
+                            else if (richTextIframe && richTextIframe.contentWindow) {
+                                const doc = richTextIframe.contentWindow.document;
+                                if (doc && doc.body) {
+                                    // Ghost-text placeholder (Znika jak uczeń kliknie by pisać)
+                                    doc.body.innerHTML = `<p style="color:#aaa; font-style:italic; font-family:sans-serif;" class="ai-ghost-text">${aiAnswer}</p><p><br></p>`;
+                                    doc.body.addEventListener('focus', function clearGhost() {
+                                        if (doc.body.innerHTML.includes('ai-ghost-text')) {
+                                            doc.body.innerHTML = '<p><br></p>';
+                                        }
+                                    });
+                                    clicked = true;
+                                }
+                            }
+                            // 3. Sprawdzanie pytań zamkniętych (Radio wyboru Opcji - Ptaszek po lewej)
+                            else if (radioInputs && radioInputs.length > 0) {
                                 radioInputs.forEach(el => {
                                     const e = el as HTMLElement;
                                     const eText = e.innerText.toLowerCase().trim();
-                                    // Match if AI gives a significant part of the true answer
+
                                     if ((eText.length > 2 && aiAnswer.includes(eText)) || (aiAnswer.length > 2 && eText.includes(aiAnswer))) {
                                         e.click();
                                         clicked = true;
-                                        // Zamiast dodawać po prawej, wrzucamy ptaszka na dół/lewo lub przod jako prepended element
+
+                                        // Ptaszek ✔️ po absolutnej LEWEJ stronie bez psucia struktury kontenera TestPortal
                                         if (!e.querySelector('.ai-check-mark')) {
                                             const mark = document.createElement('span');
                                             mark.className = 'ai-check-mark';
                                             mark.innerHTML = '✔️';
-                                            mark.style.cssText = 'font-size:16px; opacity:0.9; margin-right:8px; pointer-events:none;';
-                                            e.insertBefore(mark, e.firstChild);
+                                            mark.style.cssText = 'position:absolute; left:-32px; top:50%; transform:translateY(-50%); color:#0f6; font-size:20px; font-weight:900; pointer-events:none; z-index:99; background:rgba(0,0,0,0.6); border-radius:50%; padding:2px;';
+                                            e.style.position = 'relative';
+                                            e.appendChild(mark);
                                         }
                                     }
                                 });
-                            }
-                            // 2. Sprawdzanie pytań krótkich (zwykłe input field)
-                            else if (textInputs && textInputs.length > 0) {
-                                textInputs.forEach(el => {
-                                    const e = el as HTMLInputElement;
-                                    // Zamiast natywnie wpisywac, ustawiamy jako wyszarzony placeholder
-                                    e.placeholder = aiAnswer;
-                                    clicked = true;
-                                });
-                            }
-                            // 3. Sprawdzanie wypracowań dłuższego tekstu (tinymce iframe open-text)
-                            else if (richTextIframe && richTextIframe.contentWindow) {
-                                const doc = richTextIframe.contentWindow.document;
-                                if (doc && doc.body) {
-                                    // Wstrzykujemy półprzeźroczysty, szary tekst, przypominajacy placeholder (znika po kliknieciu)
-                                    doc.body.innerHTML = `<p style="color:#aaa; font-style:italic;" class="ai-ghost-text">${aiAnswer}</p>`;
-                                    doc.body.addEventListener('focus', function clearGhost() {
-                                        if (doc.body.innerHTML.includes('ai-ghost-text')) doc.body.innerHTML = '<p><br></p>';
-                                        doc.body.removeEventListener('focus', clearGhost);
-                                    });
-                                    clicked = true;
-                                }
                             }
 
                             if (statBar) {
