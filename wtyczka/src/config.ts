@@ -30,6 +30,19 @@ export const DEV_CONFIG = {
     // Adres Firebase (baza danych)
     FIREBASE_DB_URL: "https://antitestportaldb-default-rtdb.europe-west1.firebasedatabase.app",
 
+    // Model Sztucznej Inteligencji i Prompty
+    AI_MODEL: "gemini-1.5-flash",
+    AI_PROMPT: `Jesteś ekspertem zdającym test. Przeanalizuj pytanie i wybierz JEDNĄ najbardziej trafną opcję. Twoja odpowiedź KONIECZNIE musi być DOKŁADNYM CYTATEM jednej z opcji z pytania. Żadnego wstępu, żadnego komentarza. TYLKO dokładny tekst poprawnej odpowiedzi, aby nasz skrypt mógł ją kliknąć w DOM.`,
+
+    // Skróty Klawiszowe (Zdefiniowane kody JS: event.code)
+    SHORTCUTS: {
+        PANIC_MODE: "KeyQ",     // Ctrl + Q
+        TOGGLE_DOCK: "KeyB",    // Ctrl + B
+        TIME_FREEZE: "KeyE",    // Ctrl + E
+        SEARCH_GOOGLE: "KeyY",  // Ctrl + Y
+        SEARCH_PERPLEXITY: "KeyU"// Ctrl + U
+    },
+
     // Konfiguracja logowania (App/Core) Firebase 
     FIREBASE_CONFIG: {
         apiKey: "AIzaSyDSnKsbPNCCmEKAO1r_PvvVldViGWQ1Sw",

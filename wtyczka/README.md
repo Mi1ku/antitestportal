@@ -27,7 +27,7 @@ Instant access to solutions and automatic test answering without breaking immers
 - **Developer Bound API Key:** End-users don't have to provide any keys. The Gemini API key is securely embedded in the `config.ts` file before the deploy phase.
 - **AI Solver Status Bar:** Contains a visually stunning animation predicting AI response times and reading status.
 - **Instant Frames (Free Mode):** Connects directly with Perplexity / Google, feeding it your questions natively in a 400px side window.
-- **Panic Mode:** Hide everything completely with a smooth transition using `Ctrl + Shift + Z` or toggle dock with `Ctrl + Shift + X`.
+- **Panic Mode:** Hide everything completely with a smooth transition using `Ctrl + Q` or toggle dock with `Ctrl + B`.
 
 ### 🧹 Przeglądarka Tools
 - **Clear History:** Click a single button in the extension panel to erase local browser history.

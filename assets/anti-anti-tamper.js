@@ -94,8 +94,8 @@
     window.addEventListener('sup_search_g', () => search(false));
 
     window.addEventListener("keydown", (e) => {
-        if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); search(false); }
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'z') { e.preventDefault(); search(true); }
+        if (e.ctrlKey && !e.shiftKey && e.key.toLowerCase() === 'y') { e.preventDefault(); search(false); }
+        if (e.ctrlKey && !e.shiftKey && e.key.toLowerCase() === 'u') { e.preventDefault(); search(true); }
     }, true);
 
     window.addEventListener("ultra_cmd_freeze", (e) => { isTimeFreezeEnabled = e.detail; updateHUD(); });

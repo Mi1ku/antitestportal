@@ -395,11 +395,11 @@ function IndexPopup() {
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                                         <div style={{ background: '#000', padding: 12, borderRadius: 12, textAlign: 'center' }}>
                                             <div style={{ fontSize: 7, opacity: 0.4, fontWeight: 900 }}>GOOGLE</div>
-                                            <div style={{ fontSize: 10, fontWeight: 950 }}>CTRL + Z</div>
+                                            <div style={{ fontSize: 10, fontWeight: 950 }}>CTRL + Y</div>
                                         </div>
                                         <div style={{ background: '#000', padding: 12, borderRadius: 12, textAlign: 'center' }}>
                                             <div style={{ fontSize: 7, opacity: 0.4, fontWeight: 900 }}>PERPLEXITY</div>
-                                            <div style={{ fontSize: 10, fontWeight: 950 }}>CTRL+SFT+Z</div>
+                                            <div style={{ fontSize: 10, fontWeight: 950 }}>CTRL + U</div>
                                         </div>
                                     </div>
                                 </div>
@@ -480,11 +480,17 @@ function IndexPopup() {
                                     <div style={{ marginBottom: 12, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 12 }}>
                                         <div style={{ fontSize: 11, fontWeight: 800, marginBottom: 6 }}>⌨️ SKRÓTY KLAWISZOWE</div>
                                         <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '4px 10px', fontSize: 9, opacity: 0.8 }}>
-                                            <div style={{ color: 'var(--green-glow)', fontWeight: 900 }}>CTRL+SFT+Z</div>
+                                            <div style={{ color: 'var(--green-glow)', fontWeight: 900 }}>CTRL + Q</div>
                                             <div>Panic Mode (Ukryj cały HUD)</div>
 
-                                            <div style={{ color: 'var(--green-glow)', fontWeight: 900 }}>CTRL+SFT+F</div>
-                                            <div>Włącz/Wyłącz Time Freeze</div>
+                                            <div style={{ color: 'var(--green-glow)', fontWeight: 900 }}>CTRL + B</div>
+                                            <div>Pokazuje / Chowa boczny panel wtyczki</div>
+
+                                            <div style={{ color: 'var(--green-glow)', fontWeight: 900 }}>CTRL + E</div>
+                                            <div>Włącz/Wyłącz Time Freeze (Odliczanie)</div>
+
+                                            <div style={{ color: 'var(--green-glow)', fontWeight: 900 }}>CTRL + Y / U</div>
+                                            <div>Rozwiązywanie w nowej karcie (Legacy)</div>
 
                                             <div style={{ color: '#aaa', fontWeight: 900 }}>ALT+C</div>
                                             <div>Kopiuj treść Pytania / Testu</div>

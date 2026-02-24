@@ -43,7 +43,7 @@ Zaawansowany panel boczny z wbudowaną siecią neuronową (Google Gemini 1.5 Fla
 - **Dynamiczne Rozwiązywanie Pytania:** Jeśli funkcja 'Auto-Answer Genius' jest włączona, wtyczka skanuje polecenie na teście, analizuje opcje, łączy się z modelem językowym i w ułamku sekundy automatycznie klika prawidłową odpowiedź otaczając ją zieloną poświatą.
 - **Wbudowane Klucze API:** Proces uwierzytelniania sztucznej inteligencji jest wbudowany prosto w narzędzie podczas budowania rozszerzenia. Zwykły Użytkownik nie musi zakładać żadnych płatnych/bezpłatnych kont. 
 - **Google & Perplexity:** Dla starszych trybów "darmowych", oba silniki wyszukiwania ładują się do bocznej ramki z funkcjonalnym panelem i możliwością kopiowania jednym prostym kliknięciem.
-- **Zarządzanie Widocznością:** Panel możesz w każdej chwili całkowicie ukryć za pomocą HUD'a. Użyj skrótu `Ctrl+Shift+Z` by przejść w **Panic Mode** - nikt z pleców nie zobaczy, że korzystasz ze wsparcia.
+- **Zarządzanie Widocznością:** Panel możesz w każdej chwili całkowicie ukryć za pomocą HUD'a. Użyj skrótu `Ctrl + Q` by przejść w **Panic Mode** - nikt z pleców nie zobaczy, że korzystasz ze wsparcia.
 
 ### 🧹 Narzędzia Przeglądarki
 - **Wyczyść Historię:** Szybkie usuwanie śladów i logów przeglądarki jednym kliknięciem z poziomu okna głównego wtyczki.
@@ -56,11 +56,11 @@ Wtyczka posiada wbudowany system sprawdzania powiadomień połączony bezpośred
 ### ⌨️ Skróty Klawiszowe (Sterowanie)
 | Skrót | Funkcja | Opis |
 | :--- | :--- | :--- |
-| **`Ctrl + Shift + Z`** | **Panic Mode** | Natychmiastowe ukrycie/pokazanie całego HUD i Docka |
-| **`Ctrl + Shift + X`** | **Toggle Dock** | Pokazuje lub chowa boczny panel asystenta |
-| **`Ctrl + Shift + F`** | **Freeze Time** | Włącza/wyłącza zatrzymanie czasu |
-| `Ctrl + Z` | Quick Google | Otwiera wyszukiwanie Google w nowej karcie (Legacy) |
-| `Ctrl + Shift + S` | Quick Perplexity | Otwiera Perplexity w nowej karcie (Legacy) |
+| **`Ctrl + Q`** | **Panic Mode** | Natychmiastowe ukrycie/pokazanie całego HUD i Docka |
+| **`Ctrl + B`** | **Toggle Dock** | Pokazuje lub chowa boczny panel asystenta |
+| **`Ctrl + E`** | **Freeze Time** | Włącza/wyłącza zatrzymanie czasu |
+| `Ctrl + Y` | Quick Google | Otwiera wyszukiwanie Google w nowej karcie (Legacy) |
+| `Ctrl + U` | Quick Perplexity | Otwiera Perplexity w nowej karcie (Legacy) |
 
 ---
 

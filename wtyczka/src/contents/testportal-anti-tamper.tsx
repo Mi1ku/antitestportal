@@ -158,7 +158,7 @@ export const config: PlasmoCSConfig = {
     }
 
     window.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ') {
+        if (e.ctrlKey && !e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.PANIC_MODE) {
             e.preventDefault();
             isHudEnabled = !isHudEnabled;
             isDockVisible = isHudEnabled; // Panic mode ukrywa również dock
@@ -169,14 +169,14 @@ export const config: PlasmoCSConfig = {
             return;
         }
 
-        if (e.ctrlKey && e.shiftKey && e.code === 'KeyX') {
+        if (e.ctrlKey && !e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.TOGGLE_DOCK) {
             e.preventDefault();
             isDockVisible = !isDockVisible;
             updateAnswerFrame();
             return;
         }
 
-        if (e.ctrlKey && e.shiftKey && e.code === 'KeyF') {
+        if (e.ctrlKey && !e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.TIME_FREEZE) {
             e.preventDefault();
             isTimeFreezeEnabled = !isTimeFreezeEnabled;
             updateHUD();
@@ -184,13 +184,13 @@ export const config: PlasmoCSConfig = {
             return;
         }
 
-        if (e.ctrlKey && !e.shiftKey && e.code === 'KeyZ') {
+        if (e.ctrlKey && !e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.SEARCH_GOOGLE) {
             // Quick Google (Legacy nowa karta)
             e.preventDefault();
             searchNewTab('google');
         }
 
-        if (e.ctrlKey && e.shiftKey && e.code === 'KeyS') {
+        if (e.ctrlKey && !e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.SEARCH_PERPLEXITY) {
             // Quick Perplexity (Legacy nowa karta)
             e.preventDefault();
             searchNewTab('perplexity');
@@ -412,22 +412,28 @@ export const config: PlasmoCSConfig = {
                     isSolving = true;
                     statBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> Gemini 1.5: Trwa dogłębna analiza pytania i czytanie opcji...`;
 
-                    fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
+                    fetch(`https://generativelanguage.googleapis.com/v1beta/models/${DEV_CONFIG.AI_MODEL}:generateContent?key=${geminiApiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             contents: [{
                                 parts: [{
-                                    text: `Jesteś botem zdającym test wielokrotnego wyboru. Skup się! Podaj tylko i wyłącznie krótką treść opcji, w skrócie, słowo w słowo z zaznaczeniem poprawnej odpowiedzi. Żadnego Twojego gadania, wymysłów ani tłumaczenia, WYŁĄCZNIE tekst jednej poprawnej odpowiedzi aby skrypt javascript mógł ją dopasować po innerText. \n\n${qText}`
+                                    text: `${DEV_CONFIG.AI_PROMPT}\n\n[PYTANIE]\n${qText}`
                                 }]
-                            }]
+                            }],
+                            generationConfig: {
+                                temperature: 0.1,
+                                topK: 1
+                            }
                         })
                     }).then(res => res.json()).then(data => {
+                        if (data.error) throw new Error(data.error.message || "Błąd API Google");
+
                         const aiRaw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim()?.toLowerCase() || "";
                         // clean up ai answer from bullet points
                         const aiAnswer = aiRaw.replace(/^- /, '').replace(/^\* /, '').trim();
 
-                        if (aiAnswer) {
+                        if (aiAnswer && aiAnswer.length > 2) {
                             let clicked = false;
                             const inputs = document.querySelectorAll('.answer_container, .answer-label, .answer_body');
                             inputs.forEach(el => {
@@ -449,10 +455,15 @@ export const config: PlasmoCSConfig = {
                                     : `<div style="width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow: 0 0 10px #ffea0f;"></div> SUPREME: Brak pewnosci co kliknac!(Odp od AI: <b style="color:#0f6">${aiAnswer.substring(0, 35)}</b>)`;
                             }
                         } else {
-                            if (statBar) statBar.innerHTML = `<div style="width:8px; height:8px; background:#ff3b3b; border-radius:50%;"></div> SUPREME: Brak odpowiedzi z sieci neuronowej!`;
+                            throw new Error("Pusta odpowiedź z sieci neuronowej.");
                         }
                     }).catch(err => {
-                        if (statBar) statBar.innerHTML = `<div style="width:8px; height:8px; background:#ff3b3b; border-radius:50%;"></div> Blad API Gemini.Moze nieaktywny klucz?`;
+                        console.error("[Supreme AI Error]:", err);
+                        if (statBar) {
+                            statBar.innerHTML = `<div style="width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow: 0 0 10px #ffea0f;"></div> AI Fallback: Ściąganie awaryjne (${err.message.substring(0, 20)}...). Otwieram wyszukiwarkę...`;
+                        }
+                        const iframe = document.getElementById(FRAME_ID) as HTMLIFrameElement;
+                        if (iframe) iframe.src = targetUrl;
                     }).finally(() => {
                         setTimeout(() => { isSolving = false; }, 2000);
                     });
