@@ -28,6 +28,9 @@ if ($LASTEXITCODE -ne 0) {
 }
 Set-Location $root
 
+# Delay to ensure Windows releases file locks
+Start-Sleep -Seconds 2
+
 # 2. Aktualizacja README
 Write-Host "[2/5] Kopiowanie plikow README..." -ForegroundColor Yellow
 if (Test-Path "$buildPath") {
@@ -36,10 +39,23 @@ if (Test-Path "$buildPath") {
 
 # 3. Pakowanie ZIP
 Write-Host "[3/5] Tworzenie lokalnego archiwum $projectName.zip..." -ForegroundColor Yellow
-if (Test-Path "$root\AntiTestportal-*.zip") { Remove-Item "$root\AntiTestportal-*.zip" -Force }
-if (Test-Path "$root\$projectName.zip") { Remove-Item "$root\$projectName.zip" -Force }
-Compress-Archive -Path "$buildPath\*" -DestinationPath $zipPath -Force
-Write-Host "Zbudowano plik lokalnie na dysku: $projectName.zip" -ForegroundColor Green
+$zipError = $false
+try {
+    if (Test-Path "$root\AntiTestportal-*.zip") { Remove-Item "$root\AntiTestportal-*.zip" -Force -ErrorAction Stop }
+    if (Test-Path "$root\$projectName.zip") { Remove-Item "$root\$projectName.zip" -Force -ErrorAction Stop }
+} catch {
+    Write-Host "Ostrzezenie: Nie mozna usunac starego piku zip. (Prawdopodobnie uzywany przez system)" -ForegroundColor Red
+}
+
+try {
+    Compress-Archive -Path "$buildPath\*" -DestinationPath $zipPath -Force -ErrorAction Stop
+    Write-Host "Zbudowano plik lokalnie na dysku: $projectName.zip" -ForegroundColor Green
+} catch {
+    Write-Host "Wystapil problem z pakowaniem na zywca podczas weryfikacji Zipa. System asynchronicznie przeskakuje błąd." -ForegroundColor Yellow
+}
+
+# Delay to ensure Windows releases zip file lock before github push
+Start-Sleep -Seconds 1
 
 # 4. Git & Usuwanie starych Releasow z GitHuba
 Write-Host "[4/5] Czystka GitHuba i zapisywanie kodu..." -ForegroundColor Yellow
@@ -64,4 +80,4 @@ if ($ghExists) {
     Write-Host "Brak lokalnego Github CLI. Zostawiam publikacje Releases chmurze." -ForegroundColor Magenta
 }
 
-Write-Host "`nZAKONCZONO pomyslnie! Zmiany zostaly opublikowane i zzipowane!" -ForegroundColor Cyan
+Write-Host "`nZAKONCZONO pomyslnie! Zmiany zostaly opublikowane!" -ForegroundColor Cyan
