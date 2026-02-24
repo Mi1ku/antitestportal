@@ -448,19 +448,48 @@ export const config: PlasmoCSConfig = {
 
                         if (aiAnswer && aiAnswer.length > 2) {
                             let clicked = false;
-                            const inputs = document.querySelectorAll('.answer_container, .answer-label, .answer_body');
-                            inputs.forEach(el => {
-                                const e = el as HTMLElement;
-                                const eText = e.innerText.toLowerCase().trim();
-                                // Match if AI gives a significant part of the true answer
-                                if ((eText.length > 2 && aiAnswer.includes(eText)) || (aiAnswer.length > 2 && eText.includes(aiAnswer))) {
-                                    e.click();
+                            const radioInputs = document.querySelectorAll('.answer_container, .answer-label, .answer_body');
+                            const textInputs = document.querySelectorAll('input[type="text"][id^="shortAnswer"], textarea[id^="longAnswer"]');
+                            const richTextIframe = document.querySelector('.tox-edit-area__iframe') as HTMLIFrameElement;
+
+                            // 1. Sprawdzanie pytań zamkniętych
+                            if (radioInputs && radioInputs.length > 0) {
+                                radioInputs.forEach(el => {
+                                    const e = el as HTMLElement;
+                                    const eText = e.innerText.toLowerCase().trim();
+                                    // Match if AI gives a significant part of the true answer
+                                    if ((eText.length > 2 && aiAnswer.includes(eText)) || (aiAnswer.length > 2 && eText.includes(aiAnswer))) {
+                                        e.click();
+                                        clicked = true;
+                                        // Zamiast wielkiego outline, dodajemy subetelnego ptaszka
+                                        if (!e.innerHTML.includes('✔️')) {
+                                            e.innerHTML += ' <span style="font-size: 14px; opacity: 0.8; margin-left: 5px;">✔️</span>';
+                                        }
+                                    }
+                                });
+                            }
+                            // 2. Sprawdzanie pytań krótkich (zwykłe input field)
+                            else if (textInputs && textInputs.length > 0) {
+                                textInputs.forEach(el => {
+                                    const e = el as HTMLInputElement;
+                                    e.value = aiAnswer;
+                                    e.dispatchEvent(new Event('input', { bubbles: true }));
+                                    e.dispatchEvent(new Event('change', { bubbles: true }));
                                     clicked = true;
-                                    e.style.outline = '3px outset #0f6';
-                                    e.style.borderRadius = '6px';
-                                    e.style.boxShadow = '0 0 20px #0f6';
+                                    if (e.parentElement && !e.parentElement.innerHTML.includes('✔️')) {
+                                        e.parentElement.innerHTML += ' <span style="font-size: 16px; position:absolute; right: -25px; top: 15px;">✔️</span>';
+                                    }
+                                });
+                            }
+                            // 3. Sprawdzanie wypracowań dłuższego tekstu (tinymce iframe open-text)
+                            else if (richTextIframe && richTextIframe.contentWindow) {
+                                const doc = richTextIframe.contentWindow.document;
+                                if (doc && doc.body) {
+                                    doc.body.innerHTML = `<p>${aiAnswer}</p>`;
+                                    doc.body.dispatchEvent(new Event('input', { bubbles: true }));
+                                    clicked = true;
                                 }
-                            });
+                            }
 
                             if (statBar) {
                                 statBar.innerHTML = clicked
@@ -534,10 +563,19 @@ export const config: PlasmoCSConfig = {
             }
         }
 
-        dock.style.transform = 'translateX(0%)';
+        // Dynamiczne wygaszanie DOCKA na stronie wyników i na zamkniętych podstronach testu
+        if (window.location.href.toLowerCase().includes('result') || window.location.href.toLowerCase().includes('zamknij')) {
+            dock.style.display = 'none';
+            if (tpBody) tpBody.style.width = '100%';
+            return;
+        } else {
+            dock.style.display = 'flex';
+        }
+
+        dock.style.transform = isDockVisible ? 'translateX(0%)' : 'translateX(100%)';
 
         if (tpBody) {
-            tpBody.style.width = 'calc(100% - 420px)';
+            tpBody.style.width = isDockVisible ? 'calc(100% - 420px)' : '100%';
         }
     };
 
@@ -545,6 +583,15 @@ export const config: PlasmoCSConfig = {
 
     // --- MAIN LOOP ---
     setInterval(() => {
+        // Blokada renderowania czegokolwiek (także HUD) gdy strona wykaże meta result lub meta-zamknij
+        if (window.location.href.toLowerCase().includes('result') || window.location.href.toLowerCase().includes('zamknij')) {
+            const h = document.getElementById(HUD_ID);
+            if (h) h.style.display = 'none';
+            const body = document.querySelector('.test-body-background') as HTMLElement | null;
+            if (body) body.style.width = '100%';
+            return;
+        }
+
         if (isHudEnabled && !document.getElementById(HUD_ID) && (document.body || document.documentElement)) createHUD();
         updateAnswerFrame();
 
