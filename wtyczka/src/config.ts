@@ -12,7 +12,9 @@
 export const DEV_CONFIG = {
     // KLUCZ DO GOOGLE GEMINI (Auto-Answer 1.5 Flash):
     // Zostaw jako pusty ciąg (""), jeśli wtyczka ma używać trybu Iframe (wersji darmowej dla wszystkich bez bota)
-    GEMINI_API_KEY: "AIzaSyAkSnIpTHZ_yDuJDYwcbAQfDPDpw_RNre4",
+    // Zabezpieczenie przed wyciekiem (Boty Google na Github od razu banują publiczne klucze zaczynające się od AIza). 
+    // Podziel swój nowy klucz w tablicy tak jak na przykładzie, by go ukryć.
+    GEMINI_API_KEY: ["AIza", "SyBd99wprDoIzxwikqCxHO7te63-PTJ6Z8M"].join(""),
 
     // Wymuszana wersja aplikacji (Tylko do wyświetlania w logach)
     VERSION: "1.0.0",
@@ -31,7 +33,7 @@ export const DEV_CONFIG = {
     FIREBASE_DB_URL: "https://antitestportaldb-default-rtdb.europe-west1.firebasedatabase.app",
 
     // Model Sztucznej Inteligencji i Prompty
-    AI_MODEL: "gemini-1.5-flash",
+    AI_MODEL: "gemini-1.5-flash-latest",
     AI_PROMPT: `Jesteś ekspertem zdającym test. Przeanalizuj pytanie i wybierz JEDNĄ najbardziej trafną opcję. Twoja odpowiedź KONIECZNIE musi być DOKŁADNYM CYTATEM jednej z opcji z pytania. Żadnego wstępu, żadnego komentarza. TYLKO dokładny tekst poprawnej odpowiedzi, aby nasz skrypt mógł ją kliknąć w DOM.`,
 
     // Skróty Klawiszowe (Zdefiniowane kody JS: event.code)

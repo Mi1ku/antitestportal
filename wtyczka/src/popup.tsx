@@ -491,15 +491,6 @@ function IndexPopup() {
 
                                             <div style={{ color: 'var(--green-glow)', fontWeight: 900 }}>SHIFT + Y / U</div>
                                             <div>Rozwiązywanie w nowej karcie (Legacy)</div>
-
-                                            <div style={{ color: '#aaa', fontWeight: 900 }}>ALT+C</div>
-                                            <div>Kopiuj treść Pytania / Testu</div>
-
-                                            <div style={{ color: '#aaa', fontWeight: 900 }}>ALT+G</div>
-                                            <div>Szukaj Pytania w Google</div>
-
-                                            <div style={{ color: '#aaa', fontWeight: 900 }}>ALT+P</div>
-                                            <div>Szukaj Pytania w Perplexity</div>
                                         </div>
                                     </div>
 
