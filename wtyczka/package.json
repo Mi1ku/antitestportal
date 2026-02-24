@@ -1,70 +1,70 @@
-{
-  "name": "antitestportal-plus",
-  "displayName": "AntiTestportal+",
-  "version": "1.0.0",
-  "description": "Zaawansowane narzędzie edukacyjne do Testportal z funkcjami Time Freeze, Ghost Shield oraz Side Dock AI.",
-  "author": "mi1ku",
-  "scripts": {
-    "dev": "plasmo dev",
-    "build": "plasmo build && npm run obfuscate",
-    "package": "plasmo package",
-    "obfuscate": "npx javascript-obfuscator ./build/chrome-mv3-prod --output ./build/chrome-mv3-prod --compact true --self-defending true --string-array true"
-  },
-  "dependencies": {
-    "@plasmohq/messaging": "^0.7.2",
-    "@plasmohq/storage": "^1.15.0",
-    "firebase": "^12.9.0",
-    "plasmo": "^0.90.5",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-toastify": "^11.0.5",
-    "use-async-effect": "^2.2.7"
-  },
-  "devDependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "4.1.1",
-    "@types/chrome": "0.0.258",
-    "@types/node": "20.11.5",
-    "@types/react": "18.2.48",
-    "@types/react-dom": "18.2.18",
-    "javascript-obfuscator": "^4.1.1",
-    "prettier": "3.2.4",
-    "typescript": "5.3.3"
-  },
-  "manifest": {
-    "browser_specific_settings": {
-      "gecko": {
-        "id": "antitestportal@mikus.gg"
-      }
+﻿{
+    "name": "antitestportal-plus",
+    "displayName": "AntiTestportal+",
+    "version": "1.0.0",
+    "description": "Zaawansowane narzędzie edukacyjne do Testportal z funkcjami Time Freeze, Ghost Shield oraz Side Dock AI.",
+    "author": "mi1ku",
+    "scripts": {
+        "dev": "plasmo dev",
+        "build": "plasmo build && npm run obfuscate",
+        "package": "plasmo package",
+        "obfuscate": "npx javascript-obfuscator ./build/chrome-mv3-prod --output ./build/chrome-mv3-prod --compact true --self-defending true --string-array true"
     },
-    "host_permissions": [
-      "https://*.testportal.pl/*",
-      "https://*.testportal.net/*",
-      "https://*.testportal.online/*",
-      "https://*.perplexity.ai/*",
-      "https://*.google.com/*"
-    ],
-    "permissions": [
-      "storage",
-      "declarativeNetRequest",
-      "browsingData",
-      "tabs",
-      "scripting",
-      "unlimitedStorage",
-      "activeTab",
-      "clipboardWrite"
-    ],
-    "web_accessible_resources": [
-      {
-        "resources": [
-          "assets/anti-anti-tamper.js"
+    "dependencies": {
+        "@plasmohq/messaging": "^0.7.2",
+        "@plasmohq/storage": "^1.15.0",
+        "firebase": "^12.9.0",
+        "plasmo": "^0.90.5",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "react-toastify": "^11.0.5",
+        "use-async-effect": "^2.2.7"
+    },
+    "devDependencies": {
+        "@ianvs/prettier-plugin-sort-imports": "4.1.1",
+        "@types/chrome": "0.0.258",
+        "@types/node": "20.11.5",
+        "@types/react": "18.2.48",
+        "@types/react-dom": "18.2.18",
+        "javascript-obfuscator": "^4.1.1",
+        "prettier": "3.2.4",
+        "typescript": "5.3.3"
+    },
+    "manifest": {
+        "browser_specific_settings": {
+            "gecko": {
+                "id": "antitestportal@mikus.gg"
+            }
+        },
+        "host_permissions": [
+            "https://*.testportal.pl/*",
+            "https://*.testportal.net/*",
+            "https://*.testportal.online/*",
+            "https://*.perplexity.ai/*",
+            "https://*.google.com/*"
         ],
-        "matches": [
-          "*://*/*"
-        ]
-      }
-    ],
-    "background": {
-      "service_worker": "src/background.ts"
+        "permissions": [
+            "storage",
+            "declarativeNetRequest",
+            "browsingData",
+            "tabs",
+            "scripting",
+            "unlimitedStorage",
+            "activeTab",
+            "clipboardWrite"
+        ],
+        "web_accessible_resources": [
+            {
+                "resources": [
+                    "assets/anti-anti-tamper.js"
+                ],
+                "matches": [
+                    "*://*/*"
+                ]
+            }
+        ],
+        "background": {
+            "service_worker": "src/background.ts"
+        }
     }
-  }
 }

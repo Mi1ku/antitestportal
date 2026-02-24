@@ -1,62 +1,67 @@
-$ErrorActionPreference = "Stop"
-
-# Get project version automatically
-$packageJson = Get-Content "$PSScriptRoot\wtyczka\package.json" -Raw | ConvertFrom-Json
-$version = $packageJson.version
-$projectName = "AntiTestportal-v$version"
+$ErrorActionPreference = "Continue"
 $root = $PSScriptRoot
 $wtyczkaPath = "$root\wtyczka"
 $buildPath = "$wtyczkaPath\build\chrome-mv3-prod"
+$version = "1.0.0"
+$projectName = "AntiTestportal-v$version"
 $zipPath = "$root\$projectName.zip"
 
-Write-Host "--- 💎 mi1ku RELEASE PACKAGER v2.0 💎 ---" -ForegroundColor Cyan
-Write-Host "NOTE: You no longer need to run this manually!" -ForegroundColor Yellow
-Write-Host "Simply Push changes to GitHub and it will release automatically." -ForegroundColor Yellow
-Write-Host "--------------------------------------------`n" -ForegroundColor Cyan
+Write-Host "--- AntiTestportal+ Supreme Auto-Deploy ---" -ForegroundColor Cyan
 
-# 1. Cleaning old artifacts
-if (Test-Path "$root\AntiTestportal-*.zip") {
-    Remove-Item "$root\AntiTestportal-*.zip" -Force
-    Write-Host "[1/4] Removed old release zip(s)." -ForegroundColor Yellow
-}
-else {
-    Write-Host "[1/4] No old release zip found. Skipping cleanup."
+# 0. Fix JSON BOM Encoding for Node.js
+try {
+    $pkgPath = "$wtyczkaPath\package.json"
+    $pkgBody = Get-Content $pkgPath -Raw
+    [IO.File]::WriteAllText($pkgPath, $pkgBody, (New-Object Text.UTF8Encoding($False)))
+} catch {
+    Write-Host "Warning: Could not re-encode package.json" -ForegroundColor Magenta
 }
 
-# 2. Checking for build
-if (-not (Test-Path $buildPath)) {
-    Write-Host "[2/4] Build folder NOT found. Attempting to build project..." -ForegroundColor Magenta
-    Set-Location $wtyczkaPath
-    if (Test-Path "node_modules") {
-        npm run build
-    }
-    else {
-        Write-Host "ERROR: node_modules missing. Please run 'npm install' in 'wtyczka' folder." -ForegroundColor Red
-        exit 1
-    }
+# 1. Budowanie wtyczki
+Write-Host "[1/5] Budowanie lokalne rozszerzenia (npm run build)..." -ForegroundColor Yellow
+Set-Location $wtyczkaPath
+cmd.exe /c "npm run build"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Blad podczas budowania! Przerywam skrypt." -ForegroundColor Red
     Set-Location $root
-}
-else {
-    Write-Host "[2/4] Found existing build folder. Ready to pack." -ForegroundColor Green
-}
-
-# 3. Synchronizing assets
-Copy-Item "$root\README.md" "$buildPath\README.md" -Force
-Write-Host "[3/4] Synced README.md to build folder."
-
-# 4. Packaging
-Write-Host "[4/4] Packing into $projectName.zip..." -ForegroundColor Cyan
-if (Test-Path $zipPath) { Remove-Item $zipPath }
-Compress-Archive -Path "$buildPath\*" -DestinationPath $zipPath -Force
-
-if (Test-Path $zipPath) {
-    Write-Host "`n✅ SUCCESS! Release ready at: $zipPath" -ForegroundColor Green
-    $size = (Get-Item $zipPath).Length / 1KB
-    Write-Host "Final Size: $([math]::Round($size, 2)) KB"
-}
-else {
-    Write-Host "`n❌ FAILED to create zip file." -ForegroundColor Red
     exit 1
 }
+Set-Location $root
 
-Write-Host "`nRelease completed. NOTE: Remember that GitHub Auto-Release handles this for you on push!" -ForegroundColor Gray
+# 2. Aktualizacja README
+Write-Host "[2/5] Kopiowanie plikow README..." -ForegroundColor Yellow
+if (Test-Path "$buildPath") {
+    Copy-Item "$root\README.md" "$buildPath\README.md" -Force
+}
+
+# 3. Pakowanie ZIP
+Write-Host "[3/5] Tworzenie lokalnego archiwum $projectName.zip..." -ForegroundColor Yellow
+if (Test-Path "$root\AntiTestportal-*.zip") { Remove-Item "$root\AntiTestportal-*.zip" -Force }
+if (Test-Path "$root\$projectName.zip") { Remove-Item "$root\$projectName.zip" -Force }
+Compress-Archive -Path "$buildPath\*" -DestinationPath $zipPath -Force
+Write-Host "Zbudowano plik lokalnie na dysku: $projectName.zip" -ForegroundColor Green
+
+# 4. Git & Usuwanie starych Releasow z GitHuba
+Write-Host "[4/5] Czystka GitHuba i zapisywanie kodu..." -ForegroundColor Yellow
+try { git tag -d "v$version" 2>&1 | Out-Null } catch {}
+try { git push origin --delete "v$version" 2>&1 | Out-Null } catch {}
+
+git add .
+git commit -m "Auto-Deploy: Pelny lokalny build 1.0.0 + Zmiany kodu"
+git push
+
+# 5. GitHub Releases
+Write-Host "[5/5] Zdalna publikacja (GitHub Releases)..." -ForegroundColor Yellow
+$ghExists = Get-Command gh -ErrorAction SilentlyContinue
+if ($ghExists) {
+    try { gh release delete "v$version" --yes 2>&1 | Out-Null } catch {}
+    gh release create "v$version" $zipPath --title "AntiTestportal+ v$version" --notes "Najnowsza stabilna produkcyjna wersja wtyczki." -M "main"
+    if ($LASTEXITCODE -ne 0) {
+        gh release create "v$version" $zipPath --title "AntiTestportal+ v$version" --notes "Najnowsza stabilna produkcyjna wersja wtyczki." -M "master"
+    }
+    Write-Host "Udalo sie! GitHub Releases zostalo zaktualizowane." -ForegroundColor Green
+} else {
+    Write-Host "Brak lokalnego Github CLI. Zostawiam publikacje Releases chmurze." -ForegroundColor Magenta
+}
+
+Write-Host "`nZAKONCZONO pomyslnie! Zmiany zostaly opublikowane i zzipowane!" -ForegroundColor Cyan

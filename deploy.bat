@@ -1,20 +1,9 @@
 @echo off
+setlocal
 echo ===================================================
-echo   AntiTestportal+ 💎 Auto-Deploy 
+echo   AntiTestportal+ SUPREME DEPLOY v2.0
 echo ===================================================
 echo.
-echo Dodawanie zmian do Git...
-git add .
-echo.
-echo Tworzenie commita...
-git commit -m "Mega Update: Side Dock v1.0.0, poprawka auto-releasow, czyste README, tag mi1ku"
-echo.
-echo Wysylanie na serwery GitHub...
-git push
-echo.
-echo ===================================================
-echo GOTOWE! 
-echo Za chwilę GitHub Actions automatycznie zbuduje
-echo i wyda nową paczkę w zakładce Releases.
-echo ===================================================
+set "NODE_OPTIONS=--no-deprecation"
+powershell -ExecutionPolicy Bypass -NoProfile -File "%~dp0pack_release.ps1"
 pause
