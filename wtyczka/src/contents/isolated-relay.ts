@@ -65,7 +65,20 @@ const init = async () => {
         // console.log("[RELAY] Synced update from page:", update);
     });
 
-    // 3. Nasłuchuj zmian ze Storage -> Content Script
+    // 3. Nasłuchuj dodawania historii egzaminu
+    window.addEventListener("ultra_sync_history_add", async (e: any) => {
+        const item = e.detail;
+        if (!item) return;
+        const currentCfg = await pluginStorage.get<PluginConfig>(PluginConfigKey) || {} as PluginConfig;
+        const history = currentCfg.examHistory || [];
+        // Zabezpieczenie przed dublami (ostatnie to to samo)
+        if (history.length > 0 && history[history.length - 1].q === item.q) return;
+
+        const newCfg = { ...currentCfg, examHistory: [...history, item] };
+        await pluginStorage.set(PluginConfigKey, newCfg);
+    });
+
+    // 4. Nasłuchuj zmian ze Storage -> Content Script
     pluginStorage.watch({
         [PluginConfigKey]: (change) => {
             if (change.newValue) {

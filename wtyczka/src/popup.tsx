@@ -123,6 +123,29 @@ function IndexPopup() {
         }
     };
 
+    const exportExamHistory = () => {
+        if (!pluginConfig.examHistory || pluginConfig.examHistory.length === 0) {
+            showToast("HISTORIA EGZAMINU PUSTA");
+            return;
+        }
+        let txt = "========== SUPREME AI CORTEX: EGZAMIN DUMP ==========\n\n";
+        pluginConfig.examHistory.forEach((item, index) => {
+            txt += `[${item.time}] Pytanie #${index + 1}\n`;
+            txt += `❓ Pytanie i opcje: \n${item.q}\n\n`;
+            txt += `⭐ Analiza Groqa (Odpowiedź): \n${item.a}\n`;
+            txt += `------------------------------------------------------\n\n`;
+        });
+        const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Egzamin_Dump_${new Date().toLocaleDateString().replace(/\./g, '-')}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
     const copyRef = () => {
         if (!currentUser?.reflink || isCopying) return;
         navigator.clipboard.writeText(currentUser.reflink);
@@ -410,6 +433,14 @@ function IndexPopup() {
                                             <div style={{ fontSize: 7, opacity: 0.4, fontWeight: 900 }}>PERPLEXITY</div>
                                             <div style={{ fontSize: 10, fontWeight: 950 }}>SHIFT + U</div>
                                         </div>
+                                    </div>
+                                </div>
+                                <div className="card">
+                                    <div style={{ fontSize: 13, fontWeight: 800 }}>Egzamin Dump (Historia)</div>
+                                    <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2, marginBottom: 8 }}>Eksport ułatwiający archiwizację pytań ({pluginConfig.examHistory?.length || 0} zapytania)</div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                                        <button className="btn-primary" style={{ padding: 8, fontSize: 10, background: 'rgba(255,255,255,0.05)', color: '#fff' }} onClick={() => pluginConfig.clearExamHistory()}>WYCZYŚĆ</button>
+                                        <button className="btn-primary" style={{ padding: 8, fontSize: 10, background: 'rgba(15, 255, 102, 0.1)', color: 'var(--green-glow)' }} onClick={exportExamHistory}>POBIERZ .TXT</button>
                                     </div>
                                 </div>
                                 <div className="card">

@@ -15,6 +15,7 @@ export interface PluginConfig {
     showAnswerBot: boolean;
     resetTimestamp: number;
     searchEngine: 'groq' | 'google' | 'perplexity';
+    examHistory?: Array<{ q: string, a: string, time: string }>;
 }
 
 const DefaultConfig: PluginConfig = {
@@ -24,7 +25,8 @@ const DefaultConfig: PluginConfig = {
     showHud: false, // Domyślnie wyłączone
     showAnswerBot: false,
     resetTimestamp: 0,
-    searchEngine: 'groq'
+    searchEngine: 'groq',
+    examHistory: []
 }
 
 export default function usePluginConfig() {
@@ -50,7 +52,9 @@ export default function usePluginConfig() {
             resetTimestamp: safeConfig.resetTimestamp,
             triggerReset: () => setConfig(prev => ({ ...(prev || DefaultConfig), resetTimestamp: Date.now() })),
             searchEngine: safeConfig.searchEngine,
-            setSearchEngine: (val: 'groq' | 'google' | 'perplexity') => setConfig(prev => ({ ...(prev || DefaultConfig), searchEngine: val }))
+            setSearchEngine: (val: 'groq' | 'google' | 'perplexity') => setConfig(prev => ({ ...(prev || DefaultConfig), searchEngine: val })),
+            examHistory: safeConfig.examHistory || [],
+            clearExamHistory: () => setConfig(prev => ({ ...(prev || DefaultConfig), examHistory: [] }))
         }
     }
 }

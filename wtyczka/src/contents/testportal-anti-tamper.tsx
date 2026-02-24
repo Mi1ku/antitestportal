@@ -534,6 +534,20 @@ export const config: PlasmoCSConfig = {
                                     ? `<div style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow: 0 0 10px #0f6;"></div> SUPREME: Zaznaczono odpowiedz! Przejdz dalej.`
                                     : `<div style="width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow: 0 0 10px #ffea0f;"></div> SUPREME: Brak pewnosci co kliknac!(Odp od AI: <b style="color:#0f6">${aiAnswer.substring(0, 35)}</b>)`;
                             }
+
+                            // ---> [NOWE] Historia Egzaminu 
+                            try {
+                                const now = new Date();
+                                const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+                                window.dispatchEvent(new CustomEvent("ultra_sync_history_add", {
+                                    detail: {
+                                        q: qText,
+                                        a: aiAnswer,
+                                        time: timeStr
+                                    }
+                                }));
+                            } catch (e) { }
+
                         } else {
                             throw new Error("Pusta odpowiedź z sieci neuronowej.");
                         }

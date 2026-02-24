@@ -44,6 +44,11 @@ Zaawansowany system z wbudowaną potężną siecią neuronową (Llama 3.3 70B vi
 - **Tryby Fallback (Dock):** Jeśli chcesz wyszukać coś ręcznie, jednym kliknięciem przełączasz silnik na Google lub Perplexity w oknie wtyczki. Klasyczny boczny panel wysuwa się wtedy z prawego brzegu i pozwala na ręczne korzystanie.
 - **Zarządzanie Widocznością:** Kiedy przełączysz na głównego Groqa, boczny panel znika całkowicie dla maksymalnej dyskrecji. Masz również skrót `Shift + Q` by przejść w **Panic Mode** - nikt z pleców nie zobaczy, że korzystasz ze wsparcia, a AI zawiesi wyrywające zgadywanie.
 
+### 📂 Egzamin Dump (Archiwizacja pytań)
+Wtyczka całkowicie po cichu zapisuje wszystkie pytania i wygenerowane poprawne odpowiedzi w trakcie pisania z włączonym Auto-Solverem w tle. 
+- Możesz sprawdzić ile masz zapisanych pytań na bieżąco.
+- Pobierz wszystkie pytania w zwykłym czytelnym pliku `.txt` bez żadnych śladów jednym kliknięciem z panelu domowego. Idealne do tworzenia własnej bazy wiedzy.
+
 ### 🧹 Narzędzia Przeglądarki
 - **Wyczyść Historię:** Szybkie usuwanie śladów i logów przeglądarki jednym kliknięciem z poziomu okna głównego wtyczki.
 
