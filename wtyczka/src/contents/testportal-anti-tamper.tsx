@@ -9,12 +9,21 @@ export const config: PlasmoCSConfig = {
         "https://*.testportal.com/*",
         "https://teams.microsoft.com/*"
     ],
+    exclude_matches: [
+        "https://*.testportal.pl/exam/test-result.html*",
+        "https://*.testportal.net/exam/test-result.html*",
+        "https://*.testportal.online/exam/test-result.html*",
+        "https://*.testportal.com/exam/test-result.html*"
+    ],
     all_frames: true,
     run_at: "document_start",
     world: "MAIN"
 };
 
 (function () {
+    // SECURITY: Nie uruchamiaj też skryptu docelowego z palca w trybie results
+    if (window.location.href.includes('test-result.html')) return;
+
     const BANNER = `
     ██████╗ ██╗  ██╗ ██████╗ ███████╗████████╗
     ██╔════╝ ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝
@@ -158,7 +167,10 @@ export const config: PlasmoCSConfig = {
     }
 
     window.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && !e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.PANIC_MODE) {
+        // Zabezpieczenie przed wpisywaniem dużych liter w otwarte pola tekstowe (np. odpowiedz na pytanie otwarte)
+        if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
+
+        if (!e.ctrlKey && e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.PANIC_MODE) {
             e.preventDefault();
             isHudEnabled = !isHudEnabled;
             isDockVisible = isHudEnabled; // Panic mode ukrywa również dock
@@ -169,14 +181,14 @@ export const config: PlasmoCSConfig = {
             return;
         }
 
-        if (e.ctrlKey && !e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.TOGGLE_DOCK) {
+        if (!e.ctrlKey && e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.TOGGLE_DOCK) {
             e.preventDefault();
             isDockVisible = !isDockVisible;
             updateAnswerFrame();
             return;
         }
 
-        if (e.ctrlKey && !e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.TIME_FREEZE) {
+        if (!e.ctrlKey && e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.TIME_FREEZE) {
             e.preventDefault();
             isTimeFreezeEnabled = !isTimeFreezeEnabled;
             updateHUD();
@@ -184,13 +196,13 @@ export const config: PlasmoCSConfig = {
             return;
         }
 
-        if (e.ctrlKey && !e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.SEARCH_GOOGLE) {
+        if (!e.ctrlKey && e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.SEARCH_GOOGLE) {
             // Quick Google (Legacy nowa karta)
             e.preventDefault();
             searchNewTab('google');
         }
 
-        if (e.ctrlKey && !e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.SEARCH_PERPLEXITY) {
+        if (!e.ctrlKey && e.shiftKey && e.code === DEV_CONFIG.SHORTCUTS.SEARCH_PERPLEXITY) {
             // Quick Perplexity (Legacy nowa karta)
             e.preventDefault();
             searchNewTab('perplexity');

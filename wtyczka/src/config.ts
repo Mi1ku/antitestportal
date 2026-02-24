@@ -36,11 +36,11 @@ export const DEV_CONFIG = {
 
     // Skróty Klawiszowe (Zdefiniowane kody JS: event.code)
     SHORTCUTS: {
-        PANIC_MODE: "KeyQ",     // Ctrl + Q
-        TOGGLE_DOCK: "KeyB",    // Ctrl + B
-        TIME_FREEZE: "KeyE",    // Ctrl + E
-        SEARCH_GOOGLE: "KeyY",  // Ctrl + Y
-        SEARCH_PERPLEXITY: "KeyU"// Ctrl + U
+        PANIC_MODE: "KeyQ",     // Shift + Q
+        TOGGLE_DOCK: "KeyB",    // Shift + B
+        TIME_FREEZE: "KeyE",    // Shift + E
+        SEARCH_GOOGLE: "KeyY",  // Shift + Y
+        SEARCH_PERPLEXITY: "KeyU"// Shift + U
     },
 
     // Konfiguracja logowania (App/Core) Firebase 
