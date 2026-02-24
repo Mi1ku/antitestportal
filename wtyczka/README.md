@@ -21,10 +21,12 @@ Take control of the clock. Stop the countdown whenever you need more time to thi
 - **Sync Engine:** Allows for manual server-side time synchronization.
 - **Freeze Mode:** Holds the timer at its current state locally.
 
-### 🧠 SUPREME AI CORTEX (Side Dock)
-Instant access to solutions via an animated lateral panel. It never breaks immersion.
-- **AI Solver Status Bar:** Contains a visually stunning animation predicting AI response times and status.
-- **Instant Frames:** Connects directly with Perplexity / Google, feeding it your questions natively in a 400px side window.
+### 🧠 SUPREME AI CORTEX (Auto-Clicker & Side Dock)
+Instant access to solutions and automatic test answering without breaking immersion.
+- **Gemini 1.5 Flash Auto-Solver:** If Auto-Answer Genius is active, the extension will instantly read the question, ping the AI model, and highlight the correct option on the test for you. 
+- **Developer Bound API Key:** End-users don't have to provide any keys. The Gemini API key is securely embedded in the `config.ts` file before the deploy phase.
+- **AI Solver Status Bar:** Contains a visually stunning animation predicting AI response times and reading status.
+- **Instant Frames (Free Mode):** Connects directly with Perplexity / Google, feeding it your questions natively in a 400px side window.
 - **Panic Mode:** Hide everything completely with a smooth transition using `Ctrl + Shift + Z` or toggle dock with `Ctrl + Shift + X`.
 
 ### 🧹 Przeglądarka Tools

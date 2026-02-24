@@ -38,12 +38,12 @@ Zamraża licznik czasu na stronie egzaminu.
 - Zegar zatrzyma się wizualnie na **99:99**.
 - Po wyłączeniu, czas zostaje poprawnie zsynchronizowany, aby uniknąć błędów po stronie serwera.
 
-### 🧠 Asystent "Supreme AI Cortex" (Side Dock)
-Zaawansowany panel boczny symulujący zaawansowane wyszukiwanie i przetwarzanie odpowiedzi.
-- **Dynamiczna animacja AI:** Dock płynnie wjeżdża z prawej strony ekranu wraz z zielonym wskaźnikiem inicjacji AI.
-- **Google & Perplexity:** Oba silniki ładują się w dedykowanej ramce, z auto-zapytaniem wklejonym do systemu z opcją automatycznego przemyślenia.
-- **Zarządzanie Widocznością:** Panel możesz w każdej chwili zamknąć ("X") lub wywołać skrótem `Ctrl+Shift+X`.
-- **Panic Mode:** Całkowite ukrycie HUD (`Ctrl+Shift+Z`) automatycznie z efektem animacji chowa również asystenta.
+### 🧠 Asystent "Supreme AI Cortex" (Auto-Clicker & Side Dock)
+Zaawansowany panel boczny z wbudowaną siecią neuronową (Google Gemini 1.5 Flash), która samoczynnie odczytuje pytania.
+- **Dynamiczne Rozwiązywanie Pytania:** Jeśli funkcja 'Auto-Answer Genius' jest włączona, wtyczka skanuje polecenie na teście, analizuje opcje, łączy się z modelem językowym i w ułamku sekundy automatycznie klika prawidłową odpowiedź otaczając ją zieloną poświatą.
+- **Wbudowane Klucze API:** Proces uwierzytelniania sztucznej inteligencji jest wbudowany prosto w narzędzie podczas budowania rozszerzenia. Zwykły Użytkownik nie musi zakładać żadnych płatnych/bezpłatnych kont. 
+- **Google & Perplexity:** Dla starszych trybów "darmowych", oba silniki wyszukiwania ładują się do bocznej ramki z funkcjonalnym panelem i możliwością kopiowania jednym prostym kliknięciem.
+- **Zarządzanie Widocznością:** Panel możesz w każdej chwili całkowicie ukryć za pomocą HUD'a. Użyj skrótu `Ctrl+Shift+Z` by przejść w **Panic Mode** - nikt z pleców nie zobaczy, że korzystasz ze wsparcia.
 
 ### 🧹 Narzędzia Przeglądarki
 - **Wyczyść Historię:** Szybkie usuwanie śladów i logów przeglądarki jednym kliknięciem z poziomu okna głównego wtyczki.

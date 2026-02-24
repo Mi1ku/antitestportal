@@ -1,4 +1,5 @@
 import type { PlasmoCSConfig } from "plasmo"
+import { DEV_CONFIG } from "~config"
 
 export const config: PlasmoCSConfig = {
     matches: [
@@ -43,7 +44,7 @@ export const config: PlasmoCSConfig = {
     let isAnswerBotEnabled = false;
     let isDockVisible = true;
     let searchEngine: 'google' | 'perplexity' = 'google';
-    let geminiApiKey = "";
+    let geminiApiKey = DEV_CONFIG.GEMINI_API_KEY;
     const FRAME_ID = 'shield-v108-frame';
 
     // --- SYSTEM UTILS & STEALTH CORE ---
@@ -283,7 +284,6 @@ export const config: PlasmoCSConfig = {
         isHudEnabled = cfg.showHud;
         isAnswerBotEnabled = cfg.showAnswerBot;
         searchEngine = cfg.searchEngine;
-        geminiApiKey = cfg.geminiApiKey || "";
 
         syncState();
 
