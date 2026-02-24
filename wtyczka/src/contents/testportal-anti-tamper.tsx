@@ -469,7 +469,7 @@ export const config: PlasmoCSConfig = {
                     });
                 }
             } else if (!qText || qText.length <= 5) {
-                if (statBar) statBar.innerHTML = `< div style = "width:8px; height:8px; background:#888; border-radius:50%;" ></div > [SUPREME MODE] Oczekiwanie na zapytanie...`;
+                if (statBar) statBar.innerHTML = `<div style="width:8px; height:8px; background:#888; border-radius:50%;"></div> [SUPREME MODE] Oczekiwanie na zapytanie...`;
             }
 
             // In supreme mode, don't update iframe src wildly to avoid distraction, 
@@ -483,19 +483,19 @@ export const config: PlasmoCSConfig = {
             // --- TRYB DAROMWY (IFRAME CORTEX) ---
             if (statBar && frameLastUrl !== targetUrl) {
                 if (qText && qText.length > 5) {
-                    statBar.innerHTML = `< div class= "ai-pulse" style = "width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;" ></div > AI analizuje dostępne powiązania i symuluje rozwiązanie...`;
+                    statBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> AI analizuje dostępne powiązania i symuluje rozwiązanie...`;
 
                     setTimeout(() => {
                         const currentStatBar = document.getElementById('ai-status-bar');
                         if (currentStatBar) {
-                            currentStatBar.innerHTML = `< div class= "ai-pulse" style = "width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow:0 0 10px #ffea0f;" ></div > Dopasowywanie wzorców i weryfikacja danych(WebSearch)...`;
+                            currentStatBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow:0 0 10px #ffea0f;"></div> Dopasowywanie wzorców i weryfikacja danych (WebSearch)...`;
                         }
                     }, 2000);
 
                     setTimeout(() => {
                         const currentStatBar = document.getElementById('ai-status-bar');
                         if (currentStatBar) {
-                            currentStatBar.innerHTML = `< div style = "width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;" ></div > Zapytanie zrealizowane pomyślnie.Zaznacz widoczną podpowiedź!`;
+                            currentStatBar.innerHTML = `<div style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> Zapytanie zrealizowane pomyślnie. Zaznacz widoczną podpowiedź!`;
 
                             // Fake visual ping interaction for realism
                             const inputs = document.querySelectorAll('.answer_container, .answer-label');
@@ -509,7 +509,7 @@ export const config: PlasmoCSConfig = {
                         }
                     }, 4500);
                 } else {
-                    statBar.innerHTML = `< div style = "width:8px; height:8px; background:#888; border-radius:50%;" ></div > Tryb darmowy: Oczekiwanie na zapytanie...`;
+                    statBar.innerHTML = `<div style="width:8px; height:8px; background:#888; border-radius:50%;"></div> Tryb darmowy: Oczekiwanie na zapytanie...`;
                 }
             }
 
