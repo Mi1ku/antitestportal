@@ -31,6 +31,11 @@
     "typescript": "5.3.3"
   },
   "manifest": {
+    "browser_specific_settings": {
+      "gecko": {
+        "id": "antitestportal@mikus.gg"
+      }
+    },
     "host_permissions": [
       "https://*.testportal.pl/*",
       "https://*.testportal.net/*",

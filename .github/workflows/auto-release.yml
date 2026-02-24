@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'wtyczka/package.json'
 
 jobs:
   build-and-release:
@@ -22,50 +20,37 @@ jobs:
         with:
           node-version: 18
 
-      - name: Get Version
-        id: get_version
+      - name: Set Dynamic Version
+        id: set_version
         shell: pwsh
         run: |
-          $version = (Get-Content wtyczka/package.json | ConvertFrom-Json).version
-          echo "VERSION=$version" >> $env:GITHUB_ENV
-
-      - name: Check if Release Exists
-        id: check_release
-        shell: pwsh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release view "v$env:VERSION" 2> $null
-          if ($LASTEXITCODE -eq 0) {
-            echo "Release v$env:VERSION already exists. Skipping."
-            echo "skip=true" >> $env:GITHUB_ENV
-          } else {
-            echo "skip=false" >> $env:GITHUB_ENV
-          }
+          $pkgPath = "wtyczka/package.json"
+          $pkg = Get-Content $pkgPath -Raw | ConvertFrom-Json
+          $baseVersion = $pkg.version -replace '\.\d+$',''
+          if ($baseVersion -notmatch '\.') { $baseVersion = "$baseVersion.0" }
+          $newVersion = "$baseVersion.${{ github.run_number }}"
+          $pkg.version = $newVersion
+          $pkg | ConvertTo-Json -Depth 20 | Out-File $pkgPath -Encoding utf8
+          echo "VERSION=$newVersion" >> $env:GITHUB_ENV
 
       - name: Install dependencies
-        if: env.skip == 'false'
         working-directory: wtyczka
         run: npm install
 
       - name: Build Extension
-        if: env.skip == 'false'
         working-directory: wtyczka
         run: npm run build
 
       - name: Copy README
-        if: env.skip == 'false'
         run: Copy-Item "README.md" "wtyczka/build/chrome-mv3-prod/README.md" -Force
 
       - name: Package Release zip
-        if: env.skip == 'false'
         shell: pwsh
         run: |
           if (Test-Path "AntiTestportal-v$env:VERSION.zip") { Remove-Item "AntiTestportal-v$env:VERSION.zip" }
           Compress-Archive -Path "wtyczka/build/chrome-mv3-prod/*" -DestinationPath "AntiTestportal-v$env:VERSION.zip" -Force
 
       - name: Create Release
-        if: env.skip == 'false'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "v${{ env.VERSION }}"

@@ -37,25 +37,28 @@ Zamraża licznik czasu na stronie egzaminu.
 - Zegar zatrzyma się wizualnie na **99:99**.
 - Po wyłączeniu, czas zostaje poprawnie zsynchronizowany, aby uniknąć błędów po stronie serwera.
 
-### 🔎 Asystent Boczny (Side Dock)
-Inteligentne okno pomocy, które dokuje się po prawej stronie ekranu.
-- **Google & Perplexity:** Oba silniki ładują się bezpośrednio wewnątrz panelu. Wybierz silnik przyciskami w HUD.
-- **Zarządzanie Widocznością:** Panel możesz w każdej chwili zamknąć ("X") lub wywołać skrótem `Ctrl+Shift+X`.
-- **Panic Mode:** Całkowite ukrycie HUD (`Ctrl+Shift+Z`) automatycznie chowa również asystenta.
+### ⚡ On-page AI Tools
+Inteligentne narzędzia wstrzykiwane bezpośrednio w treść pytania (bez inwazyjnych paneli bocznych).
+- **Szybkie Szukanie:** Przyciski do Google i Perplexity dodawane po cichu pod każdym pytaniem.
+- **Kopiowanie:** Błyskawiczne kopiowanie pytania wraz z odpowiedziami do schowka.
+- **Zaznaczanie:** Możliwość odrzucania/podświetlania interesujących opcji jednym kliknięciem myszy bezpośrednio na stronie Testportalu.
+
+### 🧹 Narzędzia Przeglądarki
+- **Wyczyść Historię:** Szybkie usuwanie śladów i logów przeglądarki jednym kliknięciem z poziomu okna głównego wtyczki.
 
 ### 🔄 Auto-Aktualizacje (CI/CD)
 Wtyczka posiada wbudowany system sprawdzania powiadomień połączony bezpośrednio z repozytorium GitHub.
-- **Powiadomienia in-app:** Jeśli wyjdzie nowa wersja, automatycznie zobaczysz czerwony pasek z linkiem w oknie wtyczki.
-- **Zero-touch Release (dla dev):** Gdy wyślesz nową wersję na GitHuba, system GitHub Actions sam zbuduje, spakuje w ZIP i opublikuje nową aplikację w zakładce Releases.
+- **Powiadomienia in-app:** Jeśli wyjdzie nowa wersja, automatycznie zobaczysz czerwony pasek w oknie wtyczki z banerem i przyciskiem do pobrania.
+- **Zero-touch Release:** Każdy "push" na GitHuba buduje, pakuje i uaktualnia wtyczkę generując zawsze najnowszą zaktualizowaną wersję w zakładce Releases.
 
 ### ⌨️ Skróty Klawiszowe (Sterowanie)
 | Skrót | Funkcja | Opis |
 | :--- | :--- | :--- |
-| **`Ctrl + Shift + Z`** | **Panic Mode** | Natychmiastowe ukrycie/pokazanie całego HUD i Docka |
-| **`Ctrl + Shift + X`** | **Toggle Dock** | Pokazuje lub chowa boczny panel asystenta |
+| **`Ctrl + Shift + Z`** | **Panic Mode** | Natychmiastowe ukrycie/pokazanie całego HUD bezpieczeństwa |
 | **`Ctrl + Shift + F`** | **Freeze Time** | Włącza/wyłącza zatrzymanie czasu |
-| `Ctrl + Z` | Quick Google | Otwiera wyszukiwanie Google w nowej karcie (Legacy) |
-| `Ctrl + Shift + S` | Quick Perplexity | Otwiera Perplexity w nowej karcie (Legacy) |
+| `Alt + C` | Kopiuj Test | Kopiuje inteligentnie sformatowane pytanie wraz ze wszystkimi odpowiedziami |
+| `Alt + G` | Szukaj Google | Otwiera nowe mniejsze okno z wynikami w Google |
+| `Alt + P` | Szukaj Perplexity | Otwiera nowe mniejsze okno z zapytaniem zalanym do Perplexity AI |
 
 ---
 
