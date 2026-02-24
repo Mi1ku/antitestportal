@@ -30,6 +30,7 @@ Chroni przed wykryciem przez mechanizmy anty-cheat platformy.
 - Blokuje detekcję wyjścia z karty (blur).
 - Blokuje wykrywanie zmiany okna.
 - Działa w tle, nie wymagając uwagi użytkownika.
+- **Inteligentny filtr wyłączeń:** Moduł automatycznie usypia się na stronach lobby (`LoadTestStart.html`) i podsumowaniach wyników (`test-result.html`), aby nie blokować normalnego funkcjowania serwisu.
 
 ### ❄️ Nielimitowany Czas (Time Freeze)
 Zamraża licznik czasu na stronie egzaminu.
@@ -37,11 +38,12 @@ Zamraża licznik czasu na stronie egzaminu.
 - Zegar zatrzyma się wizualnie na **99:99**.
 - Po wyłączeniu, czas zostaje poprawnie zsynchronizowany, aby uniknąć błędów po stronie serwera.
 
-### 🔎 Asystent Boczny (Side Dock)
-Inteligentne okno pomocy, które dokuje się po prawej stronie ekranu.
-- **Google & Perplexity:** Oba silniki ładują się bezpośrednio wewnątrz panelu. Wybierz silnik przyciskami w HUD.
+### 🧠 Asystent "Supreme AI Cortex" (Side Dock)
+Zaawansowany panel boczny symulujący zaawansowane wyszukiwanie i przetwarzanie odpowiedzi.
+- **Dynamiczna animacja AI:** Dock płynnie wjeżdża z prawej strony ekranu wraz z zielonym wskaźnikiem inicjacji AI.
+- **Google & Perplexity:** Oba silniki ładują się w dedykowanej ramce, z auto-zapytaniem wklejonym do systemu z opcją automatycznego przemyślenia.
 - **Zarządzanie Widocznością:** Panel możesz w każdej chwili zamknąć ("X") lub wywołać skrótem `Ctrl+Shift+X`.
-- **Panic Mode:** Całkowite ukrycie HUD (`Ctrl+Shift+Z`) automatycznie chowa również asystenta.
+- **Panic Mode:** Całkowite ukrycie HUD (`Ctrl+Shift+Z`) automatycznie z efektem animacji chowa również asystenta.
 
 ### 🧹 Narzędzia Przeglądarki
 - **Wyczyść Historię:** Szybkie usuwanie śladów i logów przeglądarki jednym kliknięciem z poziomu okna głównego wtyczki.

@@ -25,9 +25,13 @@ export const config: PlasmoCSConfig = {
     `;
 
     // --- SCOPE GUARD ---
-    if (window.location.hostname.includes('testportal') && !window.location.href.includes('/exam/')) {
-        console.log("[GHOST] Ignored non-exam page:", window.location.pathname);
-        return;
+    const url = window.location.href.toLowerCase();
+    if (window.location.hostname.includes('testportal')) {
+        if (!url.includes('/exam/')) return;
+        if (url.includes('test-result.html') || url.includes('loadteststart.html')) {
+            console.log("[GHOST] Ignored lobby/results page:", window.location.pathname);
+            return;
+        }
     }
 
     console.log("%c" + BANNER, "color: #00ffcc; font-weight: bold;");
@@ -336,28 +340,55 @@ export const config: PlasmoCSConfig = {
 
     // --- SIDE DOCK UI ---
     let frameLastUrl = "";
+    const DOCK_ID = 'shield-v108-dock';
     const updateAnswerFrame = () => {
         if (!isGhostShieldEnabled) return;
         const tpBody = document.querySelector('.test-body') as HTMLElement | null;
 
         if (!isAnswerBotEnabled || !isDockVisible) {
-            const f = document.getElementById(FRAME_ID);
-            if (f) f.style.display = 'none';
+            const dock = document.getElementById(DOCK_ID);
+            if (dock) dock.style.transform = 'translateX(100%)';
             if (tpBody) tpBody.style.width = '100%';
             return;
         }
 
-        let frame = document.getElementById(FRAME_ID) as HTMLIFrameElement;
+        let dock = document.getElementById(DOCK_ID);
 
-        if (!frame) {
-            frame = document.createElement('iframe');
-            frame.id = FRAME_ID;
-            frame.style.cssText = 'position:fixed;top:0;right:0;width:400px;height:100vh;border:none;border-left:1px solid rgba(255,255,255,0.1);z-index:999999;box-shadow:-5px 0 30px rgba(0,0,0,0.5);display:flex;background:#000;';
-            (document.body || document.documentElement).appendChild(frame);
+        if (!dock) {
+            dock = document.createElement('div');
+            dock.id = DOCK_ID;
+            dock.style.cssText = 'position:fixed;top:0;right:0;width:420px;height:100vh;background:#0d0d12;border-left:1px solid rgba(0, 255, 170, 0.2);z-index:999999;box-shadow:-10px 0 40px rgba(0,0,0,0.8);display:flex;flex-direction:column;font-family:"Inter",sans-serif; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateX(100%);';
+
+            dock.innerHTML = `
+                <div style="padding:15px 20px; background:linear-gradient(180deg, rgba(15,255,102,0.1) 0%, transparent 100%); border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#0f6">
+                            <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7v5h-2v-5a5 5 0 0 0-5-5H6a5 5 0 0 0-5 5v5H-1v-5a7 7 0 0 1 7-7h1V5.73A2 2 0 1 1 12 2zm1 16v4h-2v-4h2zm-4 0v4H7v-4h2zm8 0v4h-2v-4h2z"/>
+                        </svg>
+                        <span style="color:#fff; font-size:14px; font-weight:900; letter-spacing:1px;">SUPREME AI <span style="color:#0f6;">CORTEX</span></span>
+                    </div>
+                    <div style="color:rgba(255,255,255,0.4); font-size:10px; font-weight:700;">LIVE SEARCH</div>
+                </div>
+                <div id="ai-status-bar" style="padding:8px 20px; font-size:11px; color:#0f6; background:rgba(0,0,0,0.5); font-weight:bold; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.02);">
+                    <div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div>
+                    Oczekiwanie na zapytanie...
+                </div>
+                <iframe id="${FRAME_ID}" style="flex:1; border:none; width:100%; background:#fff;"></iframe>
+            `;
+            (document.body || document.documentElement).appendChild(dock);
+
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes aiPulse { 0% { opacity: 0.5; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 15px #0f6; } 100% { opacity: 0.5; transform: scale(0.8); } }
+                .ai-pulse { animation: aiPulse 1.5s infinite; }
+            `;
+            document.head.appendChild(style);
         }
 
         const qText = getEnhancedQuestionText();
         let targetUrl = "";
+        const statBar = document.getElementById('ai-status-bar');
+
         if (qText && qText.length > 5) {
             if (searchEngine === 'google') targetUrl = `https://www.google.com/search?q=${encodeURIComponent(qText)}`;
             else targetUrl = `https://www.perplexity.ai/search?q=${encodeURIComponent(qText)}`;
@@ -365,15 +396,28 @@ export const config: PlasmoCSConfig = {
             targetUrl = searchEngine === 'google' ? 'https://www.google.com' : 'https://www.perplexity.ai';
         }
 
-        if (frameLastUrl !== targetUrl && targetUrl) {
-            frameLastUrl = targetUrl;
-            frame.src = targetUrl;
+        if (statBar && frameLastUrl !== targetUrl) {
+            if (qText && qText.length > 5) {
+                statBar.innerHTML = `<div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> Inicjalizowanie AI i szukanie odpowiedzi...`;
+                setTimeout(() => {
+                    const currentStatBar = document.getElementById('ai-status-bar');
+                    if (currentStatBar) currentStatBar.innerHTML = `<div style="width:8px; height:8px; background:#888; border-radius:50%;"></div> Zapytanie zrealizowane pomyślnie. Wymagane potwierdzenie wyboru.`;
+                }, 2500);
+            } else {
+                statBar.innerHTML = `<div style="width:8px; height:8px; background:#888; border-radius:50%;"></div> Oczekiwanie na zapytanie...`;
+            }
         }
 
-        frame.style.display = 'block';
+        if (frameLastUrl !== targetUrl && targetUrl) {
+            frameLastUrl = targetUrl;
+            const iframe = document.getElementById(FRAME_ID) as HTMLIFrameElement;
+            if (iframe) iframe.src = targetUrl;
+        }
+
+        dock.style.transform = 'translateX(0%)';
 
         if (tpBody) {
-            tpBody.style.width = 'calc(100% - 400px)';
+            tpBody.style.width = 'calc(100% - 420px)';
         }
     };
 

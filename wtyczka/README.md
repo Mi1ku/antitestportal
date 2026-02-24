@@ -14,17 +14,18 @@
 Our advanced bypass engine that renders you invisible to Testportal's focus tracking.
 - **Undetectable:** Fakes `document.hasFocus` and `visibilityChange`.
 - **Silent Mode:** Automatically silences all "cheat detection" signals from the server.
+- **Auto-Smart Sleep:** The Ghost module intentionally turns itself off via path detection on `LoadTestStart` and `test-result` pages to assure a bug-free experience.
 
 ### ❄️ Time Freeze Pro
 Take control of the clock. Stop the countdown whenever you need more time to think.
 - **Sync Engine:** Allows for manual server-side time synchronization.
 - **Freeze Mode:** Holds the timer at its current state locally.
 
-### 🧠 Side Dock (AI & Search)
-Instant access to solutions without ever leaving the page.
-- **AI Solver (Ctrl + Shift + S):** Direct integration with Perplexity AI for high-accuracy answers right in the side panel.
-- **Quick Search (Ctrl + Z):** Fast Google search for any question.
-- **Panic Mode:** Hide everything completely with `Ctrl + Shift + Z`.
+### 🧠 SUPREME AI CORTEX (Side Dock)
+Instant access to solutions via an animated lateral panel. It never breaks immersion.
+- **AI Solver Status Bar:** Contains a visually stunning animation predicting AI response times and status.
+- **Instant Frames:** Connects directly with Perplexity / Google, feeding it your questions natively in a 400px side window.
+- **Panic Mode:** Hide everything completely with a smooth transition using `Ctrl + Shift + Z` or toggle dock with `Ctrl + Shift + X`.
 
 ### 🧹 Przeglądarka Tools
 - **Clear History:** Click a single button in the extension panel to erase local browser history.
