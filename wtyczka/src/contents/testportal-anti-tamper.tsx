@@ -470,7 +470,7 @@ export const config: PlasmoCSConfig = {
                             throw new Error("Pusta odpowiedź z sieci neuronowej.");
                         }
                     }).catch(err => {
-                        console.error("[Supreme AI Error]:", err);
+                        console.log("%c[Supreme AI Fallback Mode]: " + err.message, "color: #ffea0f; font-weight: bold;");
                         if (statBar) {
                             statBar.innerHTML = `<div style="width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow: 0 0 10px #ffea0f;"></div> AI Fallback: Ściąganie awaryjne (${err.message.substring(0, 20)}...). Otwieram wyszukiwarkę...`;
                         }
