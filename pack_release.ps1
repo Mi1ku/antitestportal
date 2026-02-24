@@ -8,15 +8,6 @@ $zipPath = "$root\$projectName.zip"
 
 Write-Host "--- AntiTestportal+ Supreme Auto-Deploy ---" -ForegroundColor Cyan
 
-# 0. Fix JSON BOM Encoding for Node.js
-try {
-    $pkgPath = "$wtyczkaPath\package.json"
-    $pkgBody = Get-Content $pkgPath -Raw
-    [IO.File]::WriteAllText($pkgPath, $pkgBody, (New-Object Text.UTF8Encoding($False)))
-} catch {
-    Write-Host "Warning: Could not re-encode package.json" -ForegroundColor Magenta
-}
-
 # 1. Budowanie wtyczki
 Write-Host "[1/5] Budowanie lokalne rozszerzenia (npm run build)..." -ForegroundColor Yellow
 Set-Location $wtyczkaPath
@@ -39,19 +30,18 @@ if (Test-Path "$buildPath") {
 
 # 3. Pakowanie ZIP
 Write-Host "[3/5] Tworzenie lokalnego archiwum $projectName.zip..." -ForegroundColor Yellow
-$zipError = $false
 try {
     if (Test-Path "$root\AntiTestportal-*.zip") { Remove-Item "$root\AntiTestportal-*.zip" -Force -ErrorAction Stop }
     if (Test-Path "$root\$projectName.zip") { Remove-Item "$root\$projectName.zip" -Force -ErrorAction Stop }
 } catch {
-    Write-Host "Ostrzezenie: Nie mozna usunac starego piku zip. (Prawdopodobnie uzywany przez system)" -ForegroundColor Red
+    Write-Host "Ostrzezenie: Nie mozna usunac starego piku zip." -ForegroundColor Red
 }
 
 try {
     Compress-Archive -Path "$buildPath\*" -DestinationPath $zipPath -Force -ErrorAction Stop
     Write-Host "Zbudowano plik lokalnie na dysku: $projectName.zip" -ForegroundColor Green
 } catch {
-    Write-Host "Wystapil problem z pakowaniem na zywca podczas weryfikacji Zipa. System asynchronicznie przeskakuje błąd." -ForegroundColor Yellow
+    Write-Host "Wystapil maly problem z archiwum Zip. Asynchronicznie przeskakuje blad." -ForegroundColor Yellow
 }
 
 # Delay to ensure Windows releases zip file lock before github push
