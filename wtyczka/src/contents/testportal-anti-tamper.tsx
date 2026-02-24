@@ -53,7 +53,7 @@ export const config: PlasmoCSConfig = {
     let isHudEnabled = false;
     let isAnswerBotEnabled = false;
     let isDockVisible = true;
-    let searchEngine: 'google' | 'perplexity' = 'google';
+    let searchEngine: 'groq' | 'google' | 'perplexity' = 'groq';
     let groqApiKey = DEV_CONFIG.GROQ_API_KEY;
     const FRAME_ID = 'shield-v108-frame';
 
@@ -376,8 +376,26 @@ export const config: PlasmoCSConfig = {
         if (!dock) {
             dock = document.createElement('div');
             dock.id = DOCK_ID;
-            // DOCK CAŁKOWICIE UKRYTY (wg. prośby) - ale istnieje w DOM z iframe, by awaryjne fukcje nie rzucały błędów null pointera
-            dock.style.cssText = 'display:none;';
+            dock = document.createElement('div');
+            dock.id = DOCK_ID;
+            dock.style.cssText = 'position:fixed;top:0;right:0;width:420px;height:100vh;background:#0d0d12;border-left:1px solid rgba(0, 255, 170, 0.2);z-index:999999;box-shadow:-10px 0 40px rgba(0,0,0,0.8);display:flex;flex-direction:column;font-family:"Inter",sans-serif; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateX(100%);';
+
+            dock.innerHTML = `
+                <div style="padding:15px 20px; background:linear-gradient(180deg, rgba(15,255,102,0.1) 0%, transparent 100%); border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#0f6">
+                            <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7v5h-2v-5a5 5 0 0 0-5-5H6a5 5 0 0 0-5 5v5H-1v-5a7 7 0 0 1 7-7h1V5.73A2 2 0 1 1 12 2zm1 16v4h-2v-4h2zm-4 0v4H7v-4h2zm8 0v4h-2v-4h2z"/>
+                        </svg>
+                        <span style="color:#fff; font-size:14px; font-weight:900; letter-spacing:1px;">SUPREME AI <span style="color:#0f6;">CORTEX</span></span>
+                    </div>
+                    <div style="color:rgba(255,255,255,0.4); font-size:10px; font-weight:700;">LIVE SEARCH</div>
+                </div>
+                <div id="ai-status-bar" style="padding:8px 20px; font-size:11px; color:#0f6; background:rgba(0,0,0,0.5); font-weight:bold; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.02);">
+                    <div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div>
+                    Oczekiwanie na zapytanie...
+                </div>
+                <iframe id="${FRAME_ID}" style="flex:1; border:none; width:100%; background:#fff;"></iframe>
+            `;
             (document.body || document.documentElement).appendChild(dock);
 
             const style = document.createElement('style');
@@ -399,7 +417,7 @@ export const config: PlasmoCSConfig = {
             targetUrl = searchEngine === 'google' ? 'https://www.google.com' : 'https://www.perplexity.ai';
         }
 
-        if (groqApiKey) {
+        if (searchEngine === 'groq' && groqApiKey) {
             // --- PRAWDZIWY SUPREME AUTO-SOLVER ---
             if (qText && qText.length > 5 && lastSolvedQuestion !== qText) {
                 lastSolvedQuestion = qText;
@@ -524,7 +542,7 @@ export const config: PlasmoCSConfig = {
             // but we can load standard search if needed. We'll leave the iframe blank or load Google for manual searches.
             if (frameLastUrl !== targetUrl && targetUrl) {
                 const iframe = document.getElementById(FRAME_ID) as HTMLIFrameElement;
-                if (iframe && iframe.src === "about:blank") iframe.src = searchEngine === 'google' ? 'https://www.google.com' : 'https://www.perplexity.ai';
+                if (iframe && iframe.src === "about:blank") iframe.src = 'https://www.google.com';
             }
 
         } else {
@@ -569,8 +587,25 @@ export const config: PlasmoCSConfig = {
             }
         }
 
-        // Ponieważ wywaliliśmy boczny panel całkowicie, strona zajmuje zawsze 100% testbody
-        if (tpBody) tpBody.style.width = '100%';
+        // Ukrywanie/Pokazywanie dynamiczne DOCKA zależnie od wybranego silnika w ustawieniach na popup
+        if (searchEngine === 'groq') {
+            dock.style.display = 'none';
+        } else {
+            // Skoro to Google/Perplexity, pokazujemy dock
+            dock.style.display = 'flex';
+        }
+
+        // Kiedy koniec egzaminu, wyłącz Dock awaryjnie na twardo
+        if (window.location.href.toLowerCase().includes('result') || window.location.href.toLowerCase().includes('zamknij')) {
+            dock.style.display = 'none';
+        }
+
+        // Obsługa płynnego wysuwania Docka
+        dock.style.transform = isDockVisible && dock.style.display !== 'none' ? 'translateX(0%)' : 'translateX(100%)';
+
+        if (tpBody) {
+            tpBody.style.width = isDockVisible && dock.style.display !== 'none' ? 'calc(100% - 420px)' : '100%';
+        }
     };
 
     const HUGE_TIME = 9999999;

@@ -372,6 +372,15 @@ function IndexPopup() {
 
                                     <div style={{ display: 'flex', gap: 5, marginTop: 8 }}>
                                         <button
+                                            onClick={() => pluginConfig.setSearchEngine('groq')}
+                                            style={{
+                                                flex: 1, padding: 6, borderRadius: 6, border: '1px solid var(--border)',
+                                                background: pluginConfig.searchEngine === 'groq' ? 'var(--green-glow)' : 'transparent',
+                                                color: pluginConfig.searchEngine === 'groq' ? '#000' : '#fff',
+                                                fontSize: 9, fontWeight: 800, cursor: 'pointer'
+                                            }}
+                                        >SUPREME (GROQ)</button>
+                                        <button
                                             onClick={() => pluginConfig.setSearchEngine('google')}
                                             style={{
                                                 flex: 1, padding: 6, borderRadius: 6, border: '1px solid var(--border)',
@@ -379,7 +388,7 @@ function IndexPopup() {
                                                 color: pluginConfig.searchEngine === 'google' ? '#000' : '#fff',
                                                 fontSize: 9, fontWeight: 800, cursor: 'pointer'
                                             }}
-                                        >GOOGLE</button>
+                                        >GOOGLE (DOCK)</button>
                                         <button
                                             onClick={() => pluginConfig.setSearchEngine('perplexity')}
                                             style={{
@@ -388,7 +397,7 @@ function IndexPopup() {
                                                 color: pluginConfig.searchEngine === 'perplexity' ? '#000' : '#fff',
                                                 fontSize: 9, fontWeight: 800, cursor: 'pointer'
                                             }}
-                                        >PERPLEXITY AI</button>
+                                        >PERPLEXITY</button>
                                     </div>
                                 </div>
                                 <div className="card" style={{ padding: 10 }}>

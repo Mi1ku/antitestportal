@@ -14,7 +14,7 @@ export interface PluginConfig {
     showHud: boolean;
     showAnswerBot: boolean;
     resetTimestamp: number;
-    searchEngine: 'google' | 'perplexity';
+    searchEngine: 'groq' | 'google' | 'perplexity';
 }
 
 const DefaultConfig: PluginConfig = {
@@ -24,7 +24,7 @@ const DefaultConfig: PluginConfig = {
     showHud: false, // Domyślnie wyłączone
     showAnswerBot: false,
     resetTimestamp: 0,
-    searchEngine: 'google'
+    searchEngine: 'groq'
 }
 
 export default function usePluginConfig() {
@@ -50,7 +50,7 @@ export default function usePluginConfig() {
             resetTimestamp: safeConfig.resetTimestamp,
             triggerReset: () => setConfig(prev => ({ ...(prev || DefaultConfig), resetTimestamp: Date.now() })),
             searchEngine: safeConfig.searchEngine,
-            setSearchEngine: (val: 'google' | 'perplexity') => setConfig(prev => ({ ...(prev || DefaultConfig), searchEngine: val }))
+            setSearchEngine: (val: 'groq' | 'google' | 'perplexity') => setConfig(prev => ({ ...(prev || DefaultConfig), searchEngine: val }))
         }
     }
 }
