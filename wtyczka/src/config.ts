@@ -29,8 +29,9 @@ export const DEV_CONFIG = {
     // URL Wsparcie/Autor
     SUPPORT_URL: "https://www.instagram.com/76mikus/",
 
-    // Adres Firebase (baza danych)
-    FIREBASE_DB_URL: "https://antitestportaldb-default-rtdb.europe-west1.firebasedatabase.app",
+    // SUPABASE DATABASE (Professional & CSP-Friendly)
+    SUPABASE_URL: "https://lvbxiqtintdoyxkljgwd.supabase.co",
+    SUPABASE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2YnhpcXRpbnRkb3l4a2xqZ3dkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MjM3OTIsImV4cCI6MjA5MTA5OTc5Mn0.TortjVCWlTOHlz7yw1PbtuY_bf-OE5mGQunp481W-KY",
 
     // Model Sztucznej Inteligencji i Prompty
     AI_MODEL: "llama-3.3-70b-versatile",
@@ -43,16 +44,5 @@ export const DEV_CONFIG = {
         TIME_FREEZE: "KeyE",    // Shift + E
         SEARCH_GOOGLE: "KeyY",  // Shift + Y
         SEARCH_PERPLEXITY: "KeyU"// Shift + U
-    },
-
-    // Konfiguracja logowania (App/Core) Firebase 
-    FIREBASE_CONFIG: {
-        apiKey: "AIzaSyDSnKsbPNCCmEKAO1r_PvvVldViGWQ1Sw",
-        authDomain: "antitestportaldb.firebaseapp.com",
-        projectId: "antitestportaldb",
-        storageBucket: "antitestportaldb.firebasestorage.app",
-        messagingSenderId: "99856592412",
-        appId: "1:99856592412:web:b73e994dcb8d3561e4e3d9",
-        measurementId: "G-PDM2VNPEZ9"
     }
 };
