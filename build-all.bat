@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: ==========================================
-:: ANTITESTPORTAL+ MASTER BUILDER (V1.0)
+:: ANTITESTPORTAL+ MASTER BUILDER (V1.1)
 :: AUTHOR: mi1ku (76mikus)
 :: ==========================================
 
@@ -16,7 +16,7 @@ set "NODE_OPTIONS=--max-old-space-size=4096 --no-deprecation"
 
 cls
 echo ==============================================
-echo      ANTITESTPORTAL+ MASTER BUILDER V1.0
+echo      ANTITESTPORTAL+ MASTER BUILDER V1.1
 echo      OFFICIAL MASTER RELEASE v%VERSION%
 echo ==============================================
 echo.
@@ -55,7 +55,7 @@ git commit -m "Auto-Deploy: AntiTestportal+ Master Build v%VERSION%" >nul 2>&1
 git push origin main || git push origin master
 
 :: 4. GITHUB RELEASE
-echo [STEP 4] Tworzenie oficjalnego Release na GitHub...
+echo [STEP 4] Tworzenie profesjonalnego Release na GitHub...
 
 :: Create temporary release notes file (PL/EN)
 echo # ANTITESTPORTAL+ [V1.0.0 OFFICIAL MASTER] > release_notes.md
@@ -79,7 +79,7 @@ echo * **Ghost Shield**: Advanced protection against focus loss and tab-out dete
 echo * **AI Interception**: Real-time signal routing and answer analysis. >> release_notes.md
 echo * **Stealth Mode**: Undetectable presence in the browser environment. >> release_notes.md
 echo. >> release_notes.md
-echo *Developed & Maintained by **mi1ku*** >> release_notes.md
+echo *Developed ^& Maintained by **mi1ku*** >> release_notes.md
 
 where gh >nul 2>&1
 if %errorlevel% equ 0 (
