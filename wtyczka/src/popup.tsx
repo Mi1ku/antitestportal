@@ -5,6 +5,7 @@ import useDatabase, { type DbKey } from "~hooks/use-database";
 import { useGithubUpdate } from "~hooks/use-github-update";
 import { DEV_CONFIG } from "~config"
 import { TRANSLATIONS } from "~lib/translations";
+import { useStorage } from "@plasmohq/storage/hook";
 
 type Tab = "home" | "games" | "terminal" | "guide";
 
