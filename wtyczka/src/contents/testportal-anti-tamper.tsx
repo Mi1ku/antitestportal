@@ -1,5 +1,6 @@
 import type { PlasmoCSConfig } from "plasmo"
 import { DEV_CONFIG } from "~config"
+import { TRANSLATIONS } from "~lib/translations";
 
 export const config: PlasmoCSConfig = {
     matches: [
@@ -55,7 +56,12 @@ export const config: PlasmoCSConfig = {
     let isDockVisible = true;
     let searchEngine: 'groq' | 'google' | 'perplexity' = 'groq';
     let groqApiKey = DEV_CONFIG.GROQ_API_KEY;
+    let currentLang: 'pl' | 'en' = 'pl';
     const FRAME_ID = 'shield-v108-frame';
+
+    const t = (key: keyof typeof TRANSLATIONS.pl) => {
+        return TRANSLATIONS[currentLang][key] || key;
+    };
 
     // --- SYSTEM UTILS & STEALTH CORE ---
     const fakedFunctions = new Map();
@@ -238,7 +244,7 @@ export const config: PlasmoCSConfig = {
                 <!-- Status Text -->
                 <div style="display:flex; align-items:center; gap:8px; min-width:80px; justify-content:center;">
                     <div id="${DOT_ID}" style="width:6px; height:6px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6; transition:0.3s;"></div>
-                    <span id="${TXT_ID}" style="letter-spacing:1px;">ACTIVE</span>
+                    <span id="${TXT_ID}" style="letter-spacing:1px;">${t("hud_active")}</span>
                 </div>
 
             </div>
@@ -262,9 +268,9 @@ export const config: PlasmoCSConfig = {
             }
         }
         if (txt) {
-            if (isTimeFreezeEnabled) txt.innerText = 'TIME FROZEN';
-            else if (isGhostShieldEnabled) txt.innerText = 'SHIELD ACTIVE';
-            else txt.innerText = 'SHIELD OFF';
+            if (isTimeFreezeEnabled) txt.innerText = t("hud_time_frozen");
+            else if (isGhostShieldEnabled) txt.innerText = t("hud_shield_active");
+            else txt.innerText = t("hud_shield_off");
         }
     };
 
@@ -297,6 +303,7 @@ export const config: PlasmoCSConfig = {
         isHudEnabled = cfg.showHud;
         isAnswerBotEnabled = cfg.showAnswerBot;
         searchEngine = cfg.searchEngine;
+        if (cfg.lang) currentLang = cfg.lang;
 
         syncState();
 
@@ -392,7 +399,7 @@ export const config: PlasmoCSConfig = {
                 </div>
                 <div id="ai-status-bar" style="padding:8px 20px; font-size:11px; color:#0f6; background:rgba(0,0,0,0.5); font-weight:bold; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.02);">
                     <div class="ai-pulse" style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div>
-                    Oczekiwanie na zapytanie...
+                    ${t("dock_ai_waiting")}
                 </div>
                 <iframe id="${FRAME_ID}" style="flex:1; border:none; width:100%; background:#fff;"></iframe>
             `;
@@ -531,8 +538,8 @@ export const config: PlasmoCSConfig = {
 
                             if (statBar) {
                                 statBar.innerHTML = clicked
-                                    ? `<div style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow: 0 0 10px #0f6;"></div> SUPREME: Zaznaczono odpowiedz! Przejdz dalej.`
-                                    : `<div style="width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow: 0 0 10px #ffea0f;"></div> SUPREME: Brak pewnosci co kliknac!(Odp od AI: <b style="color:#0f6">${aiAnswer.substring(0, 35)}</b>)`;
+                                    ? `<div style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow: 0 0 10px #0f6;"></div> ${t("dock_ai_success")}`
+                                    : `<div style="width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow: 0 0 10px #ffea0f;"></div> ${t("dock_ai_uncertain")} (AI: <b style="color:#0f6">${aiAnswer.substring(0, 35)}</b>)`;
                             }
 
                             // ---> [NOWE] Historia Egzaminu 
@@ -554,7 +561,7 @@ export const config: PlasmoCSConfig = {
                     }).catch(err => {
                         console.log("%c[Supreme AI Fallback Mode]: " + err.message, "color: #ffea0f; font-weight: bold;");
                         if (statBar) {
-                            statBar.innerHTML = `<div style="width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow: 0 0 10px #ffea0f;"></div> AI Fallback: Ściąganie awaryjne (${err.message.substring(0, 20)}...). Otwieram wyszukiwarkę...`;
+                            statBar.innerHTML = `<div style="width:8px; height:8px; background:#ffea0f; border-radius:50%; box-shadow: 0 0 10px #ffea0f;"></div> ${t("dock_ai_fallback")} (${err.message.substring(0, 20)}...)`;
                         }
                         const iframe = document.getElementById(FRAME_ID) as HTMLIFrameElement;
                         if (iframe) iframe.src = targetUrl;
@@ -563,7 +570,7 @@ export const config: PlasmoCSConfig = {
                     });
                 }
             } else if (!qText || qText.length <= 5) {
-                if (statBar) statBar.innerHTML = `<div style="width:8px; height:8px; background:#888; border-radius:50%;"></div> [SUPREME MODE] Oczekiwanie na zapytanie...`;
+                if (statBar) statBar.innerHTML = `<div style="width:8px; height:8px; background:#888; border-radius:50%;"></div> ${t("dock_ai_waiting")}`;
             }
 
             // In supreme mode, don't update iframe src wildly to avoid distraction, 
@@ -577,9 +584,9 @@ export const config: PlasmoCSConfig = {
             // --- TRYB WYSZUKIWARKOWY (IFRAME CORTEX) ---
             if (statBar && frameLastUrl !== targetUrl) {
                 if (qText && qText.length > 5) {
-                    statBar.innerHTML = `<div style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> Live Search: Wyszukuję widoczne zapytanie...`;
+                    statBar.innerHTML = `<div style="width:8px; height:8px; background:#0f6; border-radius:50%; box-shadow:0 0 10px #0f6;"></div> ${t("dock_live_searching")}`;
                 } else {
-                    statBar.innerHTML = `<div style="width:8px; height:8px; background:#888; border-radius:50%;"></div> Tryb darmowy: Oczekiwanie na zapytanie...`;
+                    statBar.innerHTML = `<div style="width:8px; height:8px; background:#888; border-radius:50%;"></div> ${t("dock_free_mode")}`;
                 }
             }
 

@@ -29,7 +29,7 @@ Instant access to solutions and automatic test answering without breaking immers
 - **Instant Frames (Free Mode):** Connects directly with Perplexity / Google, feeding it your questions natively in a 400px side window.
 - **Panic Mode:** Hide everything completely with a smooth transition using `Shift + Q` or toggle dock with `Shift + B`.
 
-### 🧹 Przeglądarka Tools
+### 🧹 Browser Tools
 - **Clear History:** Click a single button in the extension panel to erase local browser history.
 
 ### ✈️ Aviator Casino

@@ -1,115 +1,114 @@
 # 💎 AntiTestportal+ v1.0.0 OFFICIAL
-> **SUPREME MASTER EDITION** | Najbardziej zaawansowane narzedzie edukacyjne do Testportal.
+### 🛰️ SUPREME MASTER EDITION | The most advanced tool for Testportal
+**Official Documentation | Developed by mi1ku Systems (76mikus)** 🏙️🛡️🚀
 
 ![Status](https://img.shields.io/badge/STATUS-UNDETECTED-brightgreen?style=for-the-badge&logo=shield)
 ![Version](https://img.shields.io/badge/version-1.0.0_OFFICIAL-00d4ff?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-PRO_VERSION-green?style=for-the-badge)
 
-**AntiTestportal+** to zaawansowane narzędzie edukacyjne, zaprojektowane do bezpiecznego wspomagania procesu rozwiązywania testów na platformie Testportal. Wersja **1.0.0 Master** skupia się na stabilności, niewykrywalności i pełnej automatyzacji odpowiedzi.
+**AntiTestportal+** is a powerful tool to help you with tests on the Testportal platform safely. This **1.0.0 Master** version is very stable, hard to detect, and has automatic answers using AI.
 
 ---
 
-## 📥 Przewodnik Użytkownika
+## 📥 USER GUIDE
 
-### Instalacja (Dla Posiadaczy Builda)
-1.  **Pobierz:** Pobierz plik **`AntiTestportal-Plus-v1.0.0.zip`** z sekcji Releases.
-2.  **Wypakuj:** Wypakuj ZIP do folderu (np. na pulpicie).
-3.  **Otwórz Chrome:** Przejdź do `chrome://extensions`.
-4.  **Tryb Dewelopera:** Włącz suwak **"Tryb dewelopera"** (prawy górny róg).
-5.  **Załaduj:** Kliknij **"Załaduj rozpakowane"** i wskaż wypakowany folder projektu.
-6.  **Gotowe!** Ikonka "A" pojawi się na pasku. Po wejściu na test, system Ghost Shield aktywuje się automatycznie.
+### How to Install (For Build Owners)
+1.  **Download**: Get the **`AntiTestportal-Plus-v1.0.0.zip`** file from the Releases section.
+2.  **Unpack**: Unzip the file to a folder (for example, on your desktop).
+3.  **Open Chrome**: Go to `chrome://extensions`.
+4.  **Developer Mode**: Enable the **"Developer mode"** switch (top right corner).
+5.  **Load**: Click **"Load unpacked"** and select the project folder.
+6.  **Done!** The "A" icon will appear. The Ghost Shield system starts automatically when you take a test.
 
-### Pierwsze Kroki
-Po kliknięciu ikonki, zostaniesz poproszony o **Klucz Licencyjny**.
-👉 Wpisz klucz otrzymany od administratora (**76mikus**), aby aktywować funkcje AI oraz Side Dock.
+### First Steps
+After you click the icon, it will ask for a **License Key**.
+👉 Enter the key from the administrator (**76mikus**) to use AI features and the Side Dock.
 
 ---
 
-## 🛠️ Główne Funkcje (Supreme Master)
+## 🛠️ MAIN FEATURES (Supreme Master)
 
-### 🛡️ Ghost Shield (Tryb Niewidzialny)
-Chroni przed wykryciem przez mechanizmy anty-cheat platformy.
-- Blokuje detekcję wyjścia z karty (blur).
-- Blokuje wykrywanie zmiany okna i aplikacji.
-- Działa w tle, nie wymagając uwagi użytkownika.
-- **Inteligentny filtr wyłączeń:** Moduł automatycznie usypia się na stronach lobby (`LoadTestStart.html`) i podsumowaniach wyników, aby nie blokować normalnego funkcjowania serwisu.
+### 🛡️ Ghost Shield (Stealth Mode)
+This protects you from being caught by the website's anti-cheat.
+- Blocks "tab exit" detection (blur).
+- Blocks window or app change detection.
+- Works in the background automatically.
+- **Smart Filter:** The system sleeps on lobby pages and result pages so the site works normally there.
 
-### ❄️ Nielimitowany Czas (Time Freeze)
-Zamraża licznik czasu na stronie egzaminu.
-- Kliknij **"Nielimitowany Czas"** w panelu.
-- Zegar zatrzyma się wizualnie na **99:99**.
-- Po wyłączeniu, czas zostaje poprawnie zsynchronizowany, aby uniknąć błędów po stronie serwera.
+### ❄️ Unlimited Time (Time Freeze)
+Stops the timer on the test page.
+- Click **"Unlimited Time"** in the panel.
+- The clock will stop at **99:99**.
+- When you turn it off, it syncs the time correctly to avoid server errors.
 
-### 🧠 Asystent "Auto-Solver" (Groq AI & Side Dock)
-Zaawansowany system z wbudowaną potężną siecią neuronową (Llama 3.3 70B Engine), która samoczynnie odczytuje pytania.
-- **Dynamiczne Rozwiązywanie Pytania:** Jeśli funkcja Asystenta AI jest włączona, wtyczka skanuje polecenie na teście, analizuje opcje, łączy się z Groq i w ułamku sekundy dodaje subtelny, pływający zielony znaczek (✔️) obok poprawnej odpowiedzi (lub wpisuje ghost-text dla pytań otwartych).
-- **Tryby Fallback (Dock):** Jeśli chcesz wyszukać coś ręcznie, jednym kliknięciem przełączasz silnik na Google lub Perplexity w oknie wtyczki. Klasyczny boczny panel wysuwa się wtedy z prawego brzegu i pozwala na ręczne korzystanie.
-- **Zarządzanie Widocznością:** Kiedy przełączysz na głównego Groqa, boczny panel znika całkowicie dla maksymalnej dyskrecji. Masz również skrót `Shift + Q` by przejść w **Panic Mode** - nikt z pleców nie zobaczy, że korzystasz ze wsparcia.
+### 🧠 Auto-Solver Assistant (Groq AI & Side Dock)
+A very smart system with a neural network (Llama 3.3 70B Engine) that reads questions.
+- **Dynamic Solving:** If the AI Assistant is on, it scans the test question, looks at options, and uses AI to find the answer. It adds a small green checkmark (✔️) next to the correct answer or writes text for open questions.
+- **Side Dock:** If you want to search manually, you can use Google or Perplexity inside the plugin. A side panel slide-out from the right.
+- **Hide Dock:** When you use AI, the side panel hides for safety. You can also use **`Shift + Q`** (Panic Mode) to hide everything quickly.
 
-### 📂 Egzamin Dump (Archiwizacja pytań)
-Wtyczka całkowicie po cichu zapisuje wszystkie pytania i wygenerowane poprawne odpowiedzi w trakcie pisania z włączonym Auto-Solverem w tle. 
-- Pobierz wszystkie pytania w zwykłym czytelnym pliku `.txt` bez żadnych śladów jednym kliknięciem z panelu domowego. Idealne do tworzenia własnej bazy wiedzy.
+### 📂 Exam Dump (Archive questions)
+The plugin saves all questions and correct answers while you write the test.
+- Download all questions as a `.txt` file with one click. Very useful for making your own study base.
 
-### 🧹 Narzędzia Przeglądarki
-- **Wyczyść Historię:** Szybkie usuwanie śladów i logów przeglądarki jednym kliknięciem z poziomu okna głównego wtyczki.
+### 🧹 Browser Tools
+- **Clear History:** Quickly delete your browser history and logs with one click inside the plugin.
 
-### ⌨️ Skróty Klawiszowe (Sterowanie)
-| Skrót | Funkcja | Opis |
+### ⌨️ Hotkeys (Controls)
+| Key | Function | Description |
 | :--- | :--- | :--- |
-| **`Shift + Q`** | **Panic Mode** | Natychmiastowe ukrycie/pokazanie całego HUD i Docka |
-| **`Shift + B`** | **Toggle Dock** | Pokazuje lub chowa boczny panel asystenta |
-| **`Shift + E`** | **Freeze Time** | Włącza/wyłącza zatrzymanie czasu |
-| `Shift + Y` | Quick Google | Otwiera wyszukiwanie Google w nowej karcie (Legacy) |
-| `Shift + U` | Quick Perplexity | Otwiera Perplexity w nowej karcie (Legacy) |
+| **`Shift + Q`** | **Panic Mode** | Quickly hide or show the HUD and Dock |
+| **`Shift + B`** | **Toggle Dock** | Show or hide the side assistant panel |
+| **`Shift + E`** | **Freeze Time** | Turn on or off the time freeze |
+| `Shift + Y` | Quick Google | Open Google search in a new tab (Legacy) |
+| `Shift + U` | Quick Perplexity | Open Perplexity search in a new tab (Legacy) |
 
 ---
 
-## 💻 Dokumentacja Deweloperska (BUILD SYSTEM)
+## 💻 DEVELOPER GUIDE (BUILD SYSTEM)
 
-### Wymagania
+### Requirements
 - **Node.js**: v18+
-- **NPM**: Menedżer pakietów
-- **GitHub CLI (gh)**: Do obsługi automatycznych wydań (Releases)
+- **NPM**: Package manager
+- **GitHub CLI (gh)**: To upload releases
 
-### Komendy Budowania (Master Flow)
-Wersja 1.0.0 wprowadza ujednolicony system budowania i automatycznej dystrybucji.
-
-- **FULL MASTER BUILD & DEPLOY:**
-  ```cmd
-  build-all.bat
-  ```
-  Ten skrypt wykonuje pełny cykl produkcyjny:
-  1. Czyści stare pliki builda.
-  2. Kompiluje wtyczkę (`npm run build`).
-  3. Wykonuje zaawansowaną obfuskację kodu (**Fortified Mode**).
-  4. Tworzy oficjalne archiwum **`AntiTestportal-Plus-v1.0.0.zip`**.
-  5. Wysyła kod na GitHub i automatycznie aktualizuje (nadpisuje) oficjalny **Release v1.0.0**.
+### Build Commands
+1.  **FULL BUILD & DEPLOY:**
+    ```cmd
+    build-all.bat
+    ```
+    This script does everything:
+    1. Cleans old files.
+    2. Builds the extension (`npm run build`).
+    3. Hides the code (**Fortified Mode**).
+    4. Creates the **`AntiTestportal-Plus-v1.0.0.zip`** file.
+    5. Updates the GitHub Release.
 
 ---
 
 ## ❓ FAQ
 
-**Q: Błąd "Extension context invalidated".**
-A: Odśwież stronę testu (F5). Dzieje się tak po aktualizacji wtyczki w tle.
+**Q: "Extension context invalidated" error.**
+A: Refresh the page (F5). This happens after a plugin update.
 
-**Q: Nie działa na stronie panelu nauczyciela.**
-A: To celowe. Wtyczka działa tylko na stronach egzaminu (`/exam/`), aby nie powodować konfliktów.
+**Q: It's not working on the teacher's page.**
+A: This is normal. It only works on test pages (`/exam/`) to avoid problems.
 
 ---
 
-## ⚖️ Nota Prawna & Prawa Autorskie
+## ⚖️ Legal & Copyright
 
-**Właścicielem praw autorskich do projektu jest: Mikuś (mi1ku / 76mikus).**
+**Owner of this project: Mikuś (mi1ku / 76mikus).**
 
-> 🛒 **ZAKUP / UZYSKANIE KLUCZA:**
-> Aby uzyskać pełen dostęp, własny klucz licencyjny lub wypróbować wtyczkę - napisz do autora:
+> 🛒 **GET A KEY:**
+> To get a key or try the plugin, write to the author:
 > 👉 **[instagram.com/76mikus](https://www.instagram.com/76mikus/)**
 
-Niniejsze oprogramowanie ("AntiTestportal+") zostało stworzone **wyłącznie w celach edukacyjnych** oraz do analizy zagadnień z zakresu cyberbezpieczeństwa i testowania penetracyjnego aplikacji webowych. Projekt ma na celu demonstrację luk w zabezpieczeniach systemów egzaminowania online.
+This software ("AntiTestportal+") is only for **learning** and testing web security. It shows problems in online test systems.
 
-1.  **Odpowiedzialność:** Autor projektu nie ponosi żadnej odpowiedzialności za jakiekolwiek szkody wyrządzone przez użytkowników oprogramowania ani za wykorzystanie go w sposób niezgodny z prawem lub regulaminem placówek edukacyjnych/egzaminacyjnych. Użytkownik korzysta z oprogramowania na własne ryzyko.
-2.  **Prawa Autorskie:** Zgodnie z ustawą z dnia 4 lutego 1994 r. o prawie autorskim i prawach pokrewnych (Dz.U. 1994 nr 24 poz. 83 z późn. zm.), kopiowanie, modyfikowanie, rozpowszechnianie lub wykorzystywanie kodu źródłowego (w całości lub części) bez wyraźnej, pisemnej zgody autora (**76mikus**) jest surowo zabronione.
-3.  **Licencja:** Użytek dozwolony wyłącznie do celów prywatnych, niezwiązanych z osiąganiem korzyści majątkowych, chyba że uzyskano inną licencję od autora. Odsprzedaż wtyczki pod inną nazwą jest surowo zabroniona.
+1.  **Responsibility:** The author is not responsible for any damage or if you use this to break school rules. You use it at your own risk.
+2.  **Copyright:** Do not copy or change the code without the author's (**76mikus**) permission.
+3.  **License:** For private use only. Do not sell this under a different name.
 
 ---
-**© 2026 Mikuś (mi1ku Systems). Wszelkie prawa zastrzeżone.** 🏙️🛡️🚀
+**© 2026 Mikuś (mi1ku Systems). All rights reserved.** 🏙️🛡️🚀⚓

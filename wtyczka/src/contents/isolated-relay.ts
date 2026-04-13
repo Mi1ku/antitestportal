@@ -24,9 +24,10 @@ export const config: PlasmoCSConfig = {
     run_at: "document_start"
 };
 
-const sendSync = (cfg: PluginConfig) => {
+const sendSync = async (cfg: PluginConfig) => {
     try {
-        window.dispatchEvent(new CustomEvent("ultra_sync", { detail: cfg }));
+        const lang = await pluginStorage.get<string>("mikusLang") || "pl";
+        window.dispatchEvent(new CustomEvent("ultra_sync", { detail: { ...cfg, lang } }));
     } catch (e) { }
 };
 
@@ -84,6 +85,10 @@ const init = async () => {
             if (change.newValue) {
                 sendSync(change.newValue as PluginConfig);
             }
+        },
+        "mikusLang": async () => {
+            const cfg = await pluginStorage.get<PluginConfig>(PluginConfigKey);
+            if (cfg) sendSync(cfg);
         }
     });
 
