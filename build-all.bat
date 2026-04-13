@@ -1,48 +1,36 @@
 @echo off
+chcp 65001 >nul
 setlocal enabledelayedexpansion
 
-:: ==========================================
-:: ANTITESTPORTAL+ MASTER BUILDER (V1.1)
-:: AUTHOR: mi1ku (76mikus)
-:: ==========================================
+:: ============================================================
+:: ANTITESTPORTAL+ MASTER BUILDER | PRESTIGE V1.2.1
+:: ============================================================
 
 set VERSION=1.0.0
 set ZIP_NAME=AntiTestportal-Plus-v%VERSION%.zip
 set BUILD_PATH=wtyczka\build\chrome-mv3-prod
 
-:: OPTIMIZATIONS
-set CI=true
-set "NODE_OPTIONS=--max-old-space-size=4096 --no-deprecation"
-
 :start
 cls
 echo.
-echo           ██████╗ ██████╗ ███╗   ██╗ ██████╗ 
-echo           ██╔══██╗██╔══██╗████╗  ██║██╔════╝ 
-echo           ██████╔╝██████╔╝██╔██╗ ██║██║  ███╗
-echo           ██╔═══╝ ██╔══██╗██║╚██╗██║██║   ██║
-echo           ██║     ██║  ██║██║ ╚████║╚██████╔╝
-echo           ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ 
+echo    [--- ANTITESTPORTAL+ MASTER BUILDER ---]
+echo    [--- AUTHORITY RELEASE: %VERSION% ---]
 echo.
 echo ============================================================
-echo      ANTITESTPORTAL+ MASTER BUILDER ^| PRESTIGE V1.2
-echo      LICENSED TO: 76mikus (Authority) ^| VER: %VERSION%
+echo      LICENSED TO: 76mikus (Authority)
 echo ============================================================
 echo.
 
-echo [💡] INITIALIZING SYSTEM AUDIT...
+echo [!] INITIALIZING SYSTEM AUDIT...
 if not exist wtyczka (
-    echo.
-    echo [❌] CRITICAL ERROR: 'wtyczka' directory not found!
-    echo.
+    echo [X] ERROR: 'wtyczka' directory not found!
     pause
-    exit /b 1
+    goto choice
 )
 
-:: 1. BUILD & OBFUSCATE
+:: 1. BUILD
 echo.
-echo [🔨] STEP 1: COMPILING ^& OBFUSCATING [GHOST_MODE]...
-echo ------------------------------------------------------------
+echo [*] STEP 1: COMPILING [GHOST_MODE]...
 pushd wtyczka
 if exist build rd /s /q build
 call npm run build
@@ -50,74 +38,43 @@ set BUILD_ERR=%errorlevel%
 popd
 
 if %BUILD_ERR% neq 0 (
-    echo.
-    echo [🛑] BUILD FAILURE: Check the logs above.
+    echo [!] BUILD FAILURE.
     goto choice
 )
-echo.
-echo [✅] CORE MODULES BUILT SUCCESSFULLY.
 
 :: 2. ZIP
 echo.
-echo [📦] STEP 2: GENERATING MASTER ENCRYPTED ZIP...
-echo ------------------------------------------------------------
+echo [*] STEP 2: GENERATING ZIP ARCHIVE...
 if exist %ZIP_NAME% del /f /q %ZIP_NAME%
 powershell -Command "Compress-Archive -Path '%BUILD_PATH%\*' -DestinationPath '%ZIP_NAME%' -Force"
-echo [✅] ARCHIVE READY: %ZIP_NAME%
+echo [OK] ZIP Created: %ZIP_NAME%
 
-:: 3. GIT SYNC
+:: 3. GIT
 echo.
-echo [📡] STEP 3: SYNCHRONIZING WITH GLOBAL REPOSITORY...
-echo ------------------------------------------------------------
+echo [*] STEP 3: SYNCING REPOSITORY...
 git add .
-git commit -m "Auto-Deploy: AntiTestportal+ Master Build v%VERSION%" >nul 2>&1
+git commit -m "Auto-Deploy: v%VERSION%" >nul 2>&1
 git push origin main || git push origin master
-echo [✅] SOURCE CODE SECURED.
+echo [OK] Git synced.
 
-:: 4. GITHUB RELEASE
+:: 4. GH
 echo.
-echo [🚀] STEP 4: PUBLISHING OFFICIAL AUTHORITY RELEASE...
-echo ------------------------------------------------------------
-
-:: Create temporary release notes file (PL/EN)
-echo # ANTITESTPORTAL+ [V1.0.0 OFFICIAL MASTER] > release_notes.md
-echo. >> release_notes.md
-echo ## 🇵🇱 POLSKI >> release_notes.md
-echo Najbardziej zaawansowane narzedzie do automatyzacji i edukacji na platformie Testportal. >> release_notes.md
-echo. >> release_notes.md
-echo #### Glowne funkcje: >> release_notes.md
-echo * **Ghost Shield (v2.0)**: Pelna ochrona przed wykrywaniem utraty fokusu. >> release_notes.md
-echo * **AI Response Interception**: Przechwytywanie odpowiedzi w czasie rzeczywistym. >> release_notes.md
-echo * **Side Dock AI**: Podreczny panel asystencki zintegrowany z interfejsem testu. >> release_notes.md
-echo. >> release_notes.md
-echo --- >> release_notes.md
-echo. >> release_notes.md
-echo ## 🇺🇸 ENGLISH >> release_notes.md
-echo The ultimate automation and educational tool for the Testportal platform. >> release_notes.md
-echo. >> release_notes.md
-echo *Developed ^& Maintained by **mi1ku*** >> release_notes.md
-
+echo [*] STEP 4: PUBLISHING RELEASE...
 where gh >nul 2>&1
 if %errorlevel% equ 0 (
     gh release delete v%VERSION% --yes --cleanup-tag >nul 2>&1
-    gh release create v%VERSION% %ZIP_NAME% --title "AntiTestportal+ v%VERSION% Official Master Release" --notes-file release_notes.md
-    echo [✅] GITHUB RELEASE UPDATED: v%VERSION%
-) else (
-    echo [⚠️] INFO: GitHub CLI missing. Release skipped.
+    gh release create v%VERSION% %ZIP_NAME% --title "AntiTestportal+ v%VERSION%" --notes "Official Master Release by 76mikus"
+    echo [OK] Release live.
 )
-
-:: Cleanup
-if exist release_notes.md del /f /q release_notes.md
 
 echo.
 echo ============================================================
-echo    AUTHORITY BUILD COMPLETED ^| SYSTEM READY [GHOST]
+echo    BUILD COMPLETED | SYSTEM SECURED
 echo ============================================================
 echo.
 
 :choice
-set /p user_choice="[🔵] TAP 'R' TO REPEAT OR 'E' TO EXIT: "
-
+set /p user_choice="TAP 'R' TO REPEAT OR 'E' TO EXIT: "
 if /i "%user_choice%"=="R" goto start
 if /i "%user_choice%"=="E" exit
 exit
