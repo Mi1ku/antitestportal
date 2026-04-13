@@ -1,10 +1,9 @@
 @echo off
-chcp 65001 >nul
+pause
 setlocal enabledelayedexpansion
 
-:: ============================================================
-:: ANTITESTPORTAL+ MASTER BUILDER | PRESTIGE V1.2.1
-:: ============================================================
+echo [START] ANTITESTPORTAL+ MASTER BUILDER
+echo [INFO] Srodowisko: Node ^& Git ^& GH CLI
 
 set VERSION=1.0.0
 set ZIP_NAME=AntiTestportal-Plus-v%VERSION%.zip
@@ -12,25 +11,18 @@ set BUILD_PATH=wtyczka\build\chrome-mv3-prod
 
 :start
 cls
-echo.
-echo    [--- ANTITESTPORTAL+ MASTER BUILDER ---]
-echo    [--- AUTHORITY RELEASE: %VERSION% ---]
-echo.
-echo ============================================================
-echo      LICENSED TO: 76mikus (Authority)
-echo ============================================================
+echo ===================================
+echo   ANTITESTPORTAL+ MASTER BUILDER
+echo ===================================
 echo.
 
-echo [!] INITIALIZING SYSTEM AUDIT...
 if not exist wtyczka (
-    echo [X] ERROR: 'wtyczka' directory not found!
+    echo [ERROR] folder wtyczka nie istnieje!
     pause
     goto choice
 )
 
-:: 1. BUILD
-echo.
-echo [*] STEP 1: COMPILING [GHOST_MODE]...
+echo [*] Budowanie wtyczki...
 pushd wtyczka
 if exist build rd /s /q build
 call npm run build
@@ -38,39 +30,33 @@ set BUILD_ERR=%errorlevel%
 popd
 
 if %BUILD_ERR% neq 0 (
-    echo [!] BUILD FAILURE.
+    echo [ERROR] Budowanie przerwane.
     goto choice
 )
 
-:: 2. ZIP
-echo.
-echo [*] STEP 2: GENERATING ZIP ARCHIVE...
+echo [*] Pakowanie...
 if exist %ZIP_NAME% del /f /q %ZIP_NAME%
 powershell -Command "Compress-Archive -Path '%BUILD_PATH%\*' -DestinationPath '%ZIP_NAME%' -Force"
-echo [OK] ZIP Created: %ZIP_NAME%
+echo [OK] ZIP gotowy: %ZIP_NAME%
 
-:: 3. GIT
-echo.
-echo [*] STEP 3: SYNCING REPOSITORY...
+echo [*] Synchronizacja Git...
 git add .
 git commit -m "Auto-Deploy: v%VERSION%" >nul 2>&1
 git push origin main || git push origin master
 echo [OK] Git synced.
 
-:: 4. GH
-echo.
-echo [*] STEP 4: PUBLISHING RELEASE...
+echo [*] Tworzenie Release na GitHub...
 where gh >nul 2>&1
 if %errorlevel% equ 0 (
     gh release delete v%VERSION% --yes --cleanup-tag >nul 2>&1
-    gh release create v%VERSION% %ZIP_NAME% --title "AntiTestportal+ v%VERSION%" --notes "Official Master Release by 76mikus"
-    echo [OK] Release live.
+    gh release create v%VERSION% %ZIP_NAME% --title "AntiTestportal+ v%VERSION%" --notes "Official Release by 76mikus Authority"
+    echo [OK] GitHub Release live.
+) else (
+    echo [SKIPPED] Brak GitHub CLI.
 )
 
 echo.
-echo ============================================================
-echo    BUILD COMPLETED | SYSTEM SECURED
-echo ============================================================
+echo Budowanie zakonczone pomyślnie.
 echo.
 
 :choice
