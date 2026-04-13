@@ -45,12 +45,21 @@ git commit -m "Auto-Deploy: v%VERSION%" >nul 2>&1
 git push origin main || git push origin master
 echo [OK] Git synced.
 
-echo [*] Tworzenie Release na GitHub...
+echo [*] Tworzenie Release na GitHub (Nuclear Overwrite)...
 where gh >nul 2>&1
 if %errorlevel% equ 0 (
-    gh release delete v%VERSION% --yes --cleanup-tag >nul 2>&1
-    gh release create v%VERSION% %ZIP_NAME% --title "AntiTestportal+ v%VERSION%" --notes "Official Release by 76mikus Authority"
-    echo [OK] GitHub Release live.
+    echo [!] Usuwanie starego release v%VERSION%...
+    call gh release delete v%VERSION% --yes --cleanup-tag >nul 2>&1
+    :: Pauza na odswiezenie API GitHuba
+    timeout /t 3 /nobreak >nul
+    
+    echo [!] Tworzenie nowej wersji...
+    call gh release create v%VERSION% %ZIP_NAME% --title "AntiTestportal+ v%VERSION% Official" --notes "Master Release by 76mikus Authority"
+    if %errorlevel% neq 0 (
+        echo [!] Release juz istnieje, aktualizacja pliku ZIP...
+        call gh release upload v%VERSION% %ZIP_NAME% --clobber
+    )
+    echo [OK] GitHub Release zaktualizowany.
 ) else (
     echo [SKIPPED] Brak GitHub CLI.
 )
